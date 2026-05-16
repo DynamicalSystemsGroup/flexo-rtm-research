@@ -2,17 +2,19 @@
 
 # Engineering Lifecycle Stages
 
-> **Status — Forward-compat scope for v0.1; full mechanism lands in v0.2.** This page documents engineering lifecycle stages as first-class metadata on scopes (named graphs). v0.1 ships the **vocabulary** (`rtm:lifecycleStage` and the INCOSE-aligned stage IRIs) so adopters can tag scopes today; the **stage-aware oracle behavior and lifecycle state machine** ship in v0.2. This is the **next roadmap item after v0.1** — distinct from the topological framework, which is still in research phase ([[Topological Framework Future Work]]). Adopters who tag scopes in v0.1 get forward-compatible data; the v0.2 oracle activates the stage-aware semantics against that data. Locked in [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]].
+> **Status — Forward-compat scope for v0.1; full mechanism lands in v0.2.** This page documents engineering lifecycle stages as first-class metadata on scopes (named graphs). v0.1 ships the **vocabulary** (`rtm:lifecycleStage` and the INCOSE/ISO 15288 canonical stage IRIs) so adopters can tag scopes today; the **stage-aware oracle behavior and lifecycle state machine** ship in v0.2. This is the **next roadmap item after v0.1** — distinct from the topological framework, which is still in research phase ([[Topological Framework Future Work]]). Adopters who tag scopes in v0.1 get forward-compatible data; the v0.2 oracle activates the stage-aware semantics against that data. Locked in [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]].
 
 ## Motivation
 
-Systems do not come into existence ex nihilo. They emerge from engineering work that often starts with **exploratory** phases, leads into formal **requirements specification** which cascades across scopes (subgraphs), and only then proceeds into **development**, **production**, **utilization**, **support**, and eventually **retirement**. New scopes come into existence underspecified and gain detail over time; some scopes that reach production are returned to earlier stages by changes that invalidate prior certifications.
+Systems do not come into existence ex nihilo. They emerge from engineering work that often starts with **concept** formulation (including the framing, stakeholder engagement, and requirements specification that the INCOSE Systems Engineering Handbook places inside the Concept stage), then proceeds into **development**, **production**, **utilization**, **support**, and eventually **retirement**. New scopes come into existence underspecified and gain detail over time; some scopes that reach production are returned to earlier stages by changes that invalidate prior certifications.
 
-The INCOSE Systems Engineering Handbook treats lifecycle stages as a first-class organizing concept (see [[INCOSE V2 Review]]). `flexo-rtm` should be able to assign lifecycle stages to scopes (named graphs) and to use those stages to gate which checks apply, which gaps are blocking vs. informational, and when re-certification is prompted. This is engineering work that complements the structural traceability and attestation infrastructure v0.1 ships — it does not require the topological framework or new research, but it does require coordinated oracle + operational-layer + skill work that is properly scoped for v0.2.
+The [INCOSE Systems Engineering Handbook](https://www.incose.org/products-and-publications/se-handbook) and [ISO/IEC/IEEE 15288](https://www.iso.org/standard/81702.html) treat lifecycle stages as a first-class organizing concept and define a canonical six-stage set (see [[INCOSE V2 Review]]). `flexo-rtm` should be able to assign those stages to scopes (named graphs) and to use those stages to gate which checks apply, which gaps are blocking vs. informational, and when re-certification is prompted. This is engineering work that complements the structural traceability and attestation infrastructure v0.1 ships — it does not require the topological framework or new research, but it does require coordinated oracle + operational-layer + skill work that is properly scoped for v0.2.
+
+**Principle: use existing standards, do not reinvent.** `flexo-rtm`'s stage vocabulary is exactly the canonical INCOSE/ISO 15288 six stages — no `flexo-rtm`-specific additions, no parallel "exploratory" or "requirements-specification" sub-stages. Programs already organize around these stages; the early framing and requirements work that some practitioners colloquially call "exploratory" sits inside the Concept stage as defined by the standards, and finer-grained distinctions (concept-of-operations vs. requirements-specification vs. design entry) are tracked through aspects, milestones, or program-specific metadata layered on top, not by minting new top-level stages.
 
 The motivation has two direct consequences (paraphrasing the user's framing in issue #6):
 
-1. **Early-stage scopes (named graphs) that do not satisfy requirements traceability are not expected to** — gating on T1 (orphan requirement) or T2 (dangling evidence) during exploratory or concept work would be noisy and create UX issues. The lifecycle stage tells the oracle to treat those gaps as **informational, not blocking**, at early stages.
+1. **Early-stage scopes (named graphs) that do not satisfy requirements traceability are not expected to** — gating on T1 (orphan requirement) or T2 (dangling evidence) during Concept-stage work would be noisy and create UX issues. The lifecycle stage tells the oracle to treat those gaps as **informational, not blocking**, at the Concept stage.
 2. **Later-stage scopes that have previous certifications fall back into earlier states** when changes are committed that invalidate prior certifications. Some of these will be automatically rerunnable due to the reproducibility machinery ([[Verifiable Self-Certification]], [[Transcript Replay Semantics]]); others will require human re-attestation. The lifecycle stage machine is the mechanism that ensures recertification is **prompted when appropriate** and that no unintended regressions go undetected.
 
 ## The vocabulary (ships in v0.1 for forward-compat)
@@ -27,25 +29,20 @@ v0.1 ships the following lifecycle vocabulary so adopters can begin tagging scop
 | `rtm:lifecycleStageTransition` | `owl:ObjectProperty` | Provenance of a stage transition. Subject: `rtm:Scope`. Object: a `rtm:LifecycleStageTransition` blank-or-named node carrying `prov:wasGeneratedBy`, `rtm:fromStage`, `rtm:toStage`, `rtm:approvedBy`, `prov:atTime`. |
 | `rtm:LifecycleStageTransition` | `owl:Class` | A first-class transition event. Subject of named-approver SHACL (the same `sh:minCount 1 ; sh:nodeKind sh:IRI` on `rtm:approvedBy`) under the v0.2 stage-transition profile. |
 
-### Stage IRIs (INCOSE-aligned)
+### Stage IRIs — the six canonical INCOSE / ISO 15288 stages
 
-The six canonical lifecycle stages from the INCOSE Systems Engineering Handbook, aligned via `skos:closeMatch` per the [[INCOSE V2 Review]] adoption pattern:
+The six canonical lifecycle stages from the INCOSE Systems Engineering Handbook and ISO/IEC/IEEE 15288, aligned via `skos:closeMatch` per the [[INCOSE V2 Review]] adoption pattern:
 
-| Stage IRI | INCOSE handbook stage | Typical condition |
+| Stage IRI | INCOSE / ISO 15288 stage | Typical condition |
 |---|---|---|
-| `rtm:stage/exploratory` | (pre-Concept; exploratory research) | Initial framing; requirements not yet stated |
-| `rtm:stage/concept` | Concept | Concept formulated; preliminary requirements emerging |
-| `rtm:stage/development` | Development | Requirements specified; models built; evidence accumulating |
+| `rtm:stage/concept` | Concept | Stakeholder needs identified; concept-of-operations forming; requirements being elicited, analyzed, and specified |
+| `rtm:stage/development` | Development | Requirements specified; models built; design and integration evidence accumulating |
 | `rtm:stage/production` | Production | Full certification achieved; system being produced or fielded |
 | `rtm:stage/utilization` | Utilization | System in operational use; in-service evidence accruing |
 | `rtm:stage/support` | Support | System maintained; modifications evaluated |
 | `rtm:stage/retirement` | Retirement | System being decommissioned; legacy evidence preserved |
 
-The INCOSE V2 review identifies six handbook stages (concept, development, production, utilization, support, retirement); `rtm:stage/exploratory` is an additional pre-Concept stage `flexo-rtm` introduces explicitly to give programs a first-class home for early framing work that precedes formal Concept entry. Similarly, `rtm:stage/requirements-specification` is added as a sub-stage between concept and development — programs that distinguish "concept agreed, requirements still settling" from "requirements specified, development started" can use the finer-grained tag:
-
-- `rtm:stage/requirements-specification` — between Concept and Development; requirements formally stated, traceability gates begin to apply but rollback to Concept is still cheap.
-
-The seven-stage set (`exploratory`, `concept`, `requirements-specification`, `development`, `production`, `utilization`, `support`, `retirement`) is the v0.1 default. Adopters that prefer to stay closer to INCOSE's six handbook stages can disable the two `flexo-rtm`-introduced stages via the lifecycle profile configuration. The IRIs themselves remain stable so data tagged in one adopter's ontology projects cleanly into another adopter's ontology.
+Per the INCOSE handbook, the Concept stage explicitly includes the activities that programs sometimes describe as "exploratory" or "requirements-specification" — stakeholder requirements definition, system requirements definition, and concept-of-operations work all happen here. `flexo-rtm` does not introduce parallel sub-stages for these activities; they are tracked through other mechanisms (aspects, program milestones, the operational-layer skill's prompts), not through new top-level stage IRIs. This keeps the stage vocabulary identical to the standards programs already organize around.
 
 A worked Turtle tag on a scope:
 
@@ -56,7 +53,7 @@ rtm:scope/adcs-attitude-control a rtm:Scope ;
     rtm:lifecycleStageTransition :transition-2026-05-17-development .
 
 :transition-2026-05-17-development a rtm:LifecycleStageTransition ;
-    rtm:fromStage rtm:stage/requirements-specification ;
+    rtm:fromStage rtm:stage/concept ;
     rtm:toStage rtm:stage/development ;
     rtm:approvedBy <https://example.org/approver/lead-engineer-zargham> ;
     prov:atTime "2026-05-17T10:00:00Z"^^xsd:dateTime ;
@@ -67,32 +64,30 @@ The transition is itself a first-class attestable event. Under the v0.2 stage-tr
 
 ## The two consequences from the user's issue (land in v0.2)
 
-### Consequence 1 — Early-stage scopes don't trigger traceability-gate noise
+### Consequence 1 — Concept-stage scopes don't trigger traceability-gate noise
 
-A scope tagged `rtm:stage/exploratory` or `rtm:stage/concept` is **exempt** from traditional bidirectional certification gates. Specifically, gap codes T1 (orphan-requirement) and T2 (dangling-evidence) are **reported as informational, not blocking**, at these stages. The justification is operational: in early stages, an unsatisfied requirement is the **expected** state — the team is still framing the problem. Gating on it would be noisy and force engineers to suppress checks they actually want to keep running for the data they're collecting.
+A scope tagged `rtm:stage/concept` is **exempt** from traditional bidirectional certification gates. Specifically, gap codes T1 (orphan-requirement) and T2 (dangling-evidence) are **reported as informational, not blocking**, at this stage. The justification is operational: during the Concept stage, an unsatisfied requirement is the **expected** state — the team is still framing the problem, eliciting stakeholder needs, and specifying requirements. Gating on it would be noisy and force engineers to suppress checks they actually want to keep running for the data they're collecting.
 
-The relaxation is **stage-aware**, not blanket. Even at exploratory stage:
+The relaxation is **stage-aware**, not blanket. Even at the Concept stage:
 
 - T6 (failed attestation) remains blocking — a recorded failure is still a recorded failure, regardless of stage.
 - T7 (unapproved attestation) remains structurally impossible — the named-approver SHACL bottleneck is on the parent class and is unconditional.
-- T8 (aspect-uncovered) remains active only if the `aspect-coverage` profile is on.
+- T8 (aspect-uncovered) remains active only if the `aspect-coverage` profile is on, and remains informational at Concept stage even when it does.
 
-At `rtm:stage/requirements-specification`, T1 begins to apply as blocking (the team has committed to specifying requirements; orphan requirements indicate the specification is incomplete). T2 remains informational at this stage and becomes blocking at `rtm:stage/development`.
+At `rtm:stage/development`, T1 and T2 begin to apply as blocking — requirements are specified and traceability is now expected. T3, T4, T5, T8 apply per their active profile (still informational unless their profile is on; their severity becomes blocking at Development when their profile is on).
 
 The full mapping of T-code blocking-vs-informational by stage is established in v0.2; the design sketch in [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]] is:
 
 | Stage | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 |
 |---|---|---|---|---|---|---|---|---|
-| exploratory | inf | inf | inf | inf | inf | **block** | n/a | inf |
 | concept | inf | inf | inf | inf | inf | **block** | n/a | inf |
-| requirements-specification | **block** | inf | inf | inf | inf | **block** | n/a | inf |
 | development | **block** | **block** | **block** | **block** | **block** | **block** | n/a | **block** |
 | production | **block** | **block** | **block** | **block** | **block** | **block** | n/a | **block** |
 | utilization | **block** | **block** | **block** | **block** | **block** | **block** | n/a | **block** |
 | support | **block** | **block** | **block** | **block** | **block** | **block** | n/a | **block** |
 | retirement | **block** | **block** | **block** | **block** | **block** | **block** | n/a | **block** |
 
-("inf" = informational; "block" = blocking; "n/a" = structurally impossible.) The exact relaxation matrix is an open question for v0.2 design — programs may want finer-grained control (per aspect, per T-code) via the lifecycle profile configuration.
+("inf" = informational; "block" = blocking; "n/a" = structurally impossible.) The exact relaxation matrix is an open question for v0.2 design — programs may want finer-grained control (per aspect, per T-code) via the lifecycle profile configuration, e.g., aspect-coverage gates on safety-aspect requirements that activate earlier than other aspects.
 
 ### Consequence 2 — Lifecycle-aware regression handling
 
@@ -103,8 +98,8 @@ A scope tagged `rtm:stage/development` or later that has prior certifications, w
 
 The fall-back rules:
 
-- A change that invalidates **structural completeness** of a fact (the RDF neighborhood, external URIs, projection-at-cert-time, or signatures) drops the scope from its current stage back to `development`.
-- A change that adds **new requirements** drops the scope back to `requirements-specification` (the new requirements need to be specified and traced before development-stage gates apply).
+- A change that invalidates the **structural completeness** of a fact (the RDF neighborhood, external URIs, projection-at-cert-time, or signatures) drops the scope from its current stage back to `development`. The change is within the existing requirement set; the team needs to re-establish satisfying evidence under the same specification.
+- A change that **adds, removes, or alters requirements** drops the scope back to `concept`. New or changed requirements need to be specified before development-stage gates apply; the work returns to the Concept stage's requirements-specification activities.
 - A change that **removes or alters guidance** (the adequacy/sufficiency criteria themselves) drops the scope back to `development` and additionally invalidates prior adequacy/sufficiency attestations referencing the changed criteria.
 - A change purely to **documentation, comments, or operationally-inert metadata** does not change the stage.
 
@@ -114,15 +109,13 @@ The dispatch is mechanical: SPARQL queries over the diff between the prior commi
 
 Sketch of the canonical transitions (v0.2 will lock the diagram):
 
-- `exploratory` → `concept` (requirements take shape; concept-of-operations forming)
-- `concept` → `requirements-specification` (requirements formalized)
-- `requirements-specification` → `development` (models built, evidence accumulating; traceability gates fully apply)
+- `concept` → `development` (requirements specified; design and integration work beginning; traceability gates fully apply)
 - `development` → `production` (full certification achieved)
 - `production` → `utilization` (system fielded; operational evidence begins accruing)
 - `utilization` → `support` (system in maintenance phase)
 - `support` → `retirement` (system being decommissioned)
-- Any later stage → `requirements-specification` (rollback on requirement addition or change)
-- Any state → `development` (rollback on evidence invalidation or guidance change)
+- Any later stage → `development` (rollback on evidence invalidation or guidance change)
+- Any later stage → `concept` (rollback on requirement addition or change)
 
 Transitions are themselves **attestable events** recorded with PROV provenance and named approvers (per the v0.2 stage-transition profile). The vocabulary for transitions ships in v0.1 (`rtm:lifecycleStageTransition`, `rtm:fromStage`, `rtm:toStage`); the SHACL profile that requires `rtm:approvedBy` on transitions activates in v0.2.
 
@@ -138,13 +131,13 @@ v0.1 ships the **vocabulary** so adopters can tag scopes today. The state-machin
 
 By contrast, the v0.1 work for federated audit ([[Federated Audit and Composition]]) only requires new SHACL profiles and SPARQL queries on existing vocabulary patterns — minimal new oracle work, no coordinated state-machine rollout. That asymmetry is why federated audit ships in v0.1 and lifecycle stages ship vocabulary-only in v0.1, mechanism in v0.2.
 
-The vocabulary is **stable**. Adopters tagging scopes today are not at risk of rework: the IRIs, the property names, the transition-event shape are settled by [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]. The v0.2 oracle activates the stage-aware semantics against the data v0.1 adopters have already accumulated.
+The vocabulary is **stable**. Adopters tagging scopes today are not at risk of rework: the IRIs, the property names, the transition-event shape are settled by [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]. The v0.2 oracle activates the stage-aware semantics against the data v0.1 adopters have already accumulated. Because the six stages match INCOSE/ISO 15288 exactly, programs already organizing around the standard can adopt without translation.
 
 ## Distinct from the topological framework
 
 The topological framework is **research-phase deferred** ([[Topological Framework Future Work]]). It requires a community-curated registry of pre-approved artifact types, research on alternative invariants to V−F, governance for recursive completeness, and an open question set that includes whether the framework's chosen invariants are sufficient. Its timeline is open and depends on community engagement.
 
-Lifecycle stages are **engineering-phase deferred**. The vocabulary is settled. The mechanism — a state machine with stage-aware gate dispatch — is straightforward engineering work that operates over the v0.1 cert-artifact structure already shipped. The timeline is clear: v0.2.
+Lifecycle stages are **engineering-phase deferred**. The vocabulary is settled — it is the INCOSE/ISO 15288 canonical six stages, full stop. The mechanism — a state machine with stage-aware gate dispatch — is straightforward engineering work that operates over the v0.1 cert-artifact structure already shipped. The timeline is clear: v0.2.
 
 The distinction matters for adopters and reviewers:
 
@@ -155,19 +148,19 @@ This is what the [[Mission and Thesis]] framing is naming when it identifies lif
 
 ## Worked example
 
-A power-subsystem scope starts in `rtm:stage/exploratory`. The engineering team is framing the problem; no requirements are yet stated; the named-approver discipline applies on every attestation they do author, but T1 and T2 gap codes are reported as informational, not blocking.
+A power-subsystem scope starts in `rtm:stage/concept`. The engineering team is framing the problem and eliciting stakeholder requirements; some requirements are stated but the set is still evolving; the named-approver discipline applies on every attestation they do author, but T1 and T2 gap codes are reported as informational, not blocking.
 
-As requirements firm up, the team commits a stage transition to `rtm:stage/requirements-specification`. The transition is recorded as a `rtm:LifecycleStageTransition` with the lead engineer's `rtm:approvedBy` IRI. T1 now applies as blocking — orphan requirements indicate incomplete specification — but T2 remains informational at this stage.
+As requirements firm up and the team commits to a specified set, they commit a stage transition to `rtm:stage/development`. The transition is recorded as a `rtm:LifecycleStageTransition` with the lead engineer's `rtm:approvedBy` IRI. T1 and T2 now apply as blocking — orphan requirements indicate incomplete development; dangling evidence indicates trace gaps that need to be resolved. T3–T5 and T8 apply per their active profiles.
 
-Development proceeds. The team transitions to `rtm:stage/development`. All T-codes now apply as blocking; the team's evidence-gathering and attestation work is fully gated. The scope reaches full certification under the active profile set (`attested-satisfies + attested-adequacy + attested-sufficiency + aspect-coverage`), and is promoted to `rtm:stage/production`.
+Development proceeds. The scope reaches full certification under the active profile set (`attested-satisfies + attested-adequacy + attested-sufficiency + aspect-coverage`), and is promoted to `rtm:stage/production`.
 
 A new requirement is added — a late-breaking thermal constraint from the systems engineer. The commit triggers the lifecycle state machine:
 
 - SPARQL diff identifies that a new `rtm:Requirement` instance has been added.
-- The fall-back rule fires: addition of new requirements drops the scope to `rtm:stage/requirements-specification`.
+- The fall-back rule fires: addition of new requirements drops the scope to `rtm:stage/concept` — the new requirement needs to be specified before development-stage gates apply to it.
 - The lifecycle state machine records the transition with provenance.
 
-The new requirement gets satisfied — the team adds evidence, writes attestations, runs the certification. The auto-rerunnable path handles most of the prior certifications: every fact whose canonical inputs are unchanged retains its prior result hash via [[Transcript Replay Semantics]]; every fact whose canonical inputs are unchanged but whose adequacy/sufficiency criteria are unchanged retains its prior attestations.
+The new requirement gets specified, then development resumes. The team transitions back to `rtm:stage/development`, adds evidence, writes attestations, runs the certification. The auto-rerunnable path handles most of the prior certifications: every fact whose canonical inputs are unchanged retains its prior result hash via [[Transcript Replay Semantics]]; every fact whose adequacy/sufficiency criteria are unchanged retains its prior attestations.
 
 Where the new requirement intersects prior adequacy claims — e.g., the rigid-body assumption was attested as adequate "for the slew-rate regime," and the thermal constraint introduces a regime change — the skill prompts the engineer for re-attestation. The engineer either attests the prior adequacy still holds (with updated rationale) or attests it does not, triggering a model refresh. The cert artifact records the new attestation chain transparently.
 
@@ -177,7 +170,7 @@ Once all prior certifications are either auto-revalidated or re-attested, the sc
 
 **Ships in v0.1 (vocabulary, forward-compat data accumulation):**
 
-- Vocabulary: `rtm:lifecycleStage`, `rtm:LifecycleStage`, the seven stage IRIs (`exploratory`, `concept`, `requirements-specification`, `development`, `production`, `utilization`, `support`, `retirement`), `rtm:lifecycleStageRecordedAt`, `rtm:lifecycleStageTransition`, `rtm:LifecycleStageTransition`, `rtm:fromStage`, `rtm:toStage`.
+- Vocabulary: `rtm:lifecycleStage`, `rtm:LifecycleStage`, the six INCOSE/ISO 15288 stage IRIs (`concept`, `development`, `production`, `utilization`, `support`, `retirement`), `rtm:lifecycleStageRecordedAt`, `rtm:lifecycleStageTransition`, `rtm:LifecycleStageTransition`, `rtm:fromStage`, `rtm:toStage`.
 - SHACL shape that requires `rtm:Scope` instances to declare a lifecycle stage (warning by default; error under `--profile=lifecycle-stages-required`).
 - v0.1 oracle reads the stage and includes it in transcript provenance — but does NOT yet apply stage-aware gate relaxation or auto-rerun logic.
 - Commit-metadata round-trip for `rtm:lifecycleStage` per [[Storage Layer Flexo Conventions]] F4.
@@ -196,7 +189,7 @@ Once all prior certifications are either auto-revalidated or re-attested, the sc
 These are the questions [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]] explicitly identifies as open for v0.2:
 
 - **Stage-transition authority.** Who can move a scope from one stage to another? Likely a named-approver attestation with `rtm:lifecycleStageTransition` semantics analogous to other attestations — the policy primitives in [[Identity Boundaries and Policy Projections]] (`rtm:permitsAttestationType`, `rtm:withinScope`) can govern who is authorized to transition which scopes, but the exact policy shape is to be decided.
-- **Stage-gate relaxation specifics.** The matrix above is a sketch; programs may want finer-grained control. Should T1 / T2 be relaxed only for non-safety aspects at exploratory stage? Should T3 / T4 / T5 always be informational until requirements-specification, or always informational until development? The defaults are settled in v0.2.
+- **Stage-gate relaxation specifics.** The matrix above is a sketch; programs may want finer-grained control. Should T1 / T2 be relaxed only for non-safety aspects at Concept stage? Should T3 / T4 / T5 always be informational at Concept regardless of their profile activation? The defaults are settled in v0.2.
 - **Reproducibility-machinery auto-rerun semantics.** Exact replay protocol for stage-aware re-evaluation. Per-fact auto-rerun is straightforward (canonical inputs unchanged ⇒ result hash unchanged); cascade across facts where one is auto-rerunnable and a dependent requires manual re-attestation needs careful sequencing.
 - **Cross-scope dependencies.** When a downstream scope depends on an upstream scope's certification, lifecycle-aware regression must cascade. How is the dependency declared? (Likely via the scope-algebra composition operators in [[Analysis Layer Scope Algebra]].) How does the cascade interact with [[Federated Audit and Composition]] composition attestations? (Composition attestations on a composed scope must fall back if any constituent scope falls back, or carry an explicit attestation that the constituent change is irrelevant.)
 - **Stage skew across federated parties.** If different parties to a federated audit are at different stage perceptions for the same scope, whose perception governs? The on-record stage is the one recorded in the scope's metadata at the audited commit; differing federated-audit attestations against different commits naturally carry different stages.

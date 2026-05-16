@@ -70,7 +70,7 @@ These are the same shapes of judgment v0.1 ships at the evidence level, lifted t
 
 - "Every requirement in the composed model has at least one constituent scope that traces evidence to it."
 - "Every safety-critical aspect declared on the composed model is covered by at least one constituent scope that attests that aspect."
-- "No requirement in the composed model is referenced solely from a scope flagged as exploratory" (see [[Engineering Lifecycle Stages]] for the lifecycle vocabulary this composes with).
+- "Every constituent scope is at `rtm:stage/development` or later" (see [[Engineering Lifecycle Stages]] for the lifecycle vocabulary this composes with).
 
 **Composition-sufficiency criteria** can encode rules like:
 
