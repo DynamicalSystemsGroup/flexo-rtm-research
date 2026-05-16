@@ -215,3 +215,4 @@ When the topological framework's recursive completeness check lands ([[Topologic
 - [[Topological Framework Future Work]] — the deferred recursive completeness check this is forward-compatible with.
 - [[Design Spec]] §4.9 (Reproducibility chain), §9.A.5 X6/X7/X8 (cross-cutting acceptance criteria).
 - [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]] — locked decision behind this page.
+- [[Multi-Agent Discourse Graph Precedent]] — internal prior art (`multi-agent-dg`) for the patchwork-of-named-graphs substrate this primitive rides on.

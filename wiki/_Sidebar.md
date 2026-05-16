@@ -17,6 +17,7 @@
 - [[ADCS Prototype Lessons]]
 - [[MVC Pattern from RIME TRL ANT]]
 - [[Human-AI Accountability]]
+- [[Multi-Agent Discourse Graph Precedent]]
 
 ### External Research
 
