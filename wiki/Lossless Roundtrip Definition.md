@@ -30,7 +30,7 @@ $$
 C(G_\text{in} \cap \text{core}) = C(G_\text{out} \cap \text{core})
 $$
 
-This is **byte-equality** of canonical-form output, not graph isomorphism by some other measure. RDFC-1.0 already handles blank-node relabeling, triple ordering, and namespace-prefix variation, so the test reduces to `sha256(C(G_in_core)) == sha256(C(G_out_core))`. This is checked by `tests/integration/oslc-roundtrip/test_layer_a_rm.py` and `test_layer_a_qm.py` (per [[Design Spec]] §9.A.2 O1).
+This is **byte-equality** of canonical-form output, not graph isomorphism by some other measure. RDFC-1.0 already handles blank-node relabeling, triple ordering, and namespace-prefix variation, so the test reduces to `H(C(G_in_core)) == H(C(G_out_core))` where `H` is the active cryptographic suite's content-hash algorithm (SHA-256 by default per [[ADR-026 Cryptographic Agility via Algorithm Profiles]]; the algorithm rotates with the suite, not with code surgery). This is checked by `tests/integration/oslc-roundtrip/test_layer_a_rm.py` and `test_layer_a_qm.py` (per [[Design Spec]] §9.A.2 O1).
 
 ## Layer C — Formal definition
 

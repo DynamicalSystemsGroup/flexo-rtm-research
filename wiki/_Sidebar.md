@@ -99,6 +99,8 @@
 - [[ADR-023 Cryptography by Composition of Battle-Tested Standards]]
 - [[ADR-024 Identity by Thin Projection of External Sources]]
 - [[ADR-025 Reproducibility is Structural and Local]]
+- [[ADR-026 Cryptographic Agility via Algorithm Profiles]]
+- [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]
 
 ### Meta
 

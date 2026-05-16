@@ -15,7 +15,7 @@ A transcript is an **RDF graph** whose contents are `prov:Activity` records — 
 - a **canonicalization** operation (RDFC-1.0 applied to a graph or solution set), or
 - a **knowledge-curation operation** (an `rtm:` library operation invoked by the oracle, e.g. profile assembly).
 
-The transcript is **not** a free-form log: each step is a structured `prov:Activity` carrying the canonical query text or shape IRI it executed, the SHA-256 hash of its canonical inputs, the SHA-256 hash of its canonical results, and a `prov:wasInformedBy` pointer to the preceding step. The transcript is therefore a linearly chained PROV record whose hash sequence is itself a Merkle commitment to the entire cert computation.
+The transcript is **not** a free-form log: each step is a structured `prov:Activity` carrying the canonical query text or shape IRI it executed, the content-hash of its canonical inputs, the content-hash of its canonical results, and a `prov:wasInformedBy` pointer to the preceding step. The content-hash algorithm is **a parameter of the active cryptographic suite, not a hard pin**: v0.1's default is SHA-256 because that is the W3C Data Integrity 2.0 default for the `ecdsa-rdfc-2019` / `eddsa-rdfc-2022` cryptosuites and the cosign default; the algorithm rotates with the suite, not with code surgery (see [[ADR-026 Cryptographic Agility via Algorithm Profiles]]). The transcript is therefore a linearly chained PROV record whose hash sequence is itself a Merkle commitment to the entire cert computation.
 
 Transcripts live in named graphs `<rtm:transcript/{run-id}>` and are immutable post-publish (see §7).
 
@@ -26,11 +26,11 @@ A `TranscriptStep` is the formal type carried by every entry in a transcript gra
 ```turtle
 <rtm:transcript/{run-id}/step/{n}>
     a prov:Activity, rtm:TranscriptStep ;
-    rtm:stepKind          "sparql" ;   # or "shacl", "canonicalize", "kc-operation"
+    rtm:stepKind          "sparql" ;   # or "shacl", "canonicalize", "kc-operation", "delegated-numerical"
     rtm:queryText         "PREFIX ... SELECT ..." ;   # canonicalized; SPARQL/SHACL only
     rtm:shapeIRI          <https://example.org/shapes/Req> ;  # SHACL only
-    rtm:inputsHash        "a3f1...c0"^^xsd:hexBinary ;  # SHA-256 over canonical inputs
-    rtm:resultHash        "9b2e...4d"^^xsd:hexBinary ;  # SHA-256 over canonical results
+    rtm:inputsHash        "a3f1...c0"^^xsd:hexBinary ;  # active-suite hash over canonical inputs (SHA-256 by default)
+    rtm:resultHash        "9b2e...4d"^^xsd:hexBinary ;  # active-suite hash over canonical results (SHA-256 by default)
     prov:wasInformedBy    <rtm:transcript/{run-id}/step/{n-1}> ;
     prov:startedAtTime    "2026-05-16T13:42:01Z"^^xsd:dateTime ;
     prov:endedAtTime      "2026-05-16T13:42:01.087Z"^^xsd:dateTime ;
@@ -39,11 +39,11 @@ A `TranscriptStep` is the formal type carried by every entry in a transcript gra
 
 The five `rtm:` properties listed above are mandatory:
 
-- **`rtm:stepKind`** — one of `sparql`, `shacl`, `canonicalize`, `kc-operation`. Determines which of the other properties are required.
+- **`rtm:stepKind`** — one of `sparql`, `shacl`, `canonicalize`, `kc-operation`, `delegated-numerical`. Determines which of the other properties are required, and selects between the bit-exact and tolerance-aware reproduction regimes (§4a; see [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]).
 - **`rtm:queryText`** — required for `sparql` and `shacl` steps. The canonicalized text (§4) of the query or shapes graph; carried inline so replay does not require external dereferencing (this is what makes X8 — structural completeness without dereferencing — possible).
 - **`rtm:shapeIRI`** — required for `shacl` steps; identifies the validated shape so replayers can locate the shape's source profile.
-- **`rtm:inputsHash`** — SHA-256 over the RDFC-1.0 canonical N-Quads of the input subset (or canonical bytes, for non-RDF inputs). This is what the replayer recomputes and compares.
-- **`rtm:resultHash`** — SHA-256 over the canonicalized result. For SPARQL SELECT, this is the hash of the lexically-sorted solution-set serialization; for SPARQL CONSTRUCT/DESCRIBE and SHACL validation reports, it is the hash of the RDFC-1.0 canonical N-Quads of the result graph.
+- **`rtm:inputsHash`** — content-hash (active-suite algorithm; SHA-256 by default per [[ADR-026 Cryptographic Agility via Algorithm Profiles]]) over the RDFC-1.0 canonical N-Quads of the input subset (or canonical bytes, for non-RDF inputs). This is what the replayer recomputes and compares.
+- **`rtm:resultHash`** — content-hash (active-suite algorithm; SHA-256 by default) over the canonicalized result. For SPARQL SELECT, this is the hash of the lexically-sorted solution-set serialization; for SPARQL CONSTRUCT/DESCRIBE and SHACL validation reports, it is the hash of the RDFC-1.0 canonical N-Quads of the result graph.
 - **`prov:wasInformedBy`** — the preceding step; the very first step has no `prov:wasInformedBy` (or points to a designated genesis activity carrying the input-hash of the entire cert run).
 
 `rtm:TranscriptStep` is a subclass of `prov:Activity`; no novel epistemic vocabulary is introduced.
@@ -71,7 +71,7 @@ replay(transcript_iri, input_dataset, versions):
 
         # 3. Canonicalize, hash, compare
         canonical_result := canonicalize(result)
-        computed_h       := sha256(canonical_result)
+        computed_h       := active_suite_hash(canonical_result)   # sha256 by default
         assert computed_h == step.resultHash, divergence(step, "result")
 
         # 4. Chain advance
@@ -103,11 +103,23 @@ For replay to be sound, every recorded operation must be a pure function of its 
 
 The point of canonical query text is that two semantically-identical SPARQL strings hash to the same bytes, so cosmetic re-formatting of an oracle's query template does not break replay across versions of the oracle.
 
+### 4a. Two regimes: RDF-internal (bit-exact) vs delegated-numerical (tolerance-aware)
+
+`rtm:stepKind` distinguishes two reproducibility regimes; the replay algorithm in §3 dispatches accordingly. See [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]].
+
+- **RDF-internal step kinds — `sparql`, `shacl`, `canonicalize`, `kc-operation` — commit to bit-exact reproduction across replay.** RDFC-1.0 canonicalization plus the §4 determinism requirements make this mechanically true: the recomputed `rtm:inputsHash` and `rtm:resultHash` either match the recorded values byte-for-byte or the divergence step is named. This is the X1+X2 commitment.
+
+- **`delegated-numerical` step kind commits to tolerance-aware reproduction.** When a transcript step records a delegated numerical computation — a Monte Carlo run, an FEA solve, a time-series simulation, a regression fit, an ODE/PDE integration, a symbolic proof with numerical fallback — bit-identical replay across runs and platforms is often physically impossible (floating-point non-associativity, BLAS/LAPACK kernel divergence, parallel-reduction non-determinism, library minor-version rounding differences). A `delegated-numerical` step records (i) the activity's recorded numerical result, (ii) the external URI references needed to re-fetch the result, and (iii) the IRI of the sufficiency criteria whose **tolerance** defines acceptable reproduction for this evidence type. Replay fetches the recorded result (per [[External URI References]] **U2**), looks up the sufficiency criteria's recorded tolerance (per [[Aspect Coverage with Adequacy and Sufficiency]]), and confirms the recorded result is within that tolerance of the recorded expected outcome. The tolerance value is RDF data on the criteria, not a hardcoded constant.
+
+Both step kinds are first-class. A transcript may freely interleave them: an RDF-internal SPARQL step that loads a numerical result's content-hash, a `delegated-numerical` step that records the result and its tolerance-conformance, a downstream RDF-internal SHACL step that gates a satisfaction attestation on the tolerance-conformance outcome. The Merkle chain (§5) preserves over the whole sequence — each step's `rtm:inputsHash` still equals the preceding step's `rtm:resultHash` — so tampering detection is unaffected by the regime mix.
+
+**Bit-exact is the default.** A step without `rtm:stepKind = "delegated-numerical"` is verified bit-exact. Tolerance is an explicit opt-in declared on the step (via the sufficiency-criteria reference) and on the evidence type (via the criteria's tolerance data). A `delegated-numerical` step missing its tolerance-criteria reference is a gap, surfaced via the T-series codes ([[Gap Taxonomy]]).
+
 ## 5. Tampering detection (Merkle chain)
 
 Because each step's `rtm:inputsHash` is *the prior step's `rtm:resultHash`*, the transcript is a hash chain. Any modification to step *k* — its query text, its inputs, its result, or its hashes — propagates: either step *k*'s recorded `rtm:resultHash` no longer matches the re-computed hash, or step *k+1*'s `rtm:inputsHash` no longer matches step *k*'s `rtm:resultHash`. The first mismatch in replay-order is the divergence point.
 
-A transcript-level commitment — the SHA-256 of the *terminal* step's `rtm:resultHash` concatenated with `inputs_hash` of the genesis step — serves as a Merkle-style root that a signed cert envelope can sign over (see §4.6 of [[Design Spec]] and [[Verifiable Self-Certification]]).
+A transcript-level commitment — the active-suite content-hash (SHA-256 by default) of the *terminal* step's `rtm:resultHash` concatenated with `inputs_hash` of the genesis step — serves as a Merkle-style root that a signed cert envelope can sign over (see §4.6 of [[Design Spec]] and [[Verifiable Self-Certification]]).
 
 ## 6. Versioning
 

@@ -74,6 +74,23 @@ A reviewer cannot attest adequacy or sufficiency without knowing what the bar is
 
 Criteria are referenceable from `gsn:byJustification` rationale on the attestation: "I attest adequacy *per criteria* `:rubric-slew-rigid-body-v2`." This is the named-criterion handle the reviewer takes responsibility against. v0.1 does **not** audit whether the criteria are themselves fit-for-purpose — that recursive completeness check is deferred (see below).
 
+## Tolerances for numerical evidence
+
+Sufficiency criteria are not limited to enumerative thresholds ("≥ 10⁵ Monte Carlo trials," "≥ 3 independent verification runs"). For **numerical evidence types** — Monte Carlo simulations, finite-element analyses, time-series simulations, regression fits, ODE/PDE solves, symbolic proofs with numerical fallback steps — sufficiency criteria also encode **numerical tolerances** specific to the kind of evidence:
+
+- **Monte Carlo sample-mean tolerance.** "Sample-mean within ±0.5% of the recorded value, with N ≥ 10⁵ trials."
+- **FEA residual threshold.** "Numerical residual within 1e-6 of the recorded residual under the same mesh and solver-tolerance settings."
+- **Time-series RMSE bound.** "Replay RMSE against the recorded trace below 1e-4 over the integration window."
+- **Floating-point ULP bound.** "Pairwise output values within 4 ULPs of the recorded values for a fixed RNG seed."
+
+These tolerances are part of the sufficiency criteria's RDF data — values on the criteria instance, not constants hardcoded in `flexo-rtm` code. The adequacy criteria specify what the tolerance *means*: why is this tolerance enough for the claim being made? For example, "the rigid-body assumption is adequate if the numerical residual is < 1e-6 in the slew-rate regime" couples the tolerance value (1e-6) to the engineering justification (rigid-body in this regime). Adequacy says "this tolerance is the right shape for this claim"; sufficiency says "this evidence meets the tolerance."
+
+At audit time, a verifier replaying a delegated-numerical TranscriptStep (per [[Transcript Replay Semantics]] §4a) fetches the activity's recorded numerical result via the external URI references ([[External URI References]] **U2**), looks up the sufficiency criteria's recorded tolerance, and checks whether the recorded result is within that tolerance of the recorded expected outcome. The check is mechanical and reproducible — the tolerance is declared, not implicit.
+
+**Bit-exactness remains the default.** Tolerance is an **evidence-type-specific opt-in**, declared in the sufficiency criteria for that evidence type. Numerical-attestation claims made without explicit tolerance declarations are verified bit-exact (and will almost certainly fail to replay across platforms, which is the system telling the author that a tolerance is required). The split between RDF-internal bit-exact reproduction and delegated-numerical tolerance-aware reproduction is locked in [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]; this page is where the tolerance values themselves live as criteria-typed RDF.
+
+The four sources of criteria above (project rubrics, INCOSE-derived, domain-specific, external standards) accordingly admit tolerance fields: a domain-specific FEA rubric carries the residual threshold; an INCOSE-derived Monte Carlo rubric carries the sample-mean tolerance; an external-standards-aligned criterion carries whatever tolerance the cited clause specifies. Reviewers attesting sufficiency for a numerical claim take responsibility against the named criterion's tolerance — making explicit, in the attestation, that the recorded result is within the recorded tolerance for the kind of evidence the claim depends on.
+
 ## Judgment surfacing in the operational layer
 
 The matrix is populated by the operational layer prompting an attesting engineer when new evidence arrives. The skill asks per (artifact, requirement, aspect, judgment-kind) tuple — three prompts per relevant aspect — with three responses available for each:

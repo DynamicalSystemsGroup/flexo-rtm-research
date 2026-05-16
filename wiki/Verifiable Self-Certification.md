@@ -25,7 +25,7 @@ Every step in the certification is a SPARQL query or a SHACL shape evaluation, e
 
 ### 2. Canonical inputs
 
-RDF allows the same graph to be serialized in many byte-different ways (blank node labels, prefix declarations, triple order). Verifiability requires that "the same input" mean exactly one thing. The oracle uses **RDFC-1.0 canonicalization** (W3C RDF Dataset Canonicalization) to normalize the input, then takes SHA-256 over that canonical serialization. This input hash is the load-bearing identity of "what was certified." Two parties holding the same RDF graph — independent of serialization choice — compute identical input hashes. See [[RDFC-1.0 Canonicalization]].
+RDF allows the same graph to be serialized in many byte-different ways (blank node labels, prefix declarations, triple order). Verifiability requires that "the same input" mean exactly one thing. The oracle uses **RDFC-1.0 canonicalization** (W3C RDF Dataset Canonicalization) to normalize the input, then takes a content-hash over that canonical serialization. The hash algorithm itself comes from the active cryptographic suite, not from a hardcoded constant: v0.1's default is SHA-256 because that is the W3C Data Integrity 2.0 default for the `ecdsa-rdfc-2019` / `eddsa-rdfc-2022` cryptosuites and the cosign default; the system rotates by changing suite ID, not by code surgery. See [[ADR-026 Cryptographic Agility via Algorithm Profiles]]. This input hash is the load-bearing identity of "what was certified." Two parties holding the same RDF graph — independent of serialization choice, and using the same active suite — compute identical input hashes. See [[RDFC-1.0 Canonicalization]].
 
 ### 3. Replayable transcript
 
@@ -48,6 +48,35 @@ SHACL gates this binding at write time. An attestation without an approver IRI i
 ### 3. The artifact *is* the certification
 
 There is no separate certificate document. The audit-graph plus transcript plus attestation graph — the three-layer artifact described below — *is* the certification. It carries the input hashes, the step hashes, the attestations with named approvers, the external URI references, and the audit report's coverage statistics and gap enumeration. A third party who wants "the certificate" is handed the artifact and an entry point IRI; the artifact admits independent re-derivation of every answer it carries, which a conventional certificate would not. See [[Certification Predicate]] for how PASS/FAIL is defined as a predicate over the artifact rather than a verdict stamped onto it.
+
+## Two regimes of reproducibility: bit-exact vs tolerance-aware
+
+The verifiability story above speaks consistently about **byte-identical** reproduction. That language is correct for the **RDF-internal** layer and incomplete — in a load-bearing way — for **delegated, numerical** computation. v0.1 carries both regimes as first-class, dispatched by the kind of computation a step records. The locked decision is [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]].
+
+### Regime 1 — RDF-internal computation: bit-exact, mandatory
+
+RDFC-1.0 canonicalization plus canonical SPARQL solution-set ordering plus deterministic SHACL evaluation produces **byte-identical canonical bytes** for the same canonical input across runs, libraries, platforms, and times. The transcript's `inputs_hash → result_hash` chain commits to this: same canonical input, same recorded result hash, every time. This is the §9.A.5 **X1+X2** commitment, and it is mechanically enforced — the hash of the canonical bytes either matches the recorded hash or it does not. There is no slack. Any RDF-internal divergence pinpoints the first step at which the hashes parted ways. See [[RDFC-1.0 Canonicalization]] and [[Transcript Replay Semantics]] for the algorithms; see acceptance criteria X1 and X2 in [[Design Spec]] §9.A.5.
+
+### Regime 2 — Delegated / numerical computation: tolerance-aware, evidence-type-defined
+
+When the activity that produces an artifact is numerical — a Monte Carlo simulation, a finite-element analysis, a time-series simulation or ODE/PDE solve, a regression fit, a symbolic proof with a numerical fallback step — bit-identical reproduction across runs and platforms is often **physically impossible**. Floating-point addition is non-associative; BLAS and LAPACK kernels select different code paths depending on CPU microarchitecture and parallel-reduction strategy; library minor-version updates alter rounding in edge cases. Demanding byte-equal numerical output across machines is unrealistic.
+
+The right framing is the same one v0.1 already uses for evidence-type-specific guidance ([[Aspect Coverage with Adequacy and Sufficiency]]): the **tolerance** that defines acceptable reproduction is part of the **sufficiency criteria** for that kind of evidence. Examples: "Monte Carlo with N ≥ 10⁵ trials, sample-mean within ±0.5% of the recorded value"; "FEA residual within 1e-6 of the recorded residual under the same mesh and solver-tolerance settings"; "time-series RMSE between the replay and the recorded trace below 1e-4 over the integration window." The **adequacy criteria** specify what the tolerance must *mean*: why is this tolerance enough for the claim being made (e.g., "the rigid-body assumption is adequate if the numerical residual is < 1e-6 in the slew-rate regime")? Both criteria are first-class RDF; tolerance values live in the criteria data, not in code (see [[Aspect Coverage with Adequacy and Sufficiency]] and [[GSN Integration]]).
+
+### How the certification artifact carries both
+
+The audit pipeline dispatches:
+
+- **For every TranscriptStep recording an RDF-internal operation** — SPARQL, SHACL, RDFC-1.0 canonicalization, knowledge-curation operation — the replay path of [[Transcript Replay Semantics]] §3 enforces bit-exact equality on the `inputs_hash` and `result_hash` chain. Any divergence names the step.
+- **For every TranscriptStep recording a delegated numerical computation** (`rtm:stepKind = "delegated-numerical"` per [[Transcript Replay Semantics]]), replay fetches the activity's recorded numerical result via the external URI references ([[External URI References]] **U2**), looks up the sufficiency criteria referenced by the step, and checks that the recorded result is within the criteria's recorded tolerance of the recorded expected outcome. The check is mechanical; the tolerance is declared, not implicit.
+
+Both step kinds are first-class in the transcript and in the audit report. The certification artifact therefore carries a complete reproducibility commitment in each regime — bit-exact where it must be, tolerance-bounded where the evidence type demands it.
+
+### Bit-exactness remains the default
+
+Tolerance is an **explicit, evidence-type-specific opt-in** declared in the sufficiency criteria of the relevant evidence type. A claim made without an explicit tolerance declaration is verified bit-exact. The dispatch is determined by the step kind in the transcript and by the criteria the step references, not by a global setting. There is no tolerance "leakage" between regimes: an attestation whose evidence is RDF-internal is held to bit-exact reproduction, full stop; an attestation whose evidence is delegated-numerical is held to the tolerance it explicitly declares.
+
+This split is what makes v0.1's certification honest: it promises what it can deliver (bit-exact for RDF; tolerance-bounded for numerical), and it makes the dispatch explicit so audit machinery can mechanically check each step under the right regime.
 
 ## The reproducibility principle: structural and local, not global
 

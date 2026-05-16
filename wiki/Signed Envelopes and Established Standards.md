@@ -16,6 +16,28 @@ What `flexo-rtm` v0.1 ships is the **glue vocabulary** that lets the RDF data mo
 
 ---
 
+## Cryptographic agility
+
+The composition discipline above extends one level deeper: **the algorithm choice itself — which hash, which signature curve — is a suite parameter, not a hard pin in `flexo-rtm` core.** Where this page (and the rest of the wiki) names "SHA-256," that should be read as "the content-hash algorithm specified by the active cryptographic suite; v0.1's default is SHA-256 because that is the W3C Data Integrity 2.0 default for the `ecdsa-rdfc-2019` and `eddsa-rdfc-2022` cryptosuites, and it is also the cosign and OCI image-signature default." The algorithm is not hardcoded; it is read from the artifact.
+
+**Mechanism.** Each of the five standards composed below carries its own algorithm-identifier mechanism:
+
+- **W3C VC Data Integrity 2.0** names the cryptosuite explicitly in `sec:cryptosuite` — `ecdsa-rdfc-2019` (ECDSA with SHA-256 or SHA-384 over P-256 or P-384), `eddsa-rdfc-2022` (EdDSA over Ed25519), and registered future suites for post-quantum primitives. The hash algorithm is part of the suite's specification.
+- **Sigstore cosign** embeds algorithm metadata in its signature bundles; verifiers read the metadata and apply the matching primitive. The default in current cosign builds is SHA-256 + ECDSA-P-256, with Ed25519 and other algorithms available.
+- **DSSE envelopes** carry algorithm identifiers in the payload-type field; the in-toto reference verifier dispatches on this.
+- **OCI image signatures** follow the OCI signature specification's algorithm registry; OCI 1.1 and current cosign builds default to SHA-256, with the spec admitting other digests as the registry matures.
+- **`rtm:hasContentHash`** uses a `multihash`-style algorithm prefix (e.g., `sha256:…`, `sha3-256:…`, `blake3:…`) so the algorithm travels with every content reference.
+
+`flexo-rtm` reads the suite ID (or algorithm prefix) from each artifact and applies the right verification primitive — no hardcoded `SHA-256` in the codebase, no algorithm hardcoded in the SHACL shapes.
+
+**Tooling principle.** Established libraries, never hand-rolled. `hashlib` (Python stdlib) for hash primitives, `cryptography` (PyCA) for signature primitives, `sigstore-python` for Sigstore integration, `libssl` bindings via `cryptography` for any TLS-adjacent work. The tool footprint stays compact: one Python crypto stack, one cosign install, one Sigstore client, one git signing setup. Adding a new algorithm means a new suite ID in the catalog, not a new dependency in the tree.
+
+**Forward compatibility.** When SHA-256 or P-256 fall out of favor — NIST deprecation, FIPS profile change, post-quantum migration, regulatory mandate — `flexo-rtm` rotates by updating the suite catalog (a TTL file) and the SHACL profile defaults. **No code surgery.** Prior cert artifacts remain auditable: each artifact records the suite ID it was certified under, and verifiers locate the right primitive from that ID. The composition principle that forbids inventing envelopes ([[ADR-023 Cryptography by Composition of Battle-Tested Standards]]) thereby extends to forbid inventing algorithm-negotiation vocabulary too — VC-DI / cosign / OCI / DSSE / multihash already supply the negotiation surface; `flexo-rtm` reads from it rather than parallels it.
+
+See [[ADR-026 Cryptographic Agility via Algorithm Profiles]] for the locked decision.
+
+---
+
 ## The five integration surfaces
 
 ### 1. Approver binding via git GPG/SSH commit signing

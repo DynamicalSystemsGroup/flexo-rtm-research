@@ -6,7 +6,7 @@
 
 **RDFC-1.0** is the W3C Recommendation *RDF Dataset Canonicalization 1.0* — a settled standard that defines, for any RDF dataset, a single canonical serialization to which all byte-equivalent graphs reduce. It fixes three things that vary in ordinary RDF: blank node labels, statement ordering, and serialized form. Once those are pinned, two parties holding "the same graph" — regardless of which Turtle, JSON-LD, or N-Quads file they loaded — compute the same bytes, and therefore the same hash.
 
-`flexo-rtm` uses RDFC-1.0 as the **identity function** for its cert inputs. Every claim that the oracle makes about "what was certified" is anchored to a SHA-256 over the RDFC-1.0 canonical form of the scope-resolved graph. Without canonicalization, the oracle's hashes would describe one party's *serialization choice*, not the underlying RDF.
+`flexo-rtm` uses RDFC-1.0 as the **identity function** for its cert inputs. Every claim that the oracle makes about "what was certified" is anchored to a content-hash over the RDFC-1.0 canonical form of the scope-resolved graph. The **hash algorithm itself is a suite parameter** — read from the active cryptographic suite (W3C VC Data Integrity 2.0 `sec:cryptosuite`, or the `multihash`-style prefix on `rtm:hasContentHash`) rather than hardcoded. SHA-256 is the v0.1 default because it is the W3C Data Integrity 2.0 default for the `ecdsa-rdfc-2019` and `eddsa-rdfc-2022` cryptosuites and aligned with cosign and OCI image-signature defaults; the choice is suite-driven, not hardwired. See [[ADR-026 Cryptographic Agility via Algorithm Profiles]]. Without canonicalization, the oracle's hashes would describe one party's *serialization choice*, not the underlying RDF.
 
 ## What RDFC-1.0 specifies
 
@@ -16,7 +16,7 @@ The recommendation defines an algorithm (often abbreviated URDNA2015, later URDN
 2. **Canonical statement ordering.** N-Quads lines are sorted lexicographically after canonical labeling, producing a unique byte sequence.
 3. **Canonical serialization.** Output is N-Quads with one statement per line, canonical lexical forms for literals, and explicit datatype/language tags as required by the N-Quads specification.
 
-The output is a deterministic byte stream. Hashing that stream (SHA-256, per §4.9 of the [[Design Spec]]) gives the **input-hash** that the transcript records.
+The output is a deterministic byte stream. Hashing that stream (using the active suite's content-hash algorithm — SHA-256 by default per §4.9 of the [[Design Spec]] and per the VC-DI 2.0 `ecdsa-rdfc-2019` / `eddsa-rdfc-2022` cryptosuites; see [[ADR-026 Cryptographic Agility via Algorithm Profiles]]) gives the **input-hash** that the transcript records.
 
 ## Why we use it
 
@@ -43,7 +43,7 @@ For literals, RDFC-1.0 requires canonical lexical forms per XSD: `"01"^^xsd:inte
 
 Three usage sites in the codebase, each enforcing a different acceptance criterion from §9.A.5:
 
-- **At cert time** — the scope-resolved graph (Scope IRI → union of named graphs → SPARQL/SHACL inputs) is canonicalized; the SHA-256 of the canonical form becomes the **input-hash** recorded in the transcript. This pins exactly which graph the oracle saw. Enforces X1: same canonical input → byte-identical transcript across runs, machines, and times.
+- **At cert time** — the scope-resolved graph (Scope IRI → union of named graphs → SPARQL/SHACL inputs) is canonicalized; the content-hash of the canonical form (algorithm fixed by the active suite; SHA-256 by default — see [[ADR-026 Cryptographic Agility via Algorithm Profiles]]) becomes the **input-hash** recorded in the transcript. This pins exactly which graph the oracle saw. Enforces X1: same canonical input → byte-identical transcript across runs, machines, and times.
 - **At verify time** — the verifier canonicalizes their copy of the input, compares to the transcript's input-hash. Equal hashes ⇒ same input ⇒ replaying the recorded SPARQL/SHACL steps must produce byte-identical result hashes. Unequal hashes ⇒ the verifier and certifier are not looking at the same RDF, and the divergence is named explicitly. Enforces X2: canonical input-hash + transcript replays identically.
 - **At roundtrip** — when a [[Lossless Roundtrip Definition]] check runs, the parsed input is canonicalized and the re-serialized output is canonicalized; the two canonical forms are compared byte-for-byte. Any drift (lost triples, datatype coercion, namespace mangling) shows up as a hash divergence.
 
