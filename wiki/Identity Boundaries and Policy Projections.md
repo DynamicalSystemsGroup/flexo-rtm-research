@@ -311,3 +311,4 @@ When the topological framework lands, the identity projection serves the recursi
 - [[Human-AI Accountability]]
 - [[ADCS Prototype Lessons]] — the GitHub-ID hardcoding this generalizes
 - [[Federated Audit and Composition]] — org-level identities and qualified-role attestations layered on this projection model
+- [[Multi-Agent Discourse Graph Precedent]] — internal prior art for the "policy IS RDF + SPARQL" discipline and structurally isolated policy graphs

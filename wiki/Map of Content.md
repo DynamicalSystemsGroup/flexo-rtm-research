@@ -17,6 +17,7 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 - [[ADCS Prototype Lessons]] — what `ADCS-lifecycle-demo` proves; what carries forward vs. what we abstract.
 - [[MVC Pattern from RIME TRL ANT]] — the operator-facing pattern lifted from existing examples as UX baseline.
 - [[Human-AI Accountability]] — Zargham 2026 framing applied to RTM; traceability as accountability surface.
+- [[Multi-Agent Discourse Graph Precedent]] — `multi-agent-dg` as working prior art for the federated / scoped-to-named-graph approach; named graphs per owner, declared sharing policies compiled to SPARQL, post-export boundary invariants.
 
 ## 2. External Research (literature)
 
