@@ -266,6 +266,35 @@ Engineer Zargham attempts to commit a `rtm:SufficiencyAttestation` for the safet
 - No policy authoring UI; policies are RDF and adopter tooling provides authoring UX
 - No defeaters / SACM-style attestation revocation — would propagate as a new attestation in a future revision, locally verifiable, without invalidating past artifacts' structural completeness
 
+## Org-level identities (extension for federated audit)
+
+Person-level identities are the natural starting point for named-approver attestations — every claim resolves to an accountable human. Many real-world certification patterns also require **org-level identities**: an accredited reproducibility auditor, a notified body, a regulator-of-record, a customer engineering team, a sister-organization reproducibility verifier. These are properties of an **organization**, not (only) of an individual. [[Federated Audit and Composition]] requires this surface to make qualified-role attestations first-class.
+
+The extension is straightforward — org-level identities project the **same way** person-level identities do, through the same thin-adapter pattern. W3C FOAF (`foaf:Organization`) and the W3C Organization Ontology (`org:Organization`) cover the org-level shape; the `rtm:hasExternalIdentity` predicate carries the external-identity reference; `rtm:hasQualifiedRole` is the org-level analog of `org:role` on a membership.
+
+```turtle
+:org-qreliability-labs a org:Organization, foaf:Organization ;
+    foaf:name "Q-Reliability Labs" ;
+    rtm:hasExternalIdentity "github:qreliability" ,
+                            "oidc:https://auth.qreliability.example/org/qreliability-labs" ;
+    rtm:hasQualifiedRole rtm:role/accredited-reproducibility-auditor ,
+                         rtm:role/notified-body ;
+    rtm:scopedTo rtm:scope/adcs-program .
+
+:engineer-jdoe a foaf:Person ;
+    foaf:name "Jane Doe" ;
+    rtm:hasExternalIdentity "github:jdoe-qreliability" ;
+    org:hasMembership :membership-jdoe-qreliability .
+
+:membership-jdoe-qreliability a org:Membership ;
+    org:organization :org-qreliability-labs ;
+    org:role rtm:role/accredited-reproducibility-auditor .
+```
+
+A federated-audit attestation (`rtm:ScopeCertificationAttestation`, see [[Federated Audit and Composition]]) references the person via `rtm:approvedBy` **and** the org via `rtm:approverOrganization`. Both are projected through the same adapter pattern — GitHub orgs, OIDC org claims, LDAP organizational units, SAML attribute groups. The same SHACL bottleneck (`rtm:AttestationAuthorizationShape`) governs org-level attestations because the parent class `rtm:Attestation` is the SHACL target; the qualified-role predicate adds a new dimension to authority checking but does not require a new bottleneck.
+
+The qualified-role set is **adopter-defined** in v0.1. A program declares which roles are "qualified" in its own identity projection — e.g., `rtm:role/accredited-reproducibility-auditor` is meaningful when the adopter's RDF says it is. A community-curated registry of qualified roles and orgs is forward-compatible future work (per [[Federated Audit and Composition]]), similar in spirit to the topological framework's pre-approved-types registry. The same composition principle applies: `flexo-rtm` projects org identity from external authoritative sources; it does not own org records any more than it owns person records.
+
 ## Forward compatibility with the topological framework
 
 When the topological framework lands, the identity projection serves the recursive completeness check unchanged. Every assurance face's named approver is policy-evaluated through the same SHACL bottleneck. Policies themselves can be registered as pre-approved authority claims so the registry of authorizing rules is part of the certifiable graph. The projection-at-time discipline carries through: future revocation events propagate as new attestations against the projection, and historical attestations remain locally verifiable against the projection-as-of-cert-time. [[Human-AI Accountability]] is also served — when an attestation is co-authored by a human and an AI agent, both project through the same vocabulary, and policy can require human-in-the-loop approval as an attribute predicate.
@@ -281,3 +310,4 @@ When the topological framework lands, the identity projection serves the recursi
 - [[Analysis Layer Scope Algebra]] — scope IRIs and hierarchy (I4)
 - [[Human-AI Accountability]]
 - [[ADCS Prototype Lessons]] — the GitHub-ID hardcoding this generalizes
+- [[Federated Audit and Composition]] — org-level identities and qualified-role attestations layered on this projection model

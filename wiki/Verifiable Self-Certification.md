@@ -101,6 +101,14 @@ Reproduction **composes across parties**. Federation has two axes:
 
 This is what makes the cert usable in real institutional audits where the auditing parties have asymmetric access rights. Conventional certification breaks down here because the certificate is monolithic. The three-layer artifact carries enough locality that partial-permission audits compose to a complete audit without any single party seeing the whole.
 
+### Federated audit as the operational primitive
+
+The X6/X7 commitments above presuppose a verification model that **federates** — they say the cert artifact admits local fact reproducibility and that multiple verifying parties' partial passes compose into a global pass. [[Federated Audit and Composition]] is the v0.1 operationalization of that commitment as a first-class analytical primitive. Self-certification at the component or subsystem level (this page) remains the floor; reproducibility audits, qualified-role audits, and composition certifications **stack on top** as additional named-approver attestations whose subjects are scopes and composed scopes rather than individual `rtm:satisfies` triples. The vocabulary makes these federation-level attestations first-class so the audit report can enumerate exactly which scope has which level of certification, and which slices of the cert artifact rely on self-certification alone versus independent reproduction.
+
+### Scope-level adequacy and sufficiency at composition scale
+
+The same adequacy and sufficiency framing v0.1 ships at the evidence level ([[Aspect Coverage with Adequacy and Sufficiency]]) lifts cleanly to the composition scale. **Adequacy** at composition scale is **composed scope coverage of the system-of-interest** — does the patchwork of constituent scopes cover the system-of-interest's requirements? **Sufficiency** at composition scale is **the number and nature of the orgs providing scope-level certifications** — does the signing pattern across the composition meet the program's qualified-role and signer-count criteria? Both criteria are RDF, SPARQL-evaluable, profile-toggleable. Composition-adequacy and composition-sufficiency criteria are first-class `rtm:AdequacyCriteria` / `rtm:SufficiencyCriteria` instances with `rtm:appliesToSystemOfInterest` scoping. See [[Federated Audit and Composition]] for the new attestation subjects (`rtm:ScopeCertificationAttestation`, `rtm:CompositionCoverageAttestation`, `rtm:CompositionSufficiencyAttestation`) and the three composable profiles (`composition-adequacy`, `composition-sufficiency`, `qualified-audit-per-scope`).
+
 ## The three-layer artifact
 
 The artifact has three layers, each contributing to locality of reproduction. See [[Three-Layer Architecture]] and [[Design Spec]] §4.8.
@@ -159,4 +167,4 @@ A verifier can confirm the verification layer by replaying the transcript; the v
 
 ---
 
-See also: [[Three-Layer Architecture]], [[RDFC-1.0 Canonicalization]], [[Transcript Replay Semantics]], [[Approver Binding via Git]], [[Mission and Thesis]], [[Certification Predicate]], [[External URI References]], [[Identity Boundaries and Policy Projections]], [[Signed Envelopes and Established Standards]], [[Design Spec]].
+See also: [[Three-Layer Architecture]], [[RDFC-1.0 Canonicalization]], [[Transcript Replay Semantics]], [[Approver Binding via Git]], [[Mission and Thesis]], [[Certification Predicate]], [[External URI References]], [[Identity Boundaries and Policy Projections]], [[Signed Envelopes and Established Standards]], [[Federated Audit and Composition]], [[Aspect Coverage with Adequacy and Sufficiency]], [[Design Spec]].

@@ -33,14 +33,16 @@
 - [[External URI References]]
 - [[Signed Envelopes and Established Standards]]
 - [[Aspect Coverage with Adequacy and Sufficiency]]
+- [[Federated Audit and Composition]]
 - [[Certification Predicate]]
 - [[Gap Taxonomy]]
 - [[Quantitative Outcomes]]
 
-### Future Work (deferred)
+### Roadmap and future work
 
-- [[Topological Framework Future Work]]
-- [[Vertices Edges Faces]]
+- [[Engineering Lifecycle Stages]] (v0.2)
+- [[Topological Framework Future Work]] (research phase)
+- [[Vertices Edges Faces]] (research phase)
 
 ### Three-Layer Architecture
 
@@ -101,6 +103,8 @@
 - [[ADR-025 Reproducibility is Structural and Local]]
 - [[ADR-026 Cryptographic Agility via Algorithm Profiles]]
 - [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]
+- [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]]
+- [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]
 
 ### Meta
 

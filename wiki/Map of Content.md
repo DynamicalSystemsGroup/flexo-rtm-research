@@ -33,13 +33,17 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 - [[External URI References]] — `git+commit`, content-addressed identifiers, and OCI; the open-source-first foundation.
 - [[Signed Envelopes and Established Standards]] — W3C VC-DI, DSSE, Sigstore, cosign, and signed git commits as the crypto substrate.
 - [[Aspect Coverage with Adequacy and Sufficiency]] — per-aspect, per-claim-type coverage matrix that drives the v0.1 outcome.
+- [[Federated Audit and Composition]] — scope-level adequacy and sufficiency layered on self-certification; new attestation subjects for reproducibility audits, qualified-role audits, and composition certification.
 - [[Certification Predicate]] — v0.1 basic predicate (thresholded coverage); brief note on the future-framework predicate.
 - [[Gap Taxonomy]] — T1–T8 ship in v0.1; G3–G9 documented as future-framework gap classes.
 - [[Quantitative Outcomes]] — v0.1 metrics, configurable thresholds, and how the binary view is derived.
 
-## 4. Future Work: Topological Framework (deferred)
+## 4. Roadmap and future work
 
-- [[Topological Framework Future Work]] — deferred vision, recursion structure, registry concept, open questions.
+Two distinct timelines apply here. **Engineering lifecycle stages** are a v0.2 roadmap item — vocabulary is settled and ships in v0.1 for forward-compat; the full state-machine mechanism (gate relaxation, lifecycle-aware regression) lands in v0.2. The **topological framework**, by contrast, remains in research phase — its timeline depends on community-curated registry governance and open invariant research.
+
+- [[Engineering Lifecycle Stages]] — `rtm:lifecycleStage` and INCOSE-aligned stage IRIs; vocabulary v0.1, full mechanism v0.2.
+- [[Topological Framework Future Work]] — deferred (research-phase) vision, recursion structure, registry concept, open questions.
 - [[Vertices Edges Faces]] — future-framework type catalog (V, E, F) that generalizes traditional traceability.
 
 ## 5. Three-Layer Architecture
@@ -72,7 +76,7 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 
 ## 9. Decision Log
 
-The Decision Log holds 26 ADRs (ADR-001 through ADR-025, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions D1–D26 + D3a from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**.
+The Decision Log holds 30 ADRs (ADR-001 through ADR-029, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata) closes research issue #6.
 
 ## 10. Meta
 

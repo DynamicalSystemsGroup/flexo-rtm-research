@@ -133,6 +133,17 @@ The boundary against the deferred topological framework is sharper here than els
 
 Per [[Design Spec]] §4.2 / D22, the per-claim attestations are first-class v0.1 features; the recursive completeness audit is what's deferred. See [[Topological Framework Future Work]].
 
+## Scope-level adequacy and sufficiency at composition scale
+
+The two judgment kinds — adequacy and sufficiency — lift cleanly from the evidence scale to the **composition scale**, where the subjects are scopes and composed scopes rather than artifact-requirement pairs. The framing is identical; the subjects differ.
+
+- **Adequacy at composition scale** = composed scope coverage of system-of-interest. Does the patchwork of constituent scopes (each a named graph) cover the system-of-interest's requirements? This is captured as `rtm:CompositionCoverageAttestation` — a named-approver attestation whose subject is a composed scope.
+- **Sufficiency at composition scale** = the number and nature of the orgs providing scope-level certifications. Are enough qualified orgs attesting each constituent scope to meet the composed certification criteria? This is captured as `rtm:CompositionSufficiencyAttestation` — also named-approver-bound.
+
+A third subject, `rtm:ScopeCertificationAttestation`, captures an individual org's attestation that a constituent scope's self-certification was reviewed (or reproduced) and is considered valid for the auditor's purposes. All three new subjects inherit the named-approver SHACL discipline of [[Attestation Infrastructure in v0.1]] because they're subclasses of `rtm:Attestation`. The same vocabulary — `rtm:AdequacyCriteria` and `rtm:SufficiencyCriteria` instances — carries the composition-scale criteria, with `rtm:appliesToSystemOfInterest` and `rtm:appliesToScope` predicates rather than `rtm:appliesToAspect` for the evidence-level case. Three composable SHACL profiles enforce these criteria: `composition-adequacy`, `composition-sufficiency`, `qualified-audit-per-scope`.
+
+See [[Federated Audit and Composition]] for the canonical documentation, the four levels of certification a scope can carry (self → reproducibility audit → qualified-role audit → composition certification), and the org-level identity-projection extension that makes qualified-role attestations first-class. The decision is locked in [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]].
+
 ## Forward compatibility with the topological framework
 
 The matrix-view audit display, the typed subclasses, and the aspect tags are precisely the named-approver-bearing inputs the future framework will aggregate into closed assurance triangles. Each cell of v0.1's matrix corresponds to a future-framework face — when the topological audit lands, the gate becomes "for each aspect declared on a requirement, the matching (satisfaction, adequacy, sufficiency) triple must close a 2-simplex with the guidance coupling." Per-aspect coverage stats (v0.1) and per-aspect assurance-face closure (future) operate on the same attestation data. Adopters running v0.1 with `aspect-coverage` active accumulate compliant evidence for the future audit without retro-fit.
@@ -149,3 +160,4 @@ The matrix-view audit display, the typed subclasses, and the aspect tags are pre
 - [[Identity Boundaries and Policy Projections]] — `rtm:permitsAspect` scoping for per-aspect approver authority.
 - [[Topological Framework Future Work]] — deferred recursive completeness audit over criteria themselves.
 - [[Human-AI Accountability]] — why typed, aspect-tagged attestations matter in the LLM-assisted era.
+- [[Federated Audit and Composition]] — scope-level adequacy and sufficiency at composition scale; new attestation subjects layered on the parent class.

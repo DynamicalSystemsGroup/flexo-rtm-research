@@ -129,6 +129,10 @@ A certification claim is only meaningful if both the *aspects* claimed and the *
 - **Incremental delivery is feasible.** A subsystem certification can land while a full-model certification is still incomplete, without misrepresenting either.
 - **Authority closure is per scope.** Policy projections (see [[Identity Boundaries and Policy Projections]]) attach to scopes; an approver's authority is exactly the closure under `rtm:extends` of the scopes their policy names.
 
+## Lifecycle-aware scope metadata
+
+Scopes can carry **engineering lifecycle stage** metadata via the `rtm:lifecycleStage` predicate, identifying where in the INCOSE-aligned engineering lifecycle (exploratory, concept, requirements-specification, development, production, utilization, support, retirement) the scope currently sits. The vocabulary ships in v0.1 for forward-compat data accumulation; the stage-aware oracle behavior — early-stage gate relaxation, lifecycle state machine, auto-rerunnable regression handling — lands in v0.2 (per [[Engineering Lifecycle Stages]] and [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]). The lifecycle stage is **scope-level metadata**, not a property of individual triples within the scope; the same scope-as-first-class-RDF discipline applies. Per [[Storage Layer Flexo Conventions]] F4, lifecycle stage is captured in commit metadata alongside scope IRI so the v0.2 oracle can read it. Adopters tagging scopes today produce stable data the v0.2 oracle will activate against without rework.
+
 ## Reproducibility and baseline comparison
 
 The scope IRI is part of the input-hash that drives canonical transcript replay (see [[Verifiable Self-Certification]]). Same scope IRI + same canonical input graph + same transcript ⇒ byte-identical output. This makes the *unit of reproducibility* a `(commit, scope)` pair, not a `commit` alone — appropriate, since the same commit can be certified under many different scopes and each yields a distinct, equally valid certification.
@@ -147,3 +151,5 @@ The same property makes baseline comparison clean. Evaluate `rtm:scope/adcs-safe
 - [[Topological Framework Future Work]] — deferred `knowledgecomplex` materialization and topology
 - [[Vertices Edges Faces]] — V − F invariant in the future topological view
 - [[Identity Boundaries and Policy Projections]] — scope-closure semantics for authority
+- [[Engineering Lifecycle Stages]] — `rtm:lifecycleStage` scope metadata; vocabulary v0.1, mechanism v0.2
+- [[Federated Audit and Composition]] — composition-scale adequacy and sufficiency built over scope composition operators
