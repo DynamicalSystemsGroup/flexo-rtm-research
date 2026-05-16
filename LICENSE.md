@@ -12,9 +12,14 @@ This repository contains three classes of artifact, each licensed appropriately.
 
 ## What this repo holds today
 
-`flexo-rtm-research` is the design-and-rationale companion to the forthcoming `flexo-rtm` standards + software repo. The substantive content lives in the [GitHub wiki](https://github.com/dynamicalsystemsgroup/flexo-rtm-research/wiki) — research synthesis, decision rationale, ADRs, and the canonical design spec. The main repo here exists primarily to host the wiki and carry the LICENSE files (since GitHub wikis do not have their own LICENSE).
+`flexo-rtm-research` is the design-and-rationale companion to the forthcoming `flexo-rtm` standards + software repo. The substantive content lives canonically in [`wiki/`](wiki/) in this repo and is published via the [GitHub wiki](https://github.com/dynamicalsystemsgroup/flexo-rtm-research/wiki) — see [CONTRIBUTING.md](CONTRIBUTING.md) for the source-of-truth + sync operational model.
 
-No code or ontology files live in this repo yet — those are reserved for the future `flexo-rtm` implementation repo. The Apache-2.0 and CC0-1.0 license bodies are nonetheless present so that when code or ontology arrives (or is added to the wiki as illustrative examples), the licensing strategy is already in place.
+Today's contents fall into two of the three artifact classes:
+
+- **Documentation** (`wiki/`, `README.md`, `CONTRIBUTING.md`, `LICENSE.md`) — CC-BY-4.0
+- **Code** (`scripts/sync-wiki.sh`) — Apache-2.0
+
+No ontology files live in this repo yet — those are reserved for the future `flexo-rtm` implementation repo. The CC0-1.0 license body is nonetheless present so the licensing strategy is already in place if illustrative ontology fragments are added to a wiki page.
 
 ## Why three licenses?
 

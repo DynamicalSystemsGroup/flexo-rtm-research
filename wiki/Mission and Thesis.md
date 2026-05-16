@@ -1,0 +1,51 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
+# Mission and Thesis
+
+## Mission
+
+`flexo-rtm` is a **verifiable self-certification protocol for bidirectional requirements traceability of SysMLv2 models**. It is anchored in open source, self-hostable on Flexo (an open-source Model Management System), and provides explicit lossless I/O paths to OSLC-based proprietary systems such as IBM Doors and Jama Connect. The oracle proves that a model satisfies forward and backward traceability — or pinpoints the structural gaps — and emits a layered, replayable certification artifact: transcript, attestation graph, and audit report.
+
+The differentiator vs. Doors and Jama is **certification by construction, not by convention**: engineers' natural modeling workflow accumulates traceability data, judgment moments surface as they arise, and attestations are captured atomically alongside model evolution. See [[Verifiable Self-Certification]] for the protocol and [[Design Spec]] for the normative specification.
+
+## Why this exists
+
+Doors and Jama dominate institutional requirements management because they deliver real value — forward and backward traces, coverage statistics, audit trails, OSLC interop — but on proprietary stacks where the certification artifact is a PDF or a database export and "certification" means **certification-by-process**: trust this vendor, trust this workflow, trust this auditor.
+
+There is a different way: **certification-by-construction**, using open formats (RDF, SHACL, SysMLv2 OWL renderings), reproducible analyses (canonical hashes, replayable transcripts), external content-addressed evidence (git, sha256, OCI), battle-tested signing primitives, and thin identity projections. Institutional adoption of any successor to Doors and Jama requires three things at once — **open** (no proprietary lock-in), **verifiable** (third parties can re-check claims), and **losslessly interoperable** (existing investments migrate without data loss). `flexo-rtm` delivers all three.
+
+## The thesis (eight propositions)
+
+The eight propositions below are the load-bearing claims — each both a design commitment and a falsifiable assertion the implementation must demonstrate.
+
+1. **Traditional analysis is the trusted primary.** `flexo-rtm` v0.1 ships traditional bidirectional analysis — forward and backward traces with coverage statistics — as the **only required** certification surface. Practitioners coming from Doors and Jama recognize this immediately and adopt without further commitment. Everything else is composable on top of, or deferred from, this primary.
+
+2. **Named-approver attestation is structurally enforced** for v0.1's three claim types: **satisfaction**, **adequacy**, and **sufficiency**. SHACL shapes with `sh:minCount 1 ; sh:nodeKind sh:IRI` on `rtm:Attestation.rtm:approvedBy` reject unaccountable attestations at write time — no unsigned, unattributed claim can enter the graph. Regression-compatible with the ADCS prototype corpus, which already uses adequacy and sufficiency attestations.
+
+3. **External URI references (git + content addresses + OCI) are the open-source foundation.** Evidence, models, and activities in the RDF graph reference concepts **outside** the graph via URI — git repositories with commit hashes, content-addressed data (sha256, IPFS), OCI image digests for infrastructure-as-code. These external references — not the RDF metadata in isolation — are the source of true interoperability, portability, auditability, and reproducibility. Adopters can fetch, hash-verify, and re-execute without proprietary dependencies.
+
+4. **Cryptography by composition of battle-tested standards, never invention.** Where signing matters, `flexo-rtm` composes git GPG/SSH commit signing, W3C Verifiable Credentials and Data Integrity proofs, DSSE and in-toto attestations, Sigstore (cosign plus the Rekor transparency log), and OCI image signature standards. v0.1 ships vocabulary and composable optional SHACL profiles for each surface — **no custom crypto, no custom envelopes, no custom transparency logs**. Closes the ADCS prototype's "signed envelopes deferred" gap.
+
+5. **Identity by thin projection of external authoritative sources, never ownership.** `flexo-rtm` does not authenticate users or store credentials. The named approvers required by Proposition 2 are IRIs referencing identities owned by institutional SSO (OIDC, SAML), LDAP/Active Directory, GitHub, GitLab, and similar. v0.1 ships vocabulary for thin RDF projections (FOAF + the W3C Org Ontology + a minimal `rtm:` extension) plus three configurable policy primitives — role-based (RBAC), attribute-based (ABAC), and scope-based — all SPARQL-evaluable and enforced through a single SHACL bottleneck. Reference adapters cover GitHub, OIDC, and GitHub Actions OIDC; adopters extend the thin adapter pattern for SAML, LDAP, Okta, Auth0, or Keycloak. This generalizes the ADCS prototype's hard-coded GitHub-ID approach. See [[Human-AI Accountability]] for how the same surface handles AI agents as well as humans.
+
+6. **The topological framework is future work, not v0.1.** Zargham (2026)'s typed simplicial complex framework — closed assurance triangles, recursive completeness checks, V−F-type invariants, TDA — requires a **community-curated registry of pre-approved artifact types** to terminate the recursive completeness check. That registry is premature scope for v0.1; the framework is documented as future capability in [[Topological Framework Future Work]]. The vocabulary it will require (Guidance, AdequacyCriteria, SufficiencyCriteria, Aspect) ships in the v0.1 ontology so data accumulates forward-compatibly from day one.
+
+7. **Verifiability requires reproducibility at multiple levels.** End-to-end verifiable self-certification requires layered reproducibility: **RDF-internal** (RDFC-1.0 canonical hashes plus transcript replay); **external** (fetch git + commit, content-hash, or OCI digest, re-execute, compare); **accountability** (git GPG/SSH-signed commits matching `rtm:approvedBy`); **signed envelopes** (W3C VC-DI, DSSE, cosign, Rekor as composable optional profiles); and **identity projection** (the projection-as-of-cert-time recorded in the transcript). Each layer is independently inspectable; together they yield end-to-end verifiable self-certification with **no proprietary dependencies anywhere in the chain**.
+
+8. **Reproducibility is structural and local; verification is federated.** Each fact in the certification artifact is **structurally complete for its own local context** — the RDF neighborhood, external URIs, projection-at-cert-time, and signatures sufficient to reproduce that fact in isolation. A verifier with adequate local permissions for a specific fact can re-execute its recorded steps without access to the whole graph. Reproduction therefore **federates**, both computationally (different parties run different subsets) and organizationally (different permission slices compose to a complete audit). No central coordinator and no universally-privileged verifier is required. This is the property that makes multi-party institutional verification possible under confidentiality, export control, and competing-vendor constraints.
+
+## Scope-reducing assumption
+
+The modeled system is **a SysMLv2 model conformant with OMG specifications**. The ontology assumes `omg-sysml:` IRIs (the openCAESAR OWL rendering) are dereferenceable as the canonical model vocabulary. Requirements, evidence, and attestations are structured around SysMLv2 elements. SysML v1, IBM Rhapsody-native models, MagicDraw pre-v2 dialects, and ad-hoc requirements documents are explicitly **out of scope** for v0.1; lossless OSLC roundtrip is the migration path for those sources.
+
+## What "openness" means here
+
+Three operational commitments: an **open source license** on the specification, ontology, oracle, conformance suite, and reference adapters; **self-hostable on Flexo**, with no mandatory cloud service or telemetry; and an **explicit OSLC roundtrip** so Doors and Jama users can migrate or interoperate without losing requirement structure, trace links, or attestations. Together these mean a regulator, an auditor, or a competing vendor can stand up a complete `flexo-rtm` verification environment from source.
+
+## OpenMBEE positioning
+
+`flexo-rtm-research` and `flexo-rtm` both start in the user's personal GitHub organization for early-stage iteration speed. The **planned transfer is to OpenMBEE** at the MVP service milestone — once the design has been reviewed in depth, the reference oracle passes its conformance suite, and the OSLC adapters demonstrate lossless roundtrip on real corpora. OpenMBEE is the natural home for an open-source SysMLv2-aligned standards repo with a Flexo runtime.
+
+## What this vault is for
+
+This wiki (`flexo-rtm-research`) is **the reviewable artifact**. Its purpose is to make the design — mission, eight propositions, ontology, SHACL discipline, conformance suite, OSLC interop story, deferred topological framework — **reviewable in depth before implementation begins**. Code follows in `flexo-rtm` once the design has been audited here. Reading order: [[Map of Content]]. Normative spec: [[Design Spec]].
