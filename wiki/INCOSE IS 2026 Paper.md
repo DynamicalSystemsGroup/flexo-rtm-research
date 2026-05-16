@@ -43,7 +43,7 @@ These terms appear in the `rtm:` vocabulary (`rtm:AssuranceFace`, `rtm:Assurance
 
 ## Citation
 
-> Zargham, M. (2026). *Formalizing Document Assurance: A Topological Framework for Verification, Validation, and Human Accountability.* INCOSE International Symposium 2026, Seattle, WA.
+> Zargham, M. (2026). *Formalizing Document Assurance: A Topological Framework for Verification, Validation, and Human Accountability.* INCOSE International Symposium 2026, Yokohama, Japan.
 
 (BibTeX entry and final DOI to be added once publication is finalized.)
 
