@@ -14,7 +14,11 @@ SysMLv2 is not a cosmetic refresh of SysML 1.x. It is a ground-up redesign with 
 2. **MOF-based abstract syntax (metamodel).** Behind the textual syntax sits a Meta-Object Facility metamodel that defines the abstract structure of every well-formed SysMLv2 element: parts, ports, actions, constraints, requirements, analysis cases, and so on. The metamodel is what makes interoperability tractable.
 3. **Standardized serializations and API.** Models can be serialized to `.sysml.json` (the JSON projection defined by the SysML v2 API & Services specification) and accessed through a REST API that the SysMLv2 Pilot Implementation, Magic Systems of Systems Architect, and other tools share. The API is the integration substrate.
 
-For `flexo-rtm`, "SysMLv2" therefore means the triple (textual `.kerml`/`.sysml` source, MOF metamodel, `.sysml.json` / API projection) — not any single concrete file format.
+For `flexo-rtm`, "SysMLv2" refers to this triple (textual `.kerml`/`.sysml` source, MOF metamodel, `.sysml.json` / API projection) **collectively, as a family of interoperability data standards** — not as `flexo-rtm`'s internal model.
+
+**The canonical model in `flexo-rtm` is RDF.** `flexo-rtm` is RDF-native: storage is named graphs of `omg-sysml:` triples (per the openCAESAR OWL rendering described below), analysis reasons over those triples, and the certification artifact is RDF. The three SysMLv2 file formats above are **interface contracts**: `flexo-rtm` accepts each as input (every accepted format maps deterministically into canonical RDF), and produces each on demand from canonical RDF when a downstream tool requires that format. They define the I/O boundary; they do not define the internal model.
+
+This RDF-native posture matters for two reasons. First, **interop is by deterministic mapping, not by storage choice** — `flexo-rtm` is not constrained to whichever single file format any one tool prefers, and adding a new accepted format means writing a new mapping, not changing the storage. Second, **lossless roundtrip is a property we can check** — every accepted file becomes a deterministic RDF graph, and every emission is a deterministic mapping back; the lossless criterion (RDFC-1.0 triple-set equivalence on canonical content, per [[Lossless Roundtrip Definition]]) is enforceable on every roundtrip. The same RDF-native pattern is what makes the OSLC adapter ([[OSLC RM Adapter Contract]]) work: file inputs in OSLC formats become RDF inside `flexo-rtm`, and the lossless guarantees follow.
 
 ## Why we anchor on SysMLv2
 

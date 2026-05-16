@@ -105,29 +105,29 @@ A composable SHACL contract enumerating predicates and shapes required for **los
 
 ---
 
-## 5. What we reject, and why
+## 5. What we adapt, and why
 
-Three OSLC features are deliberately out of scope for v0.1. Each rejection has a rationale grounded in open-source, self-hostable, verifiable certification.
+Three OSLC features are intentionally **adapted rather than adopted as-specified** in v0.1. Each adaptation is grounded in the design choices `flexo-rtm` makes for open-source, self-hostable, verifiable certification. None of them prevents an `flexo-rtm` adopter from interoperating with tools that implement the OSLC service-level surface — that interoperability is the job of live HTTP connectors (v0.2 work, additive on the adapter contract).
 
-| Rejected feature | Rationale |
+| OSLC feature | How `flexo-rtm` adapts it |
 |---|---|
-| **Service provider catalogs & discovery** | Catalogs assume a centralized authoritative tool publishing capabilities. `flexo-rtm` is peer-cooperative and git-anchored. Discovery is replaced by **explicit configuration**: adopters declare OSLC sources in `flexo-rtm.yaml`. No `oslc:ServiceProvider` / `oslc:ServiceProviderCatalog`. |
-| **Delegated UIs (HTML iframe + postMessage)** | Vendor-specific browser embeddings tied to a hosted tool. `flexo-rtm`'s UX is the Claude skill + git-native workflow; embedded dialogs are anti-pattern for an oracle that must be reproducible from the command line. No `oslc:CreationDialog` / `oslc:SelectionDialog`. |
-| **OSLC-RM's centralized-RM-tool assumption** | OSLC-RM was written for a world where one server is "the" RM database. `flexo-rtm` is multi-party: every collaborator's git checkout is a peer. We carry RM data faithfully but do not pretend to be a centralized RM server. The adapter operates at the **file/RDF level**, not the HTTP service level. (Live HTTP connectors are v0.2 work, additive on the adapter contract.) |
+| **Service provider catalogs & discovery** | OSLC catalogs assume a centralized authoritative tool publishing capabilities; `flexo-rtm` is peer-cooperative and git-anchored, so the v0.1 adapter substitutes **explicit configuration** (adopters declare OSLC sources in `flexo-rtm.yaml`). Live HTTP connectors in v0.2 can speak the catalog protocol against running Doors / Jama / Polarion servers. |
+| **Delegated UIs (HTML iframe + postMessage)** | Vendor-specific browser embeddings tied to a hosted tool. `flexo-rtm`'s primary UX is the Claude skill + git-native workflow, where embedded dialogs do not fit; the URIs are preserved verbatim through Layer C so a downstream tool that needs the UI delegate behavior can consume them directly. |
+| **Centralized-RM-tool assumption** | OSLC-RM was designed for a world where one server is "the" RM database. `flexo-rtm` is multi-party: every collaborator's git checkout is a peer. We carry RM data faithfully and operate at the **file/RDF level** in v0.1; the same adapter contract supports live HTTP connectors atop centralized RM tools in v0.2. |
 
-What this is *not*: a rejection of the data model. We adopt the data model. We reject the deployment surface that wraps it.
+The point: **the data model is what `flexo-rtm` adopts; the deployment model is what it complements.** Adopters who keep using Doors, Jama, or Polarion get lossless interop and a path to reproducible certification without changing tools. Adopters who run `flexo-rtm` standalone get the same data model with a different deployment surface. Vendor and hosting partners can serve either population.
 
 ---
 
-## 6. Where OSLC reflects IBM/Doors steering
+## 6. Origins of OSLC — IBM/Doors lineage
 
-OSLC emerged from IBM Rational's Jazz initiative in the late 2000s with strong influence from the DOORS family. Three artifacts of that origin are visible in the spec:
+OSLC emerged from IBM Rational's Jazz initiative in the late 2000s with strong influence from the DOORS family. Three artifacts of that origin are visible in the spec, and they are worth understanding rather than relitigating:
 
-- **The link-type taxonomy was largely shaped by Doors.** Predicates `elaboratedBy`, `specifiedBy`, `decomposedBy`, `satisfiedBy`, `validatedBy` map closely onto Doors' built-in link types. This is **good**: Doors encodes decades of requirements-engineering practice; inheriting that vocabulary is a feature.
-- **The service-provider model assumes proprietary tool hosting.** Catalogs, factories, and delegated UIs were designed to integrate Jazz-suite products across vendor boundaries. They assume a server you log into. Where the "tool" is a git repository, these constructs are vestigial.
-- **Configuration management was added later (OSLC-CM, OSLC Config) and is incomplete.** Versioning was retrofitted via separate domains and remains less mature than RM/QM. `flexo-rtm` solves versioning natively through git.
+- **The link-type taxonomy reflects Doors' practice.** Predicates `elaboratedBy`, `specifiedBy`, `decomposedBy`, `satisfiedBy`, `validatedBy` map closely onto Doors' built-in link types. This is **good**: Doors encodes decades of requirements-engineering practice, and inheriting that vocabulary is a feature `flexo-rtm` happily adopts.
+- **The service-provider model assumes proprietary tool hosting.** Catalogs, factories, and delegated UIs were designed to integrate Jazz-suite products across vendor boundaries. They assume a server you log into — which works well for hosted-tool integration and remains useful for adopters who continue using their existing RM tools through live OSLC connectors.
+- **Configuration management was added later (OSLC-CM, OSLC Config).** Versioning was retrofitted via separate domains and remains less mature than RM/QM. `flexo-rtm` solves versioning natively through git for the open-standard side of the boundary; on the OSLC side, it preserves whatever versioning constructs the source emits via Layer C carry-through.
 
-**Critical reading:** the data model is good; the deployment model is not. OSLC is the right vocabulary; it is the wrong runtime. `flexo-rtm` adopts the vocabulary and supplies its own runtime (git + RDF + Flexo MMS + the oracle).
+**Reading:** the data model is solid; the deployment model is one of several reasonable choices for the time it was designed. `flexo-rtm` adopts the vocabulary, supplies a different runtime (git + RDF + Flexo MMS + the oracle) suited to its open-source, peer-cooperative design, and stays losslessly interoperable with implementations that supply the OSLC runtime.
 
 ---
 

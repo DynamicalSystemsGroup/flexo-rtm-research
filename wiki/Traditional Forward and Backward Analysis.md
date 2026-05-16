@@ -134,7 +134,7 @@ The traditional bidirectional analysis is **not** a stepping stone that is repla
 - Every future topological "pass" implies a traditional pass: the topological framework's verification edge IS `rtm:satisfies`.
 - A traditional pass does NOT imply a topological pass: the topological framework adds requirements (closed triangles, named attestations on each face, V−F invariant).
 - Adopters migrate incrementally. Coverage statistics are reported at both layers so progress is visible at every stage of adoption.
-- A team that never migrates beyond traditional analysis still gets an open-source, OSLC-RM-roundtrip-capable, transcript-replayable RTM. That is itself a substantial improvement over closed proprietary tooling.
+- A team that never adopts the future framework still gets an open-source, OSLC-RM-roundtrip-capable, transcript-replayable RTM with reproducible certification artifacts — a meaningful complement to whatever RM tooling they already use.
 
 ## Reference implementation lineage
 
@@ -142,9 +142,9 @@ The ADCS prototype's `traceability/audit.py` module implements forward and backw
 
 ## Why this matters for adoption
 
-Doors costs $10K+/seat. Jama and Polarion are comparable. Engineering teams looking to migrate away from those tools need an immediately comparable analysis from day one — they cannot afford a multi-year transition into an unfamiliar paradigm. The traditional bidirectional analysis delivers exactly that: open source, self-hostable, OSLC-RM roundtrip, identical analytical surface, with cleaner provenance via the deterministic transcript.
+Institutional requirements management today is well-served by Doors, Jama, Polarion, and similar incumbents — but their certification artifacts are proprietary and their data is locked behind commercial agreements. `flexo-rtm` adds three properties the existing ecosystem doesn't yet supply natively: **open data portability** (RDF graphs with OSLC-RM roundtrip), **reproducible certification** (canonical hashes + replayable transcripts), and **federable verification** (third parties can re-check without proprietary access; see [[Federated Audit and Composition]]). These are properties an organization gains regardless of whether it keeps using its existing RM tool or transitions; they are also properties incumbent vendors and their hosting partners can offer their customers atop the open standard.
 
-Adopters who later choose to commit to the topological framework can do so incrementally, on their own timeline, without abandoning the analysis they already trust. Those who never make that commitment still get a complete, production-quality RTM. That dual-mode adoption path is the central rationale for putting traditional analysis first; see [[Mission and Thesis]] and [[Verifiable Self-Certification]] for the framing context, and [[Quantitative Outcomes]] for how the per-dimension reporting contract enforces X3.
+Adopters can pick whichever path suits their context: pair `flexo-rtm` with existing RM tooling via OSLC roundtrip, run `flexo-rtm` standalone, or work through a vendor or hosting provider that supports the open standard. Each path produces the same artifact: a deterministic, replayable, lossless RTM with reproducible provenance. Those who later choose to commit to the topological framework can do so incrementally, on their own timeline, without abandoning the analysis they already trust. That dual-mode adoption path is the central rationale for putting traditional analysis first; see [[Mission and Thesis]] and [[Verifiable Self-Certification]] for the framing context, and [[Quantitative Outcomes]] for how the per-dimension reporting contract enforces X3.
 
 ## See also
 

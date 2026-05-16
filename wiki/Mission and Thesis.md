@@ -10,15 +10,15 @@ The differentiator vs. Doors and Jama is **certification by construction, not by
 
 ## Why this exists
 
-Doors and Jama dominate institutional requirements management because they deliver real value — forward and backward traces, coverage statistics, audit trails, OSLC interop — but on proprietary stacks where the certification artifact is a PDF or a database export and "certification" means **certification-by-process**: trust this vendor, trust this workflow, trust this auditor.
+Today's incumbent RM tools — Doors, Jama, Polarion, codeBeamer — deliver real value: forward and backward traces, coverage statistics, audit trails, OSLC interop, hosting, support. Their constraint is not the data model but the deployment model: certification artifacts are PDFs or proprietary exports, and "certification" tends to mean **certification-by-process** (trust this vendor, trust this workflow, trust this auditor) rather than **certification-by-construction**.
 
-There is a different way: **certification-by-construction**, using open formats (RDF, SHACL, SysMLv2 OWL renderings), reproducible analyses (canonical hashes, replayable transcripts), external content-addressed evidence (git, sha256, OCI), battle-tested signing primitives, and thin identity projections. Institutional adoption of any successor to Doors and Jama requires three things at once — **open** (no proprietary lock-in), **verifiable** (third parties can re-check claims), and **losslessly interoperable** (existing investments migrate without data loss). `flexo-rtm` delivers all three.
+`flexo-rtm` is an **open standard** that delivers certification-by-construction using open formats (RDF, SHACL, SysMLv2 OWL renderings), reproducible analyses (canonical hashes, replayable transcripts), external content-addressed evidence (git, content hashes, OCI), battle-tested signing primitives, and thin identity projections. The same incumbents are first-class citizens of this ecosystem: their data roundtrips losslessly, their products can serve as hosts atop the open standard, and their organizations can serve as **credible-counterparty auditors** providing reproducibility attestations on top of engineering teams' self-certifications (see [[Federated Audit and Composition]]). The goal is not to displace incumbents — it is to make institutional requirements traceability **open, verifiable, and federable**, properties that benefit incumbents, adopters, and regulators alike.
 
 ## The thesis (eight propositions)
 
 The eight propositions below are the load-bearing claims — each both a design commitment and a falsifiable assertion the implementation must demonstrate.
 
-1. **Traditional analysis is the trusted primary.** `flexo-rtm` v0.1 ships traditional bidirectional analysis — forward and backward traces with coverage statistics — as the **only required** certification surface. Practitioners coming from Doors and Jama recognize this immediately and adopt without further commitment. Everything else is composable on top of, or deferred from, this primary.
+1. **Traditional analysis is the trusted primary.** `flexo-rtm` v0.1 ships traditional bidirectional analysis — forward and backward traces with coverage statistics — as the **only required** certification surface. Practitioners coming from Doors, Jama, Polarion, or other incumbent RM tools recognize this immediately and adopt without further commitment. Everything else is composable on top of, or deferred from, this primary.
 
 2. **Named-approver attestation is structurally enforced** for v0.1's three claim types: **satisfaction**, **adequacy**, and **sufficiency**. SHACL shapes with `sh:minCount 1 ; sh:nodeKind sh:IRI` on `rtm:Attestation.rtm:approvedBy` reject unaccountable attestations at write time — no unsigned, unattributed claim can enter the graph. Regression-compatible with the ADCS prototype corpus, which already uses adequacy and sufficiency attestations.
 
@@ -36,11 +36,11 @@ The eight propositions below are the load-bearing claims — each both a design 
 
 ## Scope-reducing assumption
 
-The modeled system is **a SysMLv2 model conformant with OMG specifications**. The ontology assumes `omg-sysml:` IRIs (the openCAESAR OWL rendering) are dereferenceable as the canonical model vocabulary. Requirements, evidence, and attestations are structured around SysMLv2 elements. SysML v1, IBM Rhapsody-native models, MagicDraw pre-v2 dialects, and ad-hoc requirements documents are explicitly **out of scope** for v0.1; lossless OSLC roundtrip is the migration path for those sources.
+The modeled system is **a SysMLv2 model conformant with OMG specifications**. The ontology assumes `omg-sysml:` IRIs (the openCAESAR OWL rendering) are dereferenceable as the canonical model vocabulary. Requirements, evidence, and attestations are structured around SysMLv2 elements. SysML v1, Rhapsody-native models, MagicDraw pre-v2 dialects, and ad-hoc requirements documents are explicitly **out of scope** for v0.1; lossless OSLC roundtrip is the integration path for those sources, whether adopters keep using their existing tools or transition over time.
 
 ## What "openness" means here
 
-Three operational commitments: an **open source license** on the specification, ontology, oracle, conformance suite, and reference adapters; **self-hostable on Flexo**, with no mandatory cloud service or telemetry; and an **explicit OSLC roundtrip** so Doors and Jama users can migrate or interoperate without losing requirement structure, trace links, or attestations. Together these mean a regulator, an auditor, or a competing vendor can stand up a complete `flexo-rtm` verification environment from source.
+Three operational commitments: an **open source license** on the specification, ontology, oracle, conformance suite, and reference adapters; **self-hostable on Flexo**, with no mandatory cloud service or telemetry; and an **explicit OSLC roundtrip** so users of Doors, Jama, Polarion, and other RM tools can interoperate with the open standard — or transition over time — without losing requirement structure, trace links, or attestations. Together these mean a regulator, an external auditor, a service provider hosting RM workloads, or an organization performing federated reproducibility audits can stand up a complete `flexo-rtm` verification environment from source.
 
 ## OpenMBEE positioning
 

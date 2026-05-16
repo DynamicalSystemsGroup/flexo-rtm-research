@@ -14,9 +14,9 @@
 
 ## 1. Mission
 
-A verifiable self-certification protocol for bidirectional requirements traceability of SysMLv2 models, anchored in open source, self-hostable on Flexo, with explicit lossless I/O paths to OSLC-based proprietary systems (Doors, Jama). The oracle proves that a model satisfies forward + backward traceability — or pinpoints the gaps from graph structure — and emits a layered, replayable certification artifact (transcript → attestation graph → audit report).
+A verifiable self-certification protocol for bidirectional requirements traceability of SysMLv2 models, anchored in open source, self-hostable on Flexo, with explicit lossless I/O paths to OSLC-based RM systems (Doors, Jama, Polarion, and others). The oracle proves that a model satisfies forward + backward traceability — or pinpoints the gaps from graph structure — and emits a layered, replayable certification artifact (transcript → attestation graph → audit report).
 
-The differentiator vs. Doors/Jama: **verifiable, reproducible, self-hostable certification by construction**, not by convention. Engineers' natural modeling workflow accumulates traceability data; the system surfaces judgment moments as they arise and captures attestations atomically alongside model evolution.
+`flexo-rtm` complements today's incumbent RM tools rather than competing with them. It supplies three properties their proprietary stacks don't yet deliver natively — **verifiable certification-by-construction** (canonical hashes + replayable transcripts), **open data portability** (RDF + lossless OSLC roundtrip), and **federable verification** (any party with adequate permissions can re-check without proprietary access; see §4.4 and §4.9). These properties benefit adopters whether they keep using their existing tools, run `flexo-rtm` standalone, or rely on a vendor or hosting partner that supports the open standard. The incumbents themselves can serve as credible-counterparty auditors and hosts atop the standard; cooperation, not displacement, is the intended posture.
 
 **Scope discipline.** `flexo-rtm` v0.1 ships **traditional bidirectional traceability** as the primary analysis (forward and backward structural traces with coverage statistics, in the form Doors/Jama/OSLC practitioners recognize) plus **named-approver attestation infrastructure for three claim types** (satisfaction, adequacy, sufficiency). The ADCS regression corpus already uses adequacy and sufficiency attestations; v0.1 supports them as first-class.
 
@@ -96,7 +96,7 @@ Both repos start in user's org; transfer to OpenMBEE at MVP service milestone.
 
 This is the analysis Doors/Jama/OSLC users recognize. It works directly against the OSLC-RM adapter's output. The oracle's `certify --level=basic` produces only this analysis: SPARQL-driven, fast, familiar, no commitment to Guidance vertices or attestation structure.
 
-**v0.1's traditional analysis is independently useful.** A team migrating from Doors can produce traceability reports using only v0.1's bidirectional analysis without ever committing to the topological framework. The reports look like the RTM tables they already use, with cleaner provenance via the transcript.
+**v0.1's traditional analysis is independently useful.** A team already running Doors, Jama, Polarion, or any other RM tool can produce traceability reports using only v0.1's bidirectional analysis — pulled from their existing data via the OSLC adapter — without ever committing to the topological framework. The reports look like the RTM tables they already use, with cleaner provenance via the transcript and the option to add reproducibility audits via [[Federated Audit and Composition]].
 
 ### 4.2 Vocabulary carried in v0.1 (preparing the ground)
 

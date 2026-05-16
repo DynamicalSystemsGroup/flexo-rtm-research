@@ -20,7 +20,7 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 
 ## 2. External Research (literature)
 
-- [[OSLC RM and QM Review]] — OSLC RM/QM review; IBM/Doors steering critique; what to adopt vs. reject.
+- [[OSLC RM and QM Review]] — OSLC RM/QM vocabulary review; the data model `flexo-rtm` adopts and the deployment-model assumptions it adjusts; lineage from IBM/Doors origins.
 - [[INCOSE V2 Review]] — alignment with INCOSE's V2 concept hierarchy.
 - [[OMG SysMLv2]] — canonical model vocabulary anchoring requirement and verification concepts.
 - [[PROV EARL GSN P-PLAN]] — the four adopted W3C/community vocabularies and the parsimony budget over them.
