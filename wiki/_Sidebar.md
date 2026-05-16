@@ -105,6 +105,7 @@
 - [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]
 - [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]]
 - [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]
+- [[ADR-030 Polycentric ASOT Authority Model]]
 
 ### Meta
 

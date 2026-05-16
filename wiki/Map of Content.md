@@ -76,7 +76,7 @@ Two distinct timelines apply here. **Engineering lifecycle stages** are a v0.2 r
 
 ## 9. Decision Log
 
-The Decision Log holds 30 ADRs (ADR-001 through ADR-029, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata) closes research issue #6.
+The Decision Log holds 31 ADRs (ADR-001 through ADR-030, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment that underwrites the scope algebra.
 
 ## 10. Meta
 
