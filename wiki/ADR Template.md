@@ -5,7 +5,7 @@
 **Status:** Accepted | Superseded | Deprecated
 **Date:** YYYY-MM-DD
 **Deciders:** Michael Zargham
-**Related:** ADR-NNN (if applicable); [[Related Wiki Page]]
+**Related:** ADR-NNN (if applicable); `[[Page Name]]` cross-link to relevant wiki page
 
 ## Context
 

@@ -43,7 +43,7 @@ where `V_boundary` is the registry-rooted boundary complex (see §3), `F` is the
 
 **Aspect-typed extension.** Each face is parameterized by an `rtm:Aspect` (functional, performance, safety, security, ethical, regulatory, environmental). A requirement is *fully covered* when every aspect declared by the requirement has at least one closed face with both adequacy- and sufficiency-flavored Guidance. The aspect taxonomy is extensible per [[Aspect Coverage with Adequacy and Sufficiency]]; v0.1 ships the vocabulary and the per-aspect attestation rollup, but does not run the aspect-tagged face-closure audit.
 
-**Derivation, not storage.** The complex is not a parallel data structure — it is a **derived view** computed from the underlying RDF triples via SPARQL `CONSTRUCT` and materialized for analysis by [[Knowledge Complex Library]]'s typed-simplicial-complex machinery. The 2×2 responsibility map of that library (Topological × Ontological crossed with OWL × SHACL) provides the type discipline. SHACL closure rules enforce face-cardinality (`Face` has exactly 3 `boundedBy` edges) and closed-triangle constraints at write time.
+**Derivation, not storage.** The complex is not a parallel data structure — it is a **derived view** computed from the underlying RDF triples via SPARQL `CONSTRUCT` and materialized for analysis by [`knowledgecomplex` library](https://github.com/DynamicalSystemsGroup/knowledgecomplex)'s typed-simplicial-complex machinery. The 2×2 responsibility map of that library (Topological × Ontological crossed with OWL × SHACL) provides the type discipline. SHACL closure rules enforce face-cardinality (`Face` has exactly 3 `boundedBy` edges) and closed-triangle constraints at write time.
 
 In implementation terms: the v0.1 vocabulary already carries every term this section names. What v0.1 omits is the audit pass that interprets those terms as a typed simplicial complex and checks closure.
 
@@ -238,7 +238,7 @@ These tests do not exist in v0.1; the file paths are reserved as placeholders so
 
 ## 14. The library that materializes the complex
 
-When the framework lands, the in-memory representation of the assurance complex is materialized by the [[Knowledge Complex Library]] (the `knowledgecomplex` Python package). That library's 2×2 responsibility map — Topological × Ontological crossed with OWL × SHACL — exactly matches the discipline the framework needs:
+When the framework lands, the in-memory representation of the assurance complex is materialized by the [`knowledgecomplex` library](https://github.com/DynamicalSystemsGroup/knowledgecomplex) (the `knowledgecomplex` Python package). That library's 2×2 responsibility map — Topological × Ontological crossed with OWL × SHACL — exactly matches the discipline the framework needs:
 
 - **Topological / OWL.** `kc:Element`, `kc:Vertex`, `kc:Edge`, `kc:Face` hierarchy with boundary-cardinality axioms.
 - **Topological / SHACL.** Closed-triangle constraints and boundary-closure rules (these require `sh:sparql` because OWL-DL cannot express the closed-triangle constraint).
@@ -263,7 +263,7 @@ v0.1 ships the foundation. v0.2+ ships the OpenAPI surface, the SysMLv2 I/O, the
 - [[Analysis Layer Scope Algebra]] — scope as the input to any audit, traditional or topological
 - [[External URI References]] — the provenance handles every vertex carries
 - [[Identity Boundaries and Policy Projections]] — the policy snapshots the framework's authority check will use
-- [[Knowledge Complex Library]] — the library that materializes the complex
+- [`knowledgecomplex` library](https://github.com/DynamicalSystemsGroup/knowledgecomplex) — the library that materializes the complex
 - [[Human-AI Accountability]] — the accountability discipline that motivates the named-approver-on-validation-edge design
 - [[INCOSE IS 2026 Paper]] — the paper that describes the framework and from which this future-work agenda derives
 - [[Map of Content]] — orientation

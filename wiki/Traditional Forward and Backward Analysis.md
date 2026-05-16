@@ -119,7 +119,7 @@ with the verification direction preserved (artifact → requirement). A graph im
 The traditional bidirectional analysis is the v0.1 primary surface. It is intentionally narrow. The following capabilities are **deferred** to the future topological framework (see [[Design Spec]] §4.10) and are NOT part of v0.1's traditional analysis:
 
 - **No guidance vertices required.** v0.1 does not require an `rtm:Guidance` node mediating each verification edge. (Adopters MAY add guidance — see [[Design Spec]] §4.2 — but bidirectional analysis runs without it.)
-- **No assurance triangle closure.** v0.1 does not check that an artifact, a requirement, and a guidance vertex form a closed triangle with the required attestations on each face. Triangle closure is part of the deferred topological framework — see [[Typed Simplicial Complex for RTM]].
+- **No assurance triangle closure.** v0.1 does not check that an artifact, a requirement, and a guidance vertex form a closed triangle with the required attestations on each face. Triangle closure is part of the deferred topological framework — see [[Topological Framework Future Work]].
 - **No V−F invariant computation.** v0.1 does not compute the vertex-minus-face topological invariant. That audit lands with the deferred framework.
 - **No adequacy/sufficiency judgment.** v0.1 records `rtm:AdequacyAttestation` and `rtm:SufficiencyAttestation` when present, but bidirectional analysis does not surface adequacy or sufficiency findings; those are guidance-mediated gap codes (`G3`–`G9`) and require the deferred audit.
 - **No recursive guidance completeness.** v0.1 does not check whether the guidance itself is fit-for-purpose. The recursive completeness check requires the registry and is deferred.
@@ -149,7 +149,7 @@ Adopters who later choose to commit to the topological framework can do so incre
 ## See also
 
 - [[Design Spec]] §4.1 (normative definitions), §9.A.5 (acceptance criteria X1–X3, X8), §4.10 (deferred topological framework)
-- [[Typed Simplicial Complex for RTM]]
+- [[Topological Framework Future Work]]
 - [[Certification Predicate]]
 - [[Gap Taxonomy]]
 - [[Quantitative Outcomes]]

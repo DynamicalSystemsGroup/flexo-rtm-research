@@ -9,7 +9,7 @@ A gap is a structural or attestation-level deficiency that a deterministic SPARQ
 
 Two crosscutting properties hold for every gap code:
 
-- **Scope-relativity.** All gap codes are evaluated against the graph subset selected by the active [[Scope]] policy. The same triple may be in scope for one cert run and out of scope for another, so the same data can produce different gap enumerations under different scopes. Scope is itself a deterministic input recorded in the transcript; a gap enumeration is reproducible given the scope and the data snapshot.
+- **Scope-relativity.** All gap codes are evaluated against the graph subset selected by the active [[Analysis Layer Scope Algebra]] policy. The same triple may be in scope for one cert run and out of scope for another, so the same data can produce different gap enumerations under different scopes. Scope is itself a deterministic input recorded in the transcript; a gap enumeration is reproducible given the scope and the data snapshot.
 - **Profile-gating.** Several gap codes only surface when a specific composable profile is active (see [[Attestation Infrastructure in v0.1]]). Adopters compose profiles as their workflow matures; gap detection rigor scales with profile selection.
 
 ## v0.1 ship list: T1–T8
@@ -167,7 +167,7 @@ The G-codes are tracked in the codebase enumeration alongside the T-codes so dow
 
 ## Scope-relativity recap
 
-Every gap code above is evaluated against the graph subset chosen by the active [[Scope]] policy. The audit report records the scope IRI and scope hash alongside the gap enumeration. Two consequences follow: (1) a triple may produce a gap under one scope and no gap under another — different cert runs ask different questions; (2) reproducing a gap enumeration requires reproducing the scope, the data snapshot, and the active profiles. All three are recorded in the transcript per [[Design Spec]] §4.8.
+Every gap code above is evaluated against the graph subset chosen by the active [[Analysis Layer Scope Algebra]] policy. The audit report records the scope IRI and scope hash alongside the gap enumeration. Two consequences follow: (1) a triple may produce a gap under one scope and no gap under another — different cert runs ask different questions; (2) reproducing a gap enumeration requires reproducing the scope, the data snapshot, and the active profiles. All three are recorded in the transcript per [[Design Spec]] §4.8.
 
 ## Where each code lives in the spec
 

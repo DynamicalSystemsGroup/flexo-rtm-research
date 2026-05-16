@@ -164,7 +164,7 @@ The above is valid v0.1 RDF, will round-trip through the storage layer, and will
 
 - [[Design Spec]] §4.1 (traditional bidirectional traceability; v0.1 primary), §4.2 (vocabulary carried in v0.1), §4.3 (attestation infrastructure), §4.10 (topological framework future work), §9.A.6 D1/D4 (deferred acceptance criteria), §11 D12/D13 (direct-property edges and derived-view simplicial complex).
 - [[Topological Framework Future Work]] — deferral discussion, registry concept, recursion challenge, open questions.
-- [[Typed Simplicial Complex for RTM]] — companion page on the simplicial-complex framing.
+- [[Topological Framework Future Work]] — companion page on the simplicial-complex framing.
 - [[Certification Predicate]] — the predicate the closed-face audit will compute.
 - [[Gap Taxonomy]] — T1–T8 (v0.1) versus G3–G9 (future framework) gap codes.
 - [[GSN Integration]] — adequacy/sufficiency as Solution + Justification mapping.
