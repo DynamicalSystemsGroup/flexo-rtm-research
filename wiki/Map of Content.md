@@ -63,11 +63,25 @@ Two distinct categories of pages live here. **`flexo-rtm`'s own roadmap items** 
 - [[Profile Mechanism]] — composable SHACL contracts, orthogonal to scope.
 - [[GSN Integration]] — Solution + Justification pattern for adequacy and sufficiency claims.
 
-## 7. Adapter Contracts
+## 7. Interface Contracts (normative — cross-linked from Design Spec §6)
+
+These are the **normative companion files** for the [[Design Spec]] §6 Acceptance Criteria. Each one specifies a boundary `flexo-rtm` interfaces with in precise, testable terms.
+
+- [[OSLC Roundtrip Acceptance]] — enumerated OSLC-RM 2.1 + OSLC-QM 2.1 core class mapping, link-type table, carry-through registry schema; cross-linked from §6.2 (O1–O7).
+- [[Identity Adapter Contract]] — adapter input/output schema, reference adapter specs (GitHub, OIDC, GitHub Actions OIDC), SHACL projection shape, refresh-policy semantics; cross-linked from §6.3 (I1–I8).
+- [[Flexo REST Binding]] — Flexo MMS Layer 1 endpoints consumed by the oracle, named-graph IRI scheme, transaction semantics, branch + merge policy; cross-linked from §6.1 (F1–F7).
+- [[SysMLv2 Ingestion Contract]] — accepted serializations, conformance profile, mapping rules to `rtm:`, element-identity stability; cross-linked from §3 and §6.6.
+- [[External URI Rules]] — required-vs-optional per artifact type, URI format validation, audit-mode fetch behavior, reproducibility manifest format; cross-linked from §6.4 (U1–U6).
+- [[Signed Envelope Shapes]] — SHACL shapes for VC-DI / DSSE / cosign / Rekor verification, cryptosuite registry, dependency posture; cross-linked from §6.5 (S1–S5).
+- [[Parsimony Manifest]] — exact terms extracted from each external vocabulary, `manifest.yaml` schema, ≤ 2000-triple budget rules; cross-linked from §6.6 X6.
+
+## 7a. Adapter Contracts (background / rationale)
+
+Background pages that motivate the normative contracts in §7. These predate the consolidated contract pages and contain useful rationale.
 
 - [[Lossless Roundtrip Definition]] — Layer A (RDFC-1.0 canonical equivalence) + Layer C (vendor carry-through).
 - [[Vendor Extension Carry-Through]] — source-preserving per-resource named graphs that survive a round trip.
-- [[OSLC RM Adapter Contract]] — full RM mapping table, SHACL profile, fixtures.
+- [[OSLC RM Adapter Contract]] — full RM mapping table, SHACL profile, fixtures (predecessor of [[OSLC Roundtrip Acceptance]]).
 - [[OSLC QM Adapter Contract]] — QM test-artifact mapping, verdict vocabulary, the QM-RM bridge.
 
 ## 8. Reproducibility
@@ -78,7 +92,7 @@ Two distinct categories of pages live here. **`flexo-rtm`'s own roadmap items** 
 
 ## 9. Decision Log
 
-The Decision Log holds 33 ADRs (ADR-001 through ADR-032, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata; revised to optional + methodology-neutral) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment; [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] introduces the four-state attestation status vocabulary; [[ADR-032 Methodology Agnosticism as Foundational Axiom]] names methodology agnosticism as a foundational design axiom and clarifies that the topological framework is a related research line with philosophical kinship, not `flexo-rtm`'s planned destination.
+The Decision Log holds 34 ADRs (ADR-001 through ADR-033, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §9 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata; revised to optional + methodology-neutral) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment; [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] introduces the four-state attestation status vocabulary; [[ADR-032 Methodology Agnosticism as Foundational Axiom]] names methodology agnosticism as a foundational design axiom and clarifies that the topological framework is a related research line, not `flexo-rtm`'s destination; [[ADR-033 Generalized ASOT Principle for All Identified Things]] unifies the ASOT pattern across persons, organizations, code, files, datasets, execution environments, activities, scopes, policies, keys, and signed envelopes into a single foundational axiom.
 
 ## 10. Meta
 
@@ -86,6 +100,7 @@ The Decision Log holds 33 ADRs (ADR-001 through ADR-032, plus ADR-003a) plus an 
 
 ## Reading paths
 
-- **"I want to understand the thesis."** [[Mission and Thesis]] → [[Verifiable Self-Certification]] → [[Traditional Forward and Backward Analysis]] → [[Topological Framework Future Work]].
-- **"I want to evaluate the design decisions."** [[Design Spec]] (especially §9.A and §14), then scan ADR-001 through ADR-025 in sequence from the sidebar.
-- **"I want to understand a specific boundary."** Pick from the v0.1 Certification Model section above; each page cross-links to the relevant `[[Design Spec]]` §9.A acceptance criteria.
+- **"I want to understand the thesis."** [[Mission and Thesis]] → [[Verifiable Self-Certification]] → [[Traditional Forward and Backward Analysis]].
+- **"I want to evaluate the design decisions."** [[Design Spec]] (especially §6 Acceptance Criteria and §9 Locked Decisions Log), then scan the relevant ADRs from the sidebar.
+- **"I need the precise interface contract for boundary X."** Go directly to §7 above ([[OSLC Roundtrip Acceptance]], [[Identity Adapter Contract]], [[Flexo REST Binding]], [[SysMLv2 Ingestion Contract]], [[External URI Rules]], [[Signed Envelope Shapes]], [[Parsimony Manifest]]). These are normative.
+- **"I want to understand a specific v0.1 capability."** Pick from the v0.1 Certification Model section above; each page cross-links to the relevant `[[Design Spec]]` §6 acceptance criteria.

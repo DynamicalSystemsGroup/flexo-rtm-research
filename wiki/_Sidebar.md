@@ -61,7 +61,17 @@
 - [[Profile Mechanism]]
 - [[GSN Integration]]
 
-### Adapter Contracts
+### Interface Contracts (normative)
+
+- [[OSLC Roundtrip Acceptance]]
+- [[Identity Adapter Contract]]
+- [[Flexo REST Binding]]
+- [[SysMLv2 Ingestion Contract]]
+- [[External URI Rules]]
+- [[Signed Envelope Shapes]]
+- [[Parsimony Manifest]]
+
+### Adapter Contracts (background)
 
 - [[Lossless Roundtrip Definition]]
 - [[Vendor Extension Carry-Through]]
@@ -110,6 +120,7 @@
 - [[ADR-030 Polycentric ASOT Authority Model]]
 - [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]
 - [[ADR-032 Methodology Agnosticism as Foundational Axiom]]
+- [[ADR-033 Generalized ASOT Principle for All Identified Things]]
 
 ### Meta
 
