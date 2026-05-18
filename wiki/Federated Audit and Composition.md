@@ -70,7 +70,7 @@ These are the same shapes of judgment v0.1 ships at the evidence level, lifted t
 
 - "Every requirement in the composed model has at least one constituent scope that traces evidence to it."
 - "Every safety-critical aspect declared on the composed model is covered by at least one constituent scope that attests that aspect."
-- "Every constituent scope is at `rtm:stage/development` or later" (see [[Engineering Lifecycle Stages]] for the lifecycle vocabulary this composes with).
+- **If the composing program uses lifecycle stages** (an adopter choice — `rtm:lifecycleStage` is optional, methodology-neutral metadata per [[Engineering Lifecycle Stages]] and the revised [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]), the composition criterion may reference them — e.g., for INCOSE / ISO 15288 adopters, "every constituent scope at `rtm:stage/development` or later"; for DO-178C adopters, "every constituent scope at DAL B or higher"; for NASA adopters, "every constituent scope at Phase C or later." Composing programs not using a lifecycle vocabulary simply do not write criteria of this shape — the composition machinery does not require it.
 
 **Composition-sufficiency criteria** can encode rules like:
 
@@ -211,7 +211,8 @@ When the topological framework's recursive completeness check lands ([[Topologic
 - [[External URI References]] — the foundation reproducibility audits exercise.
 - [[Signed Envelopes and Established Standards]] — the signature substrate audit attestations carry.
 - [[Analysis Layer Scope Algebra]] — `rtm:Scope` and the composition operators.
-- [[Engineering Lifecycle Stages]] — the lifecycle vocabulary composition criteria compose with.
+- [[Engineering Lifecycle Stages]] — the optional lifecycle vocabulary composition criteria may compose with, when both composing parties use one; methodology-neutral, INCOSE / ISO 15288 as one example.
+- [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] — the four-state attestation status vocabulary that handles regression in cross-scope compositions methodology-neutrally.
 - [[Topological Framework Future Work]] — the deferred recursive completeness check this is forward-compatible with.
 - [[Design Spec]] §4.9 (Reproducibility chain), §9.A.5 X6/X7/X8 (cross-cutting acceptance criteria).
 - [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]] — locked decision behind this page.

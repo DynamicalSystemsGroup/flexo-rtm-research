@@ -42,9 +42,9 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 
 ## 4. Roadmap and future work
 
-Two distinct timelines apply here. **Engineering lifecycle stages** are a v0.2 roadmap item — vocabulary is settled and ships in v0.1 for forward-compat; the full state-machine mechanism (gate relaxation, lifecycle-aware regression) lands in v0.2. The **topological framework**, by contrast, remains in research phase — its timeline depends on community-curated registry governance and open invariant research.
+Two distinct timelines apply here. **Engineering lifecycle stages** are **optional organizational-convenience metadata** — methodology-neutral with INCOSE / ISO 15288 as one example among many (DO-178C, NASA, Agile, ISO 9001, MIL-STD-498, custom phasing). The framework ships the vocabulary substrate but no privileged state machine; regression handling moves to the attestation level via [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] (v0.2 ships the deprecation cascade detection). The **topological framework**, by contrast, remains in research phase — its timeline depends on community-curated registry governance and open invariant research.
 
-- [[Engineering Lifecycle Stages]] — `rtm:lifecycleStage` and INCOSE-aligned stage IRIs; vocabulary v0.1, full mechanism v0.2.
+- [[Engineering Lifecycle Stages]] — optional `rtm:lifecycleStage` scope metadata; methodology-neutral with INCOSE / ISO 15288 as one example; no scope-level state machine in core.
 - [[Topological Framework Future Work]] — deferred (research-phase) vision, recursion structure, registry concept, open questions.
 - [[Vertices Edges Faces]] — future-framework type catalog (V, E, F) that generalizes traditional traceability.
 
@@ -78,7 +78,7 @@ Two distinct timelines apply here. **Engineering lifecycle stages** are a v0.2 r
 
 ## 9. Decision Log
 
-The Decision Log holds 31 ADRs (ADR-001 through ADR-030, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment that underwrites the scope algebra.
+The Decision Log holds 32 ADRs (ADR-001 through ADR-031, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata; revised to optional + methodology-neutral) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment that underwrites the scope algebra; [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] introduces the four-state attestation status vocabulary (`rtm:status/{pass,fail,deferred,deprecated}`) and locks regression handling at the attestation level rather than via a scope-level state machine — the methodology-neutrality refactor that the [[Engineering Lifecycle Stages]] and [[INCOSE V2 Review]] pages reflect.
 
 ## 10. Meta
 

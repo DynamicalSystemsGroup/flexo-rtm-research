@@ -12,9 +12,9 @@ Two crosscutting properties hold for every gap code:
 - **Scope-relativity.** All gap codes are evaluated against the graph subset selected by the active [[Analysis Layer Scope Algebra]] policy. The same triple may be in scope for one cert run and out of scope for another, so the same data can produce different gap enumerations under different scopes. Scope is itself a deterministic input recorded in the transcript; a gap enumeration is reproducible given the scope and the data snapshot.
 - **Profile-gating.** Several gap codes only surface when a specific composable profile is active (see [[Attestation Infrastructure in v0.1]]). Adopters compose profiles as their workflow matures; gap detection rigor scales with profile selection.
 
-## v0.1 ship list: T1–T8
+## v0.1 ship list: T1–T10
 
-The eight `T`-prefixed codes are what v0.1 reports. They cover traditional forward/backward analysis ($T1$, $T2$) and per-claim attestation gaps under the named-approver discipline ($T3$–$T8$). Normative source: [[Design Spec]] §4.7.
+The ten `T`-prefixed codes are what v0.1 reports. They cover traditional forward/backward analysis ($T1$, $T2$), per-claim attestation gaps under the named-approver discipline ($T3$–$T8$), and per-attestation status gaps under the four-state attestation status vocabulary ($T9$, $T10$ — see [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]). Normative source: [[Design Spec]] §4.7.
 
 ### T1.orphan-requirement — forward gap
 
@@ -112,14 +112,14 @@ SELECT ?art ?req WHERE {
 
 ### T6.failed-attestation
 
-**Definition.** Any `rtm:Attestation` (of any subclass) carrying `earl:result earl:failed`.
+**Definition.** Any `rtm:Attestation` (of any subclass) with `rtm:attestationStatus rtm:status/fail`. The `earl:result earl:failed` predicate remains SKOS-aligned via `skos:exactMatch` and is still accepted as an equivalent assertion for EARL-tooling interop; the canonical vocabulary in `flexo-rtm` is the four-state status property (see [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]).
 
 **Detection (SPARQL).**
 
 ```sparql
 SELECT ?att WHERE {
   ?att a rtm:Attestation ;
-       earl:result earl:failed .
+       rtm:attestationStatus rtm:status/fail .
 }
 ```
 
@@ -147,9 +147,46 @@ SELECT ?att WHERE {
 
 **Resolution.** Add per-aspect attestations. The specific subclass(es) needed depend on which profile triggered the gap — it may be `rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation`, or some combination — each tagged with `rtm:hasAspect <aspect-iri>`.
 
+### T9.deprecated-attestation
+
+**Definition.** An `rtm:Attestation` (of any subclass) with `rtm:attestationStatus rtm:status/deprecated` and no replacement attestation in scope. The attestation existed and was valid; upstream changes have invalidated it; a new attestation is required. This is the methodology-neutral regression-handling mechanism locked in [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] — it replaces the earlier scope-level lifecycle state machine.
+
+**Detection (SPARQL).**
+
+```sparql
+SELECT ?att ?cause WHERE {
+  ?att a rtm:Attestation ;
+       rtm:attestationStatus rtm:status/deprecated .
+  OPTIONAL { ?att prov:wasInvalidatedBy ?cause . }
+}
+```
+
+The audit-report rendering enumerates each deprecated attestation with its `prov:wasInvalidatedBy` cause so the team knows what to re-attest. Under the strict profile `--profile=deprecated-requires-provenance`, the absence of `prov:wasInvalidatedBy` on a deprecated attestation is a separate gap (the provenance is required, not merely recommended); under default profile, the provenance is recommended and its absence is informational.
+
+**Profile-gating.** Always reported. Under `--profile=accept-deprecated` the gap is informational; otherwise it is cert-blocking (a deprecated attestation needs replacement before certification passes).
+
+**Resolution.** Write a new attestation (with appropriate named approver) that re-establishes the claim under the current state. The new attestation replaces the deprecated one for cert purposes; the deprecated attestation remains in the audit graph as a record of the prior state. The v0.2 **deprecation cascade detection** ([[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]) automates marking downstream attestations as deprecated when upstream changes invalidate them; v0.1 surfaces existing deprecated attestations and relies on the engineer (or external tooling) to set the status.
+
+### T10.deferred-attestation
+
+**Definition.** An `rtm:Attestation` (of any subclass) with `rtm:attestationStatus rtm:status/deferred`. The engineer surfaced the judgment moment but has not yet resolved it. Subsumes the prior `rtm:DeferredJudgment` concept — which becomes a special case of $T10$ — per [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]].
+
+**Detection (SPARQL).**
+
+```sparql
+SELECT ?att WHERE {
+  ?att a rtm:Attestation ;
+       rtm:attestationStatus rtm:status/deferred .
+}
+```
+
+**Profile-gating.** Always reported as informational by default. Under `--profile=no-deferred`, $T10$ becomes cert-blocking — appropriate for production cert runs where every attestation must be resolved.
+
+**Resolution.** Resolve the deferred judgment by transitioning the attestation to `rtm:status/pass` or `rtm:status/fail` with appropriate evidence and provenance. The deferred state is intentional surfacing of the judgment moment, not a defect; the gap code exists so the audit report can enumerate pending judgments cleanly.
+
 ## Why $T3$–$T5$ and $T8$ are profile-gated
 
-A v0.1 adopter chooses the level of attestation discipline appropriate to the program's maturity. With no optional profiles active, the audit reports $T1$, $T2$, and $T6$ — traditional bidirectional analysis plus failed-attestation surfacing. As programs mature, they add `attested-satisfies`, then `attested-adequacy`, then `attested-sufficiency`, and finally `aspect-coverage`; each profile activates a new gap code with a deterministic SHACL/SPARQL check. Tightening the audit does not require rewriting the data, only switching on the next profile. See [[Attestation Infrastructure in v0.1]] for the profile catalogue and [[Operational Layer UX Discipline]] for how adoption is sequenced.
+A v0.1 adopter chooses the level of attestation discipline appropriate to the program's maturity. With no optional profiles active, the audit reports $T1$, $T2$, $T6$, $T9$, and $T10$ (informational) — traditional bidirectional analysis plus failed-, deprecated-, and deferred-attestation surfacing. As programs mature, they add `attested-satisfies`, then `attested-adequacy`, then `attested-sufficiency`, and finally `aspect-coverage`; each profile activates a new gap code with a deterministic SHACL/SPARQL check. Programs running production certifications add `--profile=no-deferred` to make deferred attestations cert-blocking. Tightening the audit does not require rewriting the data, only switching on the next profile. See [[Attestation Infrastructure in v0.1]] for the profile catalogue and [[Operational Layer UX Discipline]] for how adoption is sequenced.
 
 ## G3–G9: future-framework gap codes
 
@@ -181,11 +218,14 @@ Every gap code above is evaluated against the graph subset chosen by the active 
 | $T6$ | §4.7, §4.3 | always on |
 | $T7$ | §4.7, §4.3 | structurally absent — SHACL rejects at write |
 | $T8$ | §4.7, §4.3 | `aspect-coverage` |
+| $T9$ | §4.7, §4.3, ADR-031 | always on (cert-blocking by default; informational under `accept-deprecated`) |
+| $T10$ | §4.7, §4.3, ADR-031 | always on as informational; cert-blocking under `no-deferred` |
 | $G3$–$G9$ | §4.7, §9.A.6 (D1, D2) | future framework only |
 
 ## Cross-links
 
-- [[Design Spec]] — §4.7 normative source for the gap taxonomy; §4.3 attestation subclasses that generate $T3$–$T8$; §9.A.6 (D1, D2) for the deferred capabilities that the G-codes depend on.
+- [[Design Spec]] — §4.7 normative source for the gap taxonomy; §4.3 attestation subclasses that generate $T3$–$T10$; §9.A.6 (D1, D2) for the deferred capabilities that the G-codes depend on.
+- [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] — locked decision introducing the four-state attestation status vocabulary that generates $T9$ and $T10$ and refines $T6$.
 - [[Certification Predicate]] — how gap enumeration composes into the PASS/FAIL grade.
 - [[Aspect Coverage with Adequacy and Sufficiency]] — the per-aspect rollup that $T8$ checks.
 - [[Operational Layer UX Discipline]] — how the audit report surfaces gaps to practitioners.

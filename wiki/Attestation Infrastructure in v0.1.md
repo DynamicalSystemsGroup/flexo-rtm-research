@@ -36,11 +36,41 @@ All three subclasses inherit:
 
 - `rtm:approvedBy` (IRI) — **REQUIRED**; points to a `foaf:Person` or `org:Membership`. This is the SHACL-enforced field.
 - `rtm:attests` — points to the asserted triple (via RDF-star) or to the reified (artifact, requirement) pair.
-- `earl:result` — one of `earl:passed`, `earl:failed`, `earl:cantTell`, `earl:inapplicable`.
+- `rtm:attestationStatus` — **REQUIRED**; one of `rtm:status/pass`, `rtm:status/fail`, `rtm:status/deferred`, `rtm:status/deprecated`. See the next section.
+- `earl:result` (optional, retained for EARL-tooling compatibility) — SKOS-aligned to the canonical `rtm:attestationStatus`; tools may read either property. Adopters using EARL infrastructure can populate both.
 - `rtm:hasAspect` (optional) — aspect tag for per-aspect attestation; used by the `aspect-coverage` profile.
 - `prov:wasGeneratedBy`, `prov:atTime`, `prov:wasAssociatedWith` — full PROV provenance.
+- `prov:wasInvalidatedBy` (optional; required under strict profile when `rtm:attestationStatus = rtm:status/deprecated`) — points to the activity or commit that invalidated the attestation.
 
-The `earl:result` channel is what makes a "failed" attestation expressible without losing the named-approver discipline: a `T6.failed-attestation` (see [[Gap Taxonomy]]) is a *recorded* judgment, not a missing one. The attestation exists, has an approver, and asserts `earl:failed`. That is structurally different from $T3$/$T4$/$T5$ which surface as "no attestation present at all (for this claim type, under the active profile)."
+### Attestation status — the four-state vocabulary (§ADR-031)
+
+Every `rtm:Attestation` carries one of four status values. The vocabulary is locked in [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] and replaces the earlier reliance on `earl:result` alone:
+
+| Status IRI | Meaning | EARL analogue |
+|---|---|---|
+| `rtm:status/pass` | Attestation is valid and the claim holds. | `earl:passed` (via `skos:exactMatch`) |
+| `rtm:status/fail` | Attestation is valid and the claim does not hold. | `earl:failed` (via `skos:exactMatch`) |
+| `rtm:status/deferred` | Engineer surfaced the judgment moment but has not yet resolved it. Subsumes the prior `rtm:DeferredJudgment` concept. | none |
+| `rtm:status/deprecated` | Attestation existed and was valid, but is now invalidated by upstream changes; a new attestation is required. | none |
+
+The `fail` status preserves what the earlier `earl:result earl:failed` channel provided: a recorded "this claim does not hold," with full named-approver discipline. The attestation exists, has an approver, and asserts failure. That is structurally different from $T3$/$T4$/$T5$ which surface as "no attestation present at all (for this claim type, under the active profile)."
+
+The `deprecated` status is the **methodology-neutral regression-handling mechanism** introduced in [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]. When upstream changes invalidate a downstream claim, the affected attestation is marked deprecated with `prov:wasInvalidatedBy` recording the cause. The cert artifact surfaces deprecated attestations as **T9** gaps so the team knows what to re-attest. This mechanism replaced an earlier scope-level lifecycle state machine (see the reframed [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]); it is local to the attestation and does not require any privileged lifecycle vocabulary.
+
+A second SHACL shape enforces the status field:
+
+```turtle
+rtm:AttestationStatusShape a sh:NodeShape ;
+    sh:targetClass rtm:Attestation ;
+    sh:property [
+        sh:path rtm:attestationStatus ;
+        sh:minCount 1 ;
+        sh:in ( rtm:status/pass rtm:status/fail rtm:status/deferred rtm:status/deprecated ) ;
+        sh:message "Every attestation requires one of the four status values"
+    ] .
+```
+
+Combined with the named-approver shape (next section), the two shapes give every `rtm:Attestation` the same structural discipline: an accountable human AND a determinate status (or `deferred` if the human is honest that they have not yet resolved the judgment).
 
 ## Schema-enforced named-approver requirement (§9.A.3 **I1**)
 

@@ -108,6 +108,7 @@
 - [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]]
 - [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]
 - [[ADR-030 Polycentric ASOT Authority Model]]
+- [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]
 
 ### Meta
 
