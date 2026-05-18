@@ -49,9 +49,10 @@ These terms appear in the `rtm:` vocabulary (`rtm:AssuranceFace`, `rtm:Assurance
 
 ## Related wiki pages
 
-- [[Mission and Thesis]] — the load-bearing propositions that quote the paper
-- [[Human-AI Accountability]] — the paper restated for RTM context
-- [[Topological Framework Future Work]] — the deferral analysis with registry / recursion / V−F discussion
+- [[Mission and Thesis]] — the load-bearing propositions that cite the paper
+- [[Human-AI Accountability]] — the paper as one citation in a settled-engineering frame; the v0.1 SHACL mechanism stands on established practice (W3C VC-DI / SLSA / SHACL / NIST SP 800-63) and does not depend on the topological framework
+- [[Topological Framework Future Work]] — the deferral analysis with registry / recursion / V−F discussion (where the paper IS load-bearing)
 - [[Vertices Edges Faces]] — the future-framework type catalog
+- [[INCOSE V2 Review]] — INCOSE handbook SE content `flexo-rtm` grounds in; the INCOSE-Extraction-V2-Experimental digitization
 - [[ADR-020 Vocabulary Alignment with Zargham 2026]] — the locked-decision ADR
 - [[Design Spec]] §4.10 (Future work: Topological framework)

@@ -2,7 +2,7 @@
 
 # Human-AI Accountability
 
-> How `flexo-rtm` integrates LLM-assisted authoring with structurally enforced human accountability. Applies Zargham (2026)'s typed-simplicial-complex framing of "named human approver as a schema constraint" to the v0.1 attestation infrastructure described in [[Design Spec]] §4.3, and grounds the AI's operational role in the judgment-surfacing UX described in [[Operational Layer UX Discipline]].
+> How `flexo-rtm` integrates LLM-assisted authoring with structurally enforced human accountability. The mechanism — named-approver IRI required as a schema constraint at write time — is established engineering practice grounded in W3C Verifiable Credentials Data Integrity, SLSA in-toto attestations, git GPG/SSH commit signing, and the broader security tradition recorded in NIST SP 800-63 and W3C SHACL. v0.1's contribution is composing that practice into a working RDF stack for SysMLv2 requirements traceability; see [[Attestation Infrastructure in v0.1]] for the normative specification and [[Operational Layer UX Discipline]] for the judgment-surfacing UX the AI participates in. Zargham (2026) provides one topological articulation of why structural accountability matters at the framework level; the v0.1 mechanism itself does not depend on the topological framework.
 
 ## Why this matters
 
@@ -12,23 +12,30 @@ The problem is not that AI is being used. The problem is that **existing institu
 
 ## The accountability gap
 
-Zargham (2026), "Formalizing Document Assurance: A Topological Framework for Verification, Validation, and Human Accountability," names the gap precisely. Two observations are load-bearing.
+Three observations frame the gap that established SE practice + AI-assisted authoring together produce. None of the three is novel; what is new is the requirement that they hold together structurally.
 
-**Verification can be automated; validation cannot.** Verification asks "are we building the product right?" — a structural question: required sections present, types conform, references resolve. A deterministic script answers it. Validation asks "are we building the right product?" — is the model adequate to the kind of claim being made? is the evidence sufficient to support it? Those are qualitative judgments — the kind cognitive systems engineering (Hollnagel & Woods 2005; Boy et al. 2015) identifies as inherently human. Automation should support, not replace, this judgment.
+**Verification can be automated; validation cannot.** Verification asks "are we building the product right?" — a structural question: required sections present, types conform, references resolve. A deterministic script answers it. Validation asks "are we building the right product?" — is the model adequate to the kind of claim being made? is the evidence sufficient to support it? Those are qualitative judgments — the kind cognitive systems engineering (Hollnagel & Woods 2005; Boy et al. 2015) identifies as inherently human. Automation should support, not replace, this judgment. The INCOSE Systems Engineering Handbook and ISO/IEC/IEEE 15288 codify the V&V distinction; the cognitive-systems-engineering literature explains why validation resists automation.
 
-**LLMs cannot bear responsibility.** Zargham: "When AI assists in generating content, who is responsible for judging its fitness? The answer cannot be 'the AI' because language models cannot bear accountability. There must be a named human responsible for review, evaluation, and approval." Accountability presupposes a subject who can be held to account, and an LLM is not that subject. The model vendor is not the engineer who approved the claim; the operator who ran the prompt is not necessarily the credentialed authority for the aspect attested.
+**LLMs cannot bear responsibility.** Accountability presupposes a subject who can be held to account, and an LLM is not that subject. The model vendor is not the engineer who approved the claim; the operator who ran the prompt is not necessarily the credentialed authority for the aspect attested. This point is articulated across the AI-ethics literature — Floridi & Cowls (2019), UNESCO (2021), the UN High-Level Advisory Body on AI (2024) — and named explicitly in Zargham (2026): "There must be a named human responsible for review, evaluation, and approval."
 
-**Existing frameworks recommend accountability rather than structurally enforce it.** Floridi & Cowls (2019), UNESCO's 2021 Recommendation on the Ethics of Artificial Intelligence (adopted by all 194 member states), and the UN High-Level Advisory Body on AI's 2024 governance framework all call for "accountability anchored in human responsibility." But these are principles, not schemas. What is missing is a mechanism that **requires** accountability attribution at the level of individual claims, **enforces** human review, and **audits** for gaps — not as a policy norm honored by disciplined teams, but as a precondition for the data existing at all.
+**Existing frameworks recommend accountability rather than structurally enforce it.** Floridi & Cowls (2019), UNESCO's 2021 Recommendation on the Ethics of Artificial Intelligence (adopted by all 194 member states), and the UN High-Level Advisory Body on AI's 2024 governance framework all call for "accountability anchored in human responsibility." But these are principles, not schemas. The same is true of the SE handbooks (INCOSE, ISO 15288): they recommend named-human review at named gates without making the absence of a name a write-time rejection. What is missing in the recommendations is a mechanism that **requires** accountability attribution at the level of individual claims, **enforces** human review, and **audits** for gaps — not as a policy norm honored by disciplined teams, but as a precondition for the data existing at all. That mechanism is settled engineering — see the next section.
 
-## Zargham (2026)'s contribution: structural enforcement
+## Structural enforcement: making accountability a schema constraint
 
-Zargham's framework closes the gap by lifting accountability from a recommendation to a **schema constraint**. In the typed simplicial complex formalism documents are vertices, verification and validation are edges, and an assurance triangle (a 2-simplex) closes when verification, validation, and the coupling between specification and guidance are all present. The validation edge is typed such that **it cannot exist without a named human approver field**. Schema validation rejects an unaccountable claim before it enters the graph.
+Lifting accountability from a recommendation to a **schema constraint** is settled engineering, not a 2026 innovation. The pattern shows up across the security, identity, and supply-chain stack `flexo-rtm` composes:
 
-Ghrist's "The Forge" methodology (Ghrist 2025, *The Geometry of Heaven & Hell*, Appendix C) demonstrates how disciplined practice can achieve AI-assisted scholarly writing with explicit human accountability — "every sentence in this book passed through my judgment; every connection earned my conviction; every claim bears my responsibility." Ghrist's work is procedural; Zargham's contribution is to make accountability **enforceable** rather than aspirational — the schema rejects what the procedure would have refused.
+- **W3C Verifiable Credentials Data Integrity 2.0** — every credential has an issuer; cryptographic proofs are bound to that named identity. Unsigned credentials are not credentials.
+- **SLSA in-toto attestations** — every attestation has a named signer (a producer identity); the supply-chain frameworks (SLSA, OpenSSF Scorecard, Sigstore Rekor) treat unsigned predicates as non-attestations.
+- **Sigstore + Fulcio** — keyless signing binds an OIDC identity to every signature event; the signature does not exist without a named human (or named workload identity) at attestation time.
+- **git GPG/SSH commit signing** — every commit can be signed by a named author; integrators routinely require signatures on protected branches via established practice.
+- **NIST SP 800-63 (Digital Identity Guidelines)** — codifies the named-identity discipline in security: every authoritative act has a named, authenticated actor.
+- **W3C SHACL** — the `sh:minCount 1` + `sh:nodeKind sh:IRI` constraint pattern is the canonical way to make a property required-and-IRI-typed at write time.
+
+What `flexo-rtm` does is compose this established pattern into RDF for SysMLv2 requirements traceability: the `rtm:approvedBy` property on `rtm:Attestation` is required (`sh:minCount 1`), IRI-typed (`sh:nodeKind sh:IRI`), bound to a signed git commit, and authorized via a thin projection of the institutional identity provider. The discipline is not novel; the composition into the RTM use case is what v0.1 contributes. Ghrist's "The Forge" methodology (Ghrist 2025, *The Geometry of Heaven & Hell*, Appendix C) demonstrates procedural accountability in AI-assisted scholarly writing — "every sentence in this book passed through my judgment; every connection earned my conviction; every claim bears my responsibility." `flexo-rtm` makes the same accountability **schema-enforced** rather than procedural — the SHACL gate rejects what the procedure would have refused. Zargham (2026) articulates why this structural move matters at the framework level via a topological framing (see [[Topological Framework Future Work]]); the v0.1 SHACL mechanism stands on the established practice listed above and does not require the topological framework.
 
 ## Translation to `flexo-rtm`
 
-`flexo-rtm` v0.1 carries Zargham's structural move into a working RDF/SHACL stack. The mechanism is the named-approver field on `rtm:Attestation`, gated by SHACL at write time, bound to a signed git commit, and authorized via the thin identity projection. See [[Attestation Infrastructure in v0.1]] for the normative specification.
+`flexo-rtm` v0.1 implements the established named-approver SHACL pattern for RTM attestations. The mechanism is the named-approver field on `rtm:Attestation`, gated by SHACL at write time, bound to a signed git commit, and authorized via the thin identity projection. See [[Attestation Infrastructure in v0.1]] for the normative specification.
 
 The core SHACL shape (from [[Design Spec]] §4.3):
 
@@ -87,11 +94,21 @@ Two things at once:
 
 ## Related work
 
+**Settled engineering practice `flexo-rtm`'s mechanism composes:**
+
+- **W3C Verifiable Credentials Data Integrity 2.0** — required issuer identity and cryptographic proof binding; the foundational pattern for named-attribution at write time.
+- **W3C SHACL** — `sh:minCount 1` + `sh:nodeKind sh:IRI` as the canonical schema-constraint pattern for required IRI-typed properties.
+- **SLSA + in-toto** — supply-chain attestations with required named signer; the broader "every claim has an accountable signer" discipline `flexo-rtm` joins.
+- **Sigstore (Fulcio + Rekor)** — keyless signing bound to OIDC identity; named-human-at-attestation-time enforced at the cryptographic layer.
+- **NIST SP 800-63** — Digital Identity Guidelines codifying named-identity discipline across authoritative acts.
+
+**Accountability literature `flexo-rtm`'s framing draws from:**
+
 - **Floridi & Cowls (2019)** — five principles for AI in society; explicability comprises intelligibility plus accountability. `flexo-rtm` operationalizes the accountability half through SHACL enforcement.
 - **UNESCO (2021), Recommendation on the Ethics of AI** — global standards for transparency, human oversight, and accountability. `flexo-rtm` is a concrete mechanism for the accountability principle in systems engineering.
 - **UN High-Level Advisory Body on AI (2024)** — "accountability anchored in human responsibility." The named-approver field is the anchor.
-- **Ghrist (2025), *The Geometry of Heaven & Hell*, Appendix C** — procedural accountability in AI-assisted scholarly writing. `flexo-rtm` adds structural enforcement.
-- **Zargham (2026)** — the topological framework whose accountability move v0.1 carries into RDF/SHACL. See [[INCOSE IS 2026 Paper]].
+- **Ghrist (2025), *The Geometry of Heaven & Hell*, Appendix C** — procedural accountability in AI-assisted scholarly writing. `flexo-rtm` adds structural enforcement to what Ghrist demonstrates procedurally.
+- **Zargham (2026)** — one topological articulation of why structural accountability matters at the framework level; see [[INCOSE IS 2026 Paper]] and [[Topological Framework Future Work]]. The v0.1 mechanism does not depend on the topological framework; the framework is future work.
 
 ## Limitations and open questions
 

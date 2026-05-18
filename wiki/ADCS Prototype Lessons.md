@@ -80,3 +80,9 @@ Going forward:
 - **Migration direction:** the prototype migrates to depend on `flexo-rtm`. It stops carrying its own copy of the framework half of the ontology; it imports `flexo-rtm` and adds the ADCS-specific profile on top. The live Flexo integration tests in the prototype become end-to-end smoke tests for the framework as well.
 
 This boundary is what lets `flexo-rtm` ship as a domain-general framework while keeping the prototype as a continuously-running demonstration that the framework actually works on a real engineering artifact.
+
+## Sibling internal-research items
+
+The ADCS prototype is one of two internal sibling packages whose prior art `flexo-rtm` directly inherits. See also:
+
+- [[Multi-Agent Discourse Graph Precedent]] — `multi-agent-dg` is the sibling DSG package demonstrating the patchwork-of-named-graphs substrate (multi-owner RDF graphs, declared sharing policies compiled to SPARQL, post-export boundary invariants) that the [[Federated Audit and Composition]] primitive rides on. Where ADCS-lifecycle-demo proves the framework on a single engineering problem, `multi-agent-dg` proves the federated machinery underneath the composition story.
