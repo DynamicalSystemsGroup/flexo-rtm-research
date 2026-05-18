@@ -53,19 +53,19 @@ Both repos start in user's org; transfer to OpenMBEE at MVP service milestone.
 
 ## 4. Certification model
 
-`flexo-rtm` v0.1's certification model is **traditional bidirectional traceability** (§4.1). The topological framework (Zargham 2026's typed simplicial complex framing applied to RTM) is **deferred to future work**, documented in `flexo-rtm-research/Topological Framework Future Work.md` along with the registry concept, recursion challenge, and open questions.
+`flexo-rtm` v0.1's certification model is **traditional bidirectional traceability** (§4.1) plus named-approver attestation infrastructure (§4.3). The topological framework (Zargham 2026's typed simplicial complex framing applied to RTM) is **a related research line, not `flexo-rtm`'s destination** (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]); §4.10 frames the relationship and points to `flexo-rtm-research/Topological Framework Future Work.md` for the research-line documentation (registry concept, recursion challenge, open questions).
 
-| Capability | v0.1 status | Future work |
+| Capability | v0.1 status | Where it lives |
 |---|---|---|
-| Traditional bidirectional traceability + coverage stats | **In scope** (primary surface) | — |
-| Attestation vocabulary with named-approver SHACL enforcement | **In scope** (independently valuable for accountability) | — |
-| Ontology vocabulary for Guidance / AdequacyCriteria / SufficiencyCriteria / Aspect | **In scope** (terms available; no audit gate runs over them) | — |
-| Assurance triangles as audit primitive | Deferred | Topological framework |
-| Topological invariants (V−F, etc.) | Deferred (further research; numerical check insufficient) | Topological framework |
-| Recursive completeness audit + registry of pre-approved types | Deferred (scope creep) | Topological framework |
-| Persistent homology / TDA | Deferred | Topological framework |
+| Traditional bidirectional traceability + coverage stats | **In scope** (primary surface) | §4.1 |
+| Attestation vocabulary with named-approver SHACL enforcement | **In scope** (independently valuable for accountability) | §4.3 |
+| Ontology vocabulary for Guidance / AdequacyCriteria / SufficiencyCriteria / Aspect | **In scope** (terms available; aligned with the topological research line as forward-compatible interop per [[ADR-020 Vocabulary Alignment with Zargham 2026]]) | §4.2 |
+| Assurance triangles as audit primitive | Not in `flexo-rtm` — research-line problem | topological research line (§4.10) |
+| Topological invariants (V−F, etc.) | Not in `flexo-rtm` — research-line problem (further research determined numerical check alone insufficient) | topological research line (§4.10) |
+| Recursive completeness audit + registry of pre-approved types | Not in `flexo-rtm` — research-line problem | topological research line (§4.10) |
+| Persistent homology / TDA | Not in `flexo-rtm` — research-line problem | topological research line (§4.10) |
 
-§4.1 specifies what v0.1 ships. §4.2 (Deferred) summarizes the topological framework and points to the detailed treatment in the research repo. The vocabulary that v0.1 carries (§4.2's ontology terms) is included so adopters can begin tagging adequacy/sufficiency criteria and recording named-approver attestations now, even though no topological audit runs against this data in v0.1.
+§4.1 specifies the v0.1 primary surface. §4.2 documents the vocabulary `flexo-rtm` carries that aligns with the topological research line as forward-compatible interop. The vocabulary is included so adopters can begin tagging adequacy/sufficiency criteria and recording named-approver attestations now; the data is then consumable by any downstream-analysis path the adopter chooses to run (topological or otherwise — SLSA, GSN, ARP4754A, in-house).
 
 ### 4.1 Traditional bidirectional traceability (v0.1 primary)
 
@@ -126,7 +126,7 @@ These vocabulary terms ship in the core ontology with associated SHACL shapes fo
 
 ### 4.3 Attestation infrastructure (named-approver accountability for three claim types)
 
-v0.1 ships structurally enforced named-approver accountability for three kinds of attestation. These are independent assertions — each has its own subject and named approver. They do NOT require the topological framework's assurance triangle closure or recursive completeness; that audit is deferred (§4.7).
+v0.1 ships structurally enforced named-approver accountability for three kinds of attestation. These are independent assertions — each has its own subject and named approver. They do NOT require the topological framework's assurance triangle closure or recursive completeness; those checks belong to the topological research line (§4.10), which is not `flexo-rtm`'s destination — they would operate as one possible downstream analysis on the attestation data if the research line matures.
 
 **Three attestation subclasses:**
 
@@ -802,11 +802,11 @@ This section enumerates the **testable acceptance criteria** for each constraint
 | X7 | **Federated reproducibility composes**: multiple verifying parties, each with non-overlapping permission subsets, can each reproduce their permitted fact-set; the union of their per-fact PASS results equals a global PASS over the union of their permission subsets. No single party needs universal access for the audit to be complete. | `tests/conformance/test_federated_reproducibility.py` |
 | X8 | **Structural completeness without dereferencing**: a verifier without fetch access to external URIs can still confirm structural completeness (every referenced URI is well-formed, registered in the reproducibility manifest, and consistent with the recorded SHACL profile) by reading the RDF alone. Dereferencing is required for re-execution; not required for structural validation. | `tests/conformance/test_structural_completeness.py` |
 
-### 9.A.6 Acceptance criteria for deferred capabilities (NOT in v0.1)
+### 9.A.6 Acceptance criteria for the topological research line (NOT `flexo-rtm` criteria)
 
-These criteria are documented for forward planning; they DO NOT gate v0.1 release.
+These criteria document what an applied audit would check **if the topological research line matures**. They are **not `flexo-rtm` criteria** and do NOT gate any v0.1 or later release of `flexo-rtm`. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the topological framework is a related research line — one possible downstream-analysis mode an adopter may choose to run on top of `flexo-rtm`'s data. Listed here for traceability so that, if an adopter (or the research line itself) builds a topological audit, its acceptance contract is documented in the same place as `flexo-rtm`'s v0.1 contract.
 
-| ID | Future criterion | Future test |
+| ID | Topology-line criterion | Reference test |
 |---|---|---|
 | D1 | Closed assurance triangle audit | `tests/future/test_triangle_closure.py` |
 | D2 | Recursive completeness check against registry | `tests/future/test_recursive_completeness.py` |
@@ -858,10 +858,10 @@ The acceptance criteria in §9.A.1–§9.A.5 are the v0.1 release gate. Implemen
   - Pre-commit hook + GitHub Actions verify GPG/SSH commit signatures against `rtm:approvedBy` key fingerprint
   - No custom crypto — composition of git native signing, W3C VC-DI, DSSE/in-toto, Sigstore, OCI image signatures
   - Closes the ADCS prototype's "signed envelopes deferred" gap
-- **Future-ready ontology vocabulary** for the deferred topological framework (no triangle-closure audit gate in v0.1)
+- **Forward-compatible vocabulary aligned with the topological research line** (no triangle-closure audit gate in `flexo-rtm` core; the audit, if built, lives in the research line per §4.10)
   - `rtm:Guidance`, `rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`
   - `rtm:Aspect` taxonomy (extensible)
-  - The attestation infrastructure listed above already uses these terms; v0.1 simply doesn't run the recursive completeness audit over them
+  - The attestation infrastructure listed above already uses these terms; the recursive completeness audit that would consume them is a research-line problem (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]), and the data is equally consumable by any other downstream-analysis path (SLSA, GSN, ARP4754A, in-house)
 - Ontology: core + alignment + profiles + shapes + parsimony extracts
 - Formal spec: all documents in §8
 - Conformance suite: SHACL + SPARQL + fixtures
@@ -870,12 +870,12 @@ The acceptance criteria in §9.A.1–§9.A.5 are the v0.1 release gate. Implemen
 - Scope as first-class RDF resource; composition algebra
 - Regression corpus: ADCS prototype graphs (must certify under v0.1 traditional analysis)
 
-**Out of scope (deferred to future work — documented in `flexo-rtm-research/Topological Framework Future Work.md`):**
+**Out of scope (not `flexo-rtm` features — these are problems in the related topological research line, documented in `flexo-rtm-research/Topological Framework Future Work.md`; per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] the research line is not `flexo-rtm`'s destination):**
 
 - Topological framework (assurance triangles as audit primitive, recursive completeness condition)
 - Topological invariants (V−F and successors; further research determined the numerical check alone is insufficient)
 - Pre-approved artifact/specification/guidance registry
-- G3–G9 gap codes (require topological framework)
+- G3–G9 gap codes (apply only under the topological research line; surface only if an adopter chooses to run topological analysis as a downstream-analysis mode)
 - Persistent homology / TDA
 
 **Out of scope (deferred to v0.2+):**
@@ -969,8 +969,8 @@ Mathematical detail, mermaid diagrams, and decision rationale live here. `flexo-
 | D15 | GSN adoption (parsimony-extracted) for adequacy/sufficiency claims | Consistent with ADCS prototype; interop with assurance-case tooling |
 | D16 | Profile mechanism = composable SHACL contracts | Constraint selection orthogonal to data selection (Scope) |
 | D17 | `knowledgecomplex` as `[analysis]` optional extras | Lean default install; analysis opt-in |
-| D18 | V−F topological invariant **deferred** along with topological framework | Further research determined purely numerical invariants insufficient; proper topological audit requires recursive completeness checked against a registry of pre-approved types |
-| D21 | **Topological framework deferred to future work; research repo documents the vision, registry concept, recursion challenge, open questions** | The framework is powerful but the registry-of-pre-approved-types commitment is huge scope creep for v0.1; the right move is to ship traditional bidirectional analysis (trusted, familiar) now and develop the topological framework with appropriate research and community engagement later. The vocabulary the framework will require ships in v0.1 ontology so data accumulates forward-compatibly |
+| D18 | V−F topological invariant is **not a `flexo-rtm` feature** — it is a research-line question, distinct from `flexo-rtm`'s scope | Further research determined purely numerical invariants insufficient; the proper topological audit requires recursive completeness checked against a registry of pre-approved types — a problem internal to the topological research line per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] |
+| D21 | **Topological framework is a related research line, not `flexo-rtm`'s destination; research repo documents the vision, registry concept, recursion challenge, open questions** | `flexo-rtm` is methodology-agnostic (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]); the topological framework articulated in Zargham (2026) shares philosophical kinship but is not required and is not on `flexo-rtm`'s critical path. If the research line matures, it operates as one optional downstream-analysis mode on top of `flexo-rtm`'s data alongside other paths (SLSA, GSN, ARP4754A, in-house). Aligned vocabulary ships in v0.1 ontology as forward-compatible interop for that and other downstream paths |
 | D22 | **Adequacy and sufficiency attestations ship in v0.1 as typed `rtm:Attestation` subclasses** (independent of topological audit) | The ADCS regression corpus operates with adequacy and sufficiency attestations today; v0.1 must support these to pass regression tests. Three subclasses (`rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation`) all share named-approver SHACL enforcement. Audit reports show coverage and gaps per claim type per aspect. The recursive completeness audit (does the guidance itself meet adequacy/sufficiency criteria?) is what's deferred — the per-claim attestations are first-class v0.1 features |
 | D23 | **External URI references (git+commit, content addresses, OCI digests) are foundational v0.1 vocabulary** | Evidence, models, and activities in the RDF graph reference concepts outside it via URI. These references — not the RDF metadata in isolation — are the source of true open-source interoperability, portability, auditability, and reproducibility. The ADCS prototype already operates this way (Docker compute backend captures `prov:atLocation` / `prov:wasAssociatedWith`); v0.1 formalizes the vocabulary (`rtm:hasGitRepo`, `rtm:hasGitCommit`, `rtm:hasContentHash`, `rtm:hasOCIImage`) plus PROV-O provenance, and adds SHACL discipline. Reproducibility chain (§4.9) extends beyond RDF-internal canonical hashing to include re-fetching code/data/containers from their external URIs and re-executing |
 | D24 | **Cryptography by composition of battle-tested standards, never invention** | Signed envelopes use: git GPG/SSH commit signing, W3C Verifiable Credentials + Data Integrity proofs, DSSE + in-toto attestation predicates, Sigstore cosign + Rekor transparency log, OCI image signatures. Vocabulary support shipped in v0.1 (`sec:proof`, `rtm:dsseEnvelope`, `rtm:cosignBundle`, `rtm:rekorLogEntry`); profile-gated requirements (`signed-commits`, `data-integrity-attestations`, `dsse-activities`, `cosign-images`, `rekor-transparency`) off by default. No custom crypto, no custom envelopes, no custom transparency logs. Closes the ADCS prototype's "signed envelopes deferred" gap |

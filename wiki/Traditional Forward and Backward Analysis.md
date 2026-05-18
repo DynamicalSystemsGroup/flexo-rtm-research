@@ -4,7 +4,7 @@
 
 ## Why this page comes first
 
-`flexo-rtm`'s primary surface is traditional Requirements Traceability Matrix (RTM) analysis, in the form that Doors, Jama, Polarion, and OSLC-RM users already recognize. Practitioners can adopt this analysis on day one to produce familiar requirements traceability reports — without committing to the deferred topological assurance framework. The topological framework (assurance triangles, V−F invariants, recursive completeness) extends traditional bidirectional analysis; it does not replace it.
+`flexo-rtm`'s primary surface is traditional Requirements Traceability Matrix (RTM) analysis, in the form that Doors, Jama, Polarion, and OSLC-RM users already recognize. Practitioners can adopt this analysis on day one to produce familiar requirements traceability reports — without committing to any specific downstream-analysis methodology. The topological framework articulated in Zargham (2026) (assurance triangles, V−F invariants, recursive completeness) is one related research line that, if it matures, would consume `flexo-rtm`'s traditional traceability + attestation data as input — it is **not `flexo-rtm`'s destination** (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]); it is one possible downstream-analysis path among several (SLSA, GSN, ARP4754A, in-house).
 
 This page specifies the **v0.1 primary surface**. Everything described here ships in v0.1 and is governed by the §9.A acceptance criteria in [[Design Spec]] — specifically X1 (determinism), X2 (replay), X3 (quantitative outcomes only), and X8 (structural completeness without dereferencing). The bidirectional analysis is exactly what those criteria anchor as the v0.1 release gate.
 

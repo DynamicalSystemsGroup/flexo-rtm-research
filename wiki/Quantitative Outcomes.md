@@ -122,13 +122,13 @@ The metrics enable graduated adoption. A typical industrial trajectory:
 
 **Day 90.** Programme enables `attested-adequacy` and `attested-sufficiency`, then turns on `aspect-coverage` once enough requirements are aspect-tagged. The matrix view appears. The safety officer sees the safety-adequacy column lighting up; the human-factors lead sees their own column. Coverage discussions move from generalities to specific cells.
 
-**Day 365.** Full attestation discipline. All four thresholds at 100 %. Failed-attestation count tracked as a leading indicator. The team is now ready to opt into the deferred topological framework when it ships — the underlying typed attestations already exist; what changes is the addition of the closed-assurance-face gate and the V−F invariant. The transition is additive; no historical data has to be re-captured.
+**Day 365.** Full attestation discipline. All four thresholds at 100 %. Failed-attestation count tracked as a leading indicator. The team has accumulated data that is also forward-compatible with downstream-analysis paths an adopter might choose to run on top of `flexo-rtm` (topological audit per [[Topological Framework Future Work]] is one such path among several — SLSA, GSN, ARP4754A, in-house); the underlying typed attestations already exist in the right vocabulary, so any chosen downstream mode reads them natively, no historical data has to be re-captured.
 
 The story is not aspirational. Each step is a configuration change against the same v0.1 schema, executed in the same audit pipeline. The gradient is the institutional gift.
 
 ## What v0.1 does NOT compute
 
-The following metrics belong to the deferred topological framework ([[Design Spec]] §4.10) and are out of scope for v0.1. Listing them here exists to draw the boundary explicitly so adopters do not expect them.
+The following metrics belong to the related topological research line ([[Design Spec]] §4.10 and [[ADR-032 Methodology Agnosticism as Foundational Axiom]]) and are out of scope for `flexo-rtm` core. They would surface only if an adopter chose to run a topological audit as a downstream-analysis mode on top of `flexo-rtm`'s data; they are not `flexo-rtm` features. Listing them here exists to draw the boundary explicitly so adopters do not expect them.
 
 - **Assurance-face closure rate.** The fraction of (requirement, artifact, guidance, satisfaction-attestation, adequacy-attestation, sufficiency-attestation) tuples that form a closed face. Needs the topological face structure, not yet defined for v0.1.
 - **V−F invariant.** The vertices-minus-faces structural invariant from Zargham (2026). Requires the closed-face notion.

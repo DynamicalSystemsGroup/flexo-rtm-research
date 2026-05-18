@@ -52,4 +52,4 @@ Three operational commitments: an **open source license** on the specification, 
 
 ## What this vault is for
 
-This wiki (`flexo-rtm-research`) is **the reviewable artifact**. Its purpose is to make the design — mission, eight propositions, ontology, SHACL discipline, conformance suite, OSLC interop story, deferred topological framework — **reviewable in depth before implementation begins**. Code follows in `flexo-rtm` once the design has been audited here. Reading order: [[Map of Content]]. Normative spec: [[Design Spec]].
+This wiki (`flexo-rtm-research`) is **the reviewable artifact**. Its purpose is to make the design — mission, eight propositions, ontology, SHACL discipline, conformance suite, OSLC interop story, and the related topological research line — **reviewable in depth before implementation begins**. Code follows in `flexo-rtm` once the design has been audited here. Reading order: [[Map of Content]]. Normative spec: [[Design Spec]].
