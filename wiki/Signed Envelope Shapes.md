@@ -30,7 +30,7 @@ Five profiles, off by default. Adopters enable as their workflow requires.
 
 ## 3. Cryptosuite registry
 
-Per [[ADR-027 Cryptographic Agility via Algorithm Profiles]], the active cryptosuite supplies algorithm identifiers. v0.1 supports:
+Per [[ADR-026 Cryptographic Agility via Algorithm Profiles]], the active cryptosuite supplies algorithm identifiers. v0.1 supports:
 
 | Suite | Source | Digest | Signature | Cryptosuite IRI |
 |---|---|---|---|---|

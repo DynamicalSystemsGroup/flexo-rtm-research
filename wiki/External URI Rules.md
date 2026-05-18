@@ -85,7 +85,7 @@ rtm:HasGitCommitShape a sh:NodeShape ;
     ] .
 ```
 
-Algorithm is **suite-derived** per [[ADR-027 Cryptographic Agility via Algorithm Profiles]]. v0.1 default: SHA-1 (git's current default) with SHA-256 acceptance for git repos in SHA-256 mode.
+Algorithm is **suite-derived** per [[ADR-026 Cryptographic Agility via Algorithm Profiles]]. v0.1 default: SHA-1 (git's current default) with SHA-256 acceptance for git repos in SHA-256 mode.
 
 ### 3.3 `rtm:hasGitPath`
 
@@ -103,7 +103,7 @@ rtm:HasContentHashShape a sh:NodeShape ;
     ] .
 ```
 
-Accepted algorithm prefixes (per [[ADR-027 Cryptographic Agility via Algorithm Profiles]]):
+Accepted algorithm prefixes (per [[ADR-026 Cryptographic Agility via Algorithm Profiles]]):
 
 - `sha256:` (v0.1 default; 64 hex chars)
 - `sha384:`, `sha512:` (NIST/FIPS suites)
@@ -234,7 +234,7 @@ The distinction: a verifier without fetch access can still confirm structural co
 
 The recorded hash algorithm (sha256 vs. sha384 vs. sha3-256 vs. ipfs vs. cid) is encoded in the hash string itself (`<algo>:<digest>`). The oracle's compute step uses the algorithm declared.
 
-If the cryptosuite changes between cert authoring and audit replay, the recorded hash algorithm is what's verified — not the current default. This makes audits stable across cryptosuite updates (per [[ADR-027 Cryptographic Agility via Algorithm Profiles]]).
+If the cryptosuite changes between cert authoring and audit replay, the recorded hash algorithm is what's verified — not the current default. This makes audits stable across cryptosuite updates (per [[ADR-026 Cryptographic Agility via Algorithm Profiles]]).
 
 ## 8. Reproducibility manifest format
 

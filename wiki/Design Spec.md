@@ -106,7 +106,7 @@ This is the analysis Doors/Jama/Polarion/OSLC users recognize; it works directly
 | `rtm:AdequacyAttestation` | an (artifact, requirement) pair | "the model representation is adequate for the claim" |
 | `rtm:SufficiencyAttestation` | an (artifact, requirement) pair | "the evidence is sufficient to support the claim" |
 
-The ADCS regression corpus uses adequacy and sufficiency attestations; v0.1 must support them. See [[ADR-022 Three Attestation Subclasses Ship in v0.1]] and [[ADR-005 Adequacy and Sufficiency as Guidance Subtypes]].
+The ADCS regression corpus uses adequacy and sufficiency attestations; v0.1 must support them. See [[ADR-021 Three Attestation Subclasses Ship in v0.1]] and [[ADR-005 Adequacy and Sufficiency as Guidance Subtypes]].
 
 **Composition attestations (v0.1, for federated audit; see §4.8):**
 
@@ -155,11 +155,11 @@ Applies to the parent class and all six subclasses.
 - `attested-sufficiency` — same with `rtm:SufficiencyAttestation`
 - `composition-adequacy` / `composition-sufficiency` / `qualified-audit-per-scope` — composition-level (see §4.8)
 
-**Vocabulary for adequacy / sufficiency criteria.** `rtm:Guidance` (abstract), `rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, `rtm:Aspect` ship in the core ontology because the per-claim attestations reference them. SHACL well-formedness shapes apply; no triangle-closure or recursive completeness audit runs over them. See [[ADR-022 Three Attestation Subclasses Ship in v0.1]].
+**Vocabulary for adequacy / sufficiency criteria.** `rtm:Guidance` (abstract), `rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, `rtm:Aspect` ship in the core ontology because the per-claim attestations reference them. SHACL well-formedness shapes apply; no triangle-closure or recursive completeness audit runs over them. See [[ADR-021 Three Attestation Subclasses Ship in v0.1]].
 
 ### 4.3 Identity boundaries — thin projections of external authoritative sources
 
-`flexo-rtm` does not own identity. Named approvers are IRIs referencing identities owned by external systems (institutional SSO via OIDC/SAML, LDAP/AD, GitHub/GitLab). The system carries thin RDF projections of identities and policies; SHACL is the single bottleneck where authority is checked at attestation-write time. See [[ADR-025 Identity by Thin Projection of External Sources]] and [[Identity Adapter Contract]] for the full normative contract.
+`flexo-rtm` does not own identity. Named approvers are IRIs referencing identities owned by external systems (institutional SSO via OIDC/SAML, LDAP/AD, GitHub/GitLab). The system carries thin RDF projections of identities and policies; SHACL is the single bottleneck where authority is checked at attestation-write time. See [[ADR-024 Identity by Thin Projection of External Sources]] and [[Identity Adapter Contract]] for the full normative contract.
 
 **Vocabulary:**
 
@@ -183,13 +183,13 @@ All three are SPARQL-evaluable against the identity projection. Policies are RDF
 
 **Reference adapters (v0.1):** GitHub, generic OIDC, GitHub Actions OIDC. Adopters extend for SAML / LDAP / AD / Okta / Auth0 / Keycloak via the thin adapter pattern; the input/output schema and conformance criteria are normative in [[Identity Adapter Contract]].
 
-**Refresh policy.** Projections are point-in-time. Adopters choose: every cert run, on commit, scheduled, or static. The transcript records the projection-as-of-cert-time so audit re-runs evaluate against the recorded projection, not the live identity provider — identity changes do not invalidate past attestations. Refresh policy and reproducibility are complementary, not in tension. See [[ADR-026 Reproducibility is Structural and Local]].
+**Refresh policy.** Projections are point-in-time. Adopters choose: every cert run, on commit, scheduled, or static. The transcript records the projection-as-of-cert-time so audit re-runs evaluate against the recorded projection, not the live identity provider — identity changes do not invalidate past attestations. Refresh policy and reproducibility are complementary, not in tension. See [[ADR-025 Reproducibility is Structural and Local]].
 
 **Out of scope:** authentication (no login, no session, no credentials stored); proprietary policy engines (no XACML / OPA / Cedar — SPARQL evaluation against RDF is the policy engine).
 
 ### 4.4 External URI references — the git+RDF foundation
 
-Evidence, models, and activities are RDF entities that reference concepts outside the graph via URI: git repositories + commit hashes, content-addressed data (sha256 / IPFS), OCI image digests. These references — not the RDF metadata in isolation — are the source of true open-source interoperability, portability, auditability, and reproducibility. See [[ADR-023 External URI References as Open-Source Foundation]] and [[External URI Rules]] for the normative contract.
+Evidence, models, and activities are RDF entities that reference concepts outside the graph via URI: git repositories + commit hashes, content-addressed data (sha256 / IPFS), OCI image digests. These references — not the RDF metadata in isolation — are the source of true open-source interoperability, portability, auditability, and reproducibility. See [[ADR-022 External URI References as Open-Source Foundation]] and [[External URI Rules]] for the normative contract.
 
 **Entity classes:**
 
@@ -213,9 +213,9 @@ Plus standard PROV-O: `prov:wasDerivedFrom`, `prov:used`, `prov:wasGeneratedBy`,
 
 ### 4.5 Signed envelopes — composing battle-tested cryptographic standards
 
-`flexo-rtm` does not invent cryptography. Where signing matters, the system composes established standards. See [[ADR-024 Cryptography by Composition of Battle-Tested Standards]] and [[Signed Envelope Shapes]] for the normative SHACL shapes and verification flow.
+`flexo-rtm` does not invent cryptography. Where signing matters, the system composes established standards. See [[ADR-023 Cryptography by Composition of Battle-Tested Standards]] and [[Signed Envelope Shapes]] for the normative SHACL shapes and verification flow.
 
-**Cryptographic agility.** Algorithm choice (SHA-256, P-256, Ed25519, …) is **suite-derived**, not hardcoded in the data model. The active cryptographic suite (W3C VC-DI cryptosuite, cosign suite, DSSE suite, OCI signature suite) supplies the algorithm. v0.1 default: SHA-256 for content hashes; signing-suite default per W3C VC-DI 2.0. See [[ADR-027 Cryptographic Agility via Algorithm Profiles]].
+**Cryptographic agility.** Algorithm choice (SHA-256, P-256, Ed25519, …) is **suite-derived**, not hardcoded in the data model. The active cryptographic suite (W3C VC-DI cryptosuite, cosign suite, DSSE suite, OCI signature suite) supplies the algorithm. v0.1 default: SHA-256 for content hashes; signing-suite default per W3C VC-DI 2.0. See [[ADR-026 Cryptographic Agility via Algorithm Profiles]].
 
 **Integration surfaces:**
 
@@ -253,7 +253,7 @@ v0.1 reports these gap codes:
 
 ### 4.7 Reproducibility chain — structural completeness enables local, federated verification
 
-**The principle.** Reproducibility is **structural and local**, not global. The cert artifact carries everything a verifying party needs to reproduce a specific fact — without re-dereferencing the whole graph or holding universal permissions. Reproduction federates: multiple parties verify different subsets, composing to a complete audit without any single party owning everything. See [[ADR-026 Reproducibility is Structural and Local]].
+**The principle.** Reproducibility is **structural and local**, not global. The cert artifact carries everything a verifying party needs to reproduce a specific fact — without re-dereferencing the whole graph or holding universal permissions. Reproduction federates: multiple parties verify different subsets, composing to a complete audit without any single party owning everything. See [[ADR-025 Reproducibility is Structural and Local]].
 
 **Two regimes, both first-class** (per [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]]):
 

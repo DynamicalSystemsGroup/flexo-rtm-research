@@ -2,7 +2,7 @@
 
 # Identity Adapter Contract
 
-> **Normative contract** for identity-projection adapters. The input/output schema, reference adapter specifications, SHACL projection shape, refresh-policy semantics, and new-provider extension guide live here. The `flexo-rtm` [[Design Spec]] §4.3 and §6.3 reference this page; tests under `tests/conformance/test_identity_adapters.py`, `test_adapter_contract_schema.py` enforce it. See also [[ADR-025 Identity by Thin Projection of External Sources]], [[Identity Boundaries and Policy Projections]] (rationale).
+> **Normative contract** for identity-projection adapters. The input/output schema, reference adapter specifications, SHACL projection shape, refresh-policy semantics, and new-provider extension guide live here. The `flexo-rtm` [[Design Spec]] §4.3 and §6.3 reference this page; tests under `tests/conformance/test_identity_adapters.py`, `test_adapter_contract_schema.py` enforce it. See also [[ADR-024 Identity by Thin Projection of External Sources]], [[Identity Boundaries and Policy Projections]] (rationale).
 
 ## 1. Scope
 
@@ -223,7 +223,7 @@ Projections are **point-in-time**. Adopters configure refresh via `rtm:refreshPo
 | `scheduled` | Adapter runs on a cron (e.g., nightly); projection cached between runs | Low | Predictable cost, bounded staleness |
 | `static` | Projection is loaded at startup and not refreshed | Zero | Test scenarios, audit replay |
 
-The audit transcript records the active refresh policy and the projection-as-of-cert-time. Re-running the transcript months later evaluates against the **recorded** projection, not the live identity provider — per [[ADR-026 Reproducibility is Structural and Local]], identity changes after cert do not invalidate past attestations.
+The audit transcript records the active refresh policy and the projection-as-of-cert-time. Re-running the transcript months later evaluates against the **recorded** projection, not the live identity provider — per [[ADR-025 Reproducibility is Structural and Local]], identity changes after cert do not invalidate past attestations.
 
 ## 7. Reference adapters (v0.1)
 
