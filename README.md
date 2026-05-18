@@ -34,7 +34,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full operational model and conven
 
 ## Status
 
-**Design phase complete.** 77 wiki pages (4 nav/foundation + 41 content docs + ADR template + 31 ADRs) ready for in-depth review before `flexo-rtm` implementation begins. No software is built here. The implementation repo (`flexo-rtm`) follows after this research is reviewed. Browse online via the [wiki](https://github.com/dynamicalsystemsgroup/flexo-rtm-research/wiki).
+**Design phase complete.** 78 wiki pages (4 nav/foundation + 42 content docs + ADR template + 31 ADRs) ready for in-depth review before `flexo-rtm` implementation begins. No software is built here. The implementation repo (`flexo-rtm`) follows after this research is reviewed. Browse online via the [wiki](https://github.com/dynamicalsystemsgroup/flexo-rtm-research/wiki).
 
 ## Citation
 

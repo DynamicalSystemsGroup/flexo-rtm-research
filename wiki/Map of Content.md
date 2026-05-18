@@ -25,6 +25,7 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 - [[INCOSE V2 Review]] — alignment with INCOSE's V2 concept hierarchy.
 - [[OMG SysMLv2]] — canonical model vocabulary anchoring requirement and verification concepts.
 - [[PROV EARL GSN P-PLAN]] — the four adopted W3C/community vocabularies and the parsimony budget over them.
+- [[Dragon Architecture and Mission Enterprise]] — the openMBEE-community vision for a Mission Enterprise for Digital Thread approaches; the upstream methodology-neutral framing `flexo-rtm`'s certification-evidence layer is designed to serve.
 
 ## 3. v0.1 Certification Model (what ships now)
 
