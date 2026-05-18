@@ -9,7 +9,7 @@
 
 ## Context
 
-The simplicial-complex derived view (see [[ADR-013 Simplicial Complex as Derived View When Built]]) is useful to research users and to the future topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]), but it is **not required** for v0.1's traditional analysis or attestation infrastructure. Bundling it into the default `flexo-rtm` install adds dependency surface (graph-analysis libraries, simplicial-complex tooling) that ordinary adopters do not need. The question is whether the simplicial-complex tooling ships as a required dependency, a vendored subset, or an optional extras package. See [[Design Spec]] §7.5 and [[ADR-013 Simplicial Complex as Derived View When Built]].
+The simplicial-complex derived view (see [[ADR-013 Simplicial Complex as Derived View When Built]]) is useful to research users and to adopters who may choose to run a topological audit as a downstream-analysis mode (see [[ADR-003 Topological Framework Documented as Future Work]] and [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — the topological framework is a related research line, not `flexo-rtm`'s destination). It is **not required** for v0.1's traditional analysis or attestation infrastructure, and `flexo-rtm` does not commit to a downstream-analysis methodology that needs it. Bundling it into the default `flexo-rtm` install adds dependency surface (graph-analysis libraries, simplicial-complex tooling) that ordinary adopters do not need. The question is whether the simplicial-complex tooling ships as a required dependency, a vendored subset, or an optional extras package. See [[Design Spec]] §7.5 and [[ADR-013 Simplicial Complex as Derived View When Built]].
 
 ## Decision
 
@@ -21,8 +21,8 @@ The simplicial-complex derived view (see [[ADR-013 Simplicial Complex as Derived
 
 - Default install is lean — adopters running traditional analysis and OSLC roundtrip don't pull in simplicial-complex dependencies
 - The `[analysis]` extras flag is the standard Python pattern for opt-in capability; familiar to adopters
-- Research users and adopters experimenting with the future topological framework opt in explicitly via the extras flag; the experimental capability is gated by deliberate install choice
-- Forward-compatible: when the topological framework lands, `[analysis]` is the natural home for its tooling — adopters upgrading to use it install the extras
+- Research users and adopters experimenting with the topological research line opt in explicitly via the extras flag; the experimental capability is gated by deliberate install choice
+- Forward-compatible: if an adopter chooses to run topological analysis as a downstream-analysis mode, `[analysis]` is the natural home for that tooling — adopters who want it install the extras, adopters who don't are unaffected
 
 ### Negative / Tradeoffs
 
@@ -49,4 +49,5 @@ The simplicial-complex derived view (see [[ADR-013 Simplicial Complex as Derived
 
 - [[Design Spec]] §7.5 (Optional Extras Packaging)
 - [[ADR-013 Simplicial Complex as Derived View When Built]] — the derived view this extras hosts
-- [[ADR-003 Topological Framework Documented as Future Work]] — the framework that this extras supports researching today
+- [[ADR-003 Topological Framework Documented as Future Work]] — the related research line this extras supports researching today
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — the topological framework is one downstream-analysis path among several; the extras package is opt-in accordingly

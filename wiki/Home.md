@@ -30,7 +30,7 @@ The load-bearing claims of the design. One-line summaries here; full prose lives
 - **`flexo-rtm`** — the implementation repo (built **after** this wiki is reviewed). Will hold the formal spec, oracle code, ontology, conformance suite, and OSLC adapters.
 - **`flexo-conflict-resolution-policy-research`** — the sibling vault analyzing constraint-aware merge synthesis. `flexo-rtm`'s storage layer adopts its conclusions; see [[Flexo Git Coexistence]].
 - **`ADCS-lifecycle-demo`** — the prototype that proves the pattern end-to-end (8-stage pipeline, 166 tests, live Flexo integration). v0.1's regression corpus. See [[ADCS Prototype Lessons]].
-- **INCOSE IS 2026 paper** — *Formalizing Document Assurance: A Topological Framework for Verification, Validation, and Human Accountability* (Zargham 2026), submitted. The substrate for the future topological framework. See [[INCOSE IS 2026 Paper]].
+- **INCOSE IS 2026 paper** — *Formalizing Document Assurance: A Topological Framework for Verification, Validation, and Human Accountability* (Zargham 2026), submitted. Articulates the topological framework as a related research line (not `flexo-rtm`'s destination — see [[ADR-032 Methodology Agnosticism as Foundational Axiom]]); the paper's named-approver accountability principle is part of what `flexo-rtm` IS. See [[INCOSE IS 2026 Paper]].
 - **OpenMBEE** — the open-source MBSE ecosystem `flexo-rtm` targets. Both `flexo-rtm-research` and `flexo-rtm` transfer to OpenMBEE at the MVP service milestone.
 
 ## Where to start (reading paths)

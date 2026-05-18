@@ -23,7 +23,7 @@ A cert artifact's value depends on its reproducibility — auditors need to veri
 - Locality is a **property of the cert artifact**, not a property of the verifier — the artifact is structurally complete fact-by-fact, so the verifier doesn't need universal access to verify any single fact
 - Refresh policy (see [[ADR-024 Identity by Thin Projection of External Sources]]) and reproducibility are **not in tension**: refresh is an authoring-time freshness setting; reproduction always operates against the **recorded projection-at-cert-time**, never against fresh data
 - Federated computational verification: parties can verify in parallel; no single computational bottleneck
-- Forward-compatible to the topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]) — when the framework lands, the recursive completeness check operates over the same structurally-local facts
+- Forward-compatible to any downstream-analysis path (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]): an adopter who chooses to run topological analysis as a downstream-analysis mode (see [[ADR-003 Topological Framework Documented as Future Work]]) would compute the recursive completeness check over the same structurally-local facts; SLSA, GSN, ARP4754A, or in-house downstream analyses read the same locality property
 
 ### Negative / Tradeoffs
 
@@ -56,3 +56,4 @@ A cert artifact's value depends on its reproducibility — auditors need to veri
 - [[ADR-023 Cryptography by Composition of Battle-Tested Standards]] — signature dimension
 - [[ADR-024 Identity by Thin Projection of External Sources]] — projection-at-cert-time dimension
 - [[ADR-011 Lossless Criterion A plus C]] — RDFC-1.0 dimension
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — locality is methodology-neutral; any downstream-analysis path reads it

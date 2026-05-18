@@ -13,7 +13,7 @@ The Zargham 2026 RTM paper uses a specific vocabulary for the topological framew
 
 ## Decision
 
-`flexo-rtm` v0.1 ontology uses the **Zargham 2026 vocabulary verbatim**: `rtm:AssuranceComplex`, `rtm:AssuranceFace`, `rtm:AssuranceTriple` (and supporting terms) are the canonical class names in the RDF ontology. Paper and implementation are mutually citable without translation. The vocabulary ships in v0.1 ontology forward-compatibly (see [[ADR-003 Topological Framework Documented as Future Work]]) — class definitions are present even though no v0.1 audit consumes them — so that adopters' accumulated data is in the right vocabulary when the framework lands.
+`flexo-rtm` v0.1 ontology uses the **Zargham 2026 vocabulary verbatim**: `rtm:AssuranceComplex`, `rtm:AssuranceFace`, `rtm:AssuranceTriple` (and supporting terms) are the canonical class names in the RDF ontology. Paper and implementation are mutually citable without translation. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the vocabulary alignment is **forward-compatible interop for the related topological research line, not a commitment that the topological framework is `flexo-rtm`'s eventual destination**. Adopters who choose to run topological analysis as a downstream-analysis mode benefit from the alignment (their accumulated data is in the right vocabulary without translation); adopters who do not are unaffected. The vocabulary is equally readable by other downstream-analysis paths (SLSA, GSN, ARP4754A, in-house) — its presence in v0.1 ontology does not privilege any one of them.
 
 ## Consequences
 
@@ -21,7 +21,7 @@ The Zargham 2026 RTM paper uses a specific vocabulary for the topological framew
 
 - Paper and implementation are mutually citable — no translation table required for standards engagement, research dialogue, or reader navigation
 - Adopters reading the Zargham 2026 paper can directly look up the same class names in the v0.1 ontology
-- Forward-compatibility for the topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]) is built in — accumulated `rtm:AssuranceFace` instances in v0.1 graphs become the inputs the future framework consumes
+- Forward-compatible interop for the topological research line (see [[ADR-003 Topological Framework Documented as Future Work]] and [[ADR-032 Methodology Agnosticism as Foundational Axiom]]) is built in — adopters who choose to run topological analysis as a downstream-analysis mode read `rtm:AssuranceFace` instances directly, and adopters who don't are unaffected
 - Standards engagement (INCOSE IS 2026 paper, future OMG submissions) operates on a single vocabulary
 
 ### Negative / Tradeoffs
@@ -48,6 +48,7 @@ The Zargham 2026 RTM paper uses a specific vocabulary for the topological framew
 
 - [[Design Spec]] §6.8 (Vocabulary Alignment), §6.9 (Paper-Ontology Mapping)
 - [[Vertices Edges Faces]] — the vocabulary documentation
-- [[Topological Framework Future Work]] — the framework that consumes this vocabulary
-- [[ADR-003 Topological Framework Documented as Future Work]] — framework deferral
+- [[Topological Framework Future Work]] — the related research line whose vocabulary this aligns with
+- [[ADR-003 Topological Framework Documented as Future Work]] — `flexo-rtm` does not commit to the framework
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — vocabulary alignment as forward-compatible interop, not commitment to a specific downstream-analysis destination
 - Zargham (2026), "Typed Simplicial Complexes for Requirements Traceability" (forthcoming)

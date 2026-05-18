@@ -109,6 +109,7 @@
 - [[ADR-029 Engineering Lifecycle Stages as Scope Metadata]]
 - [[ADR-030 Polycentric ASOT Authority Model]]
 - [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]]
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]]
 
 ### Meta
 

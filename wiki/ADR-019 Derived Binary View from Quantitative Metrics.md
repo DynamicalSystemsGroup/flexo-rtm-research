@@ -22,7 +22,7 @@ The Zargham 2026 paper, in its TDD framing, characterizes the RTM certification 
 - Reconciles paper's TDD framing with industrial reality: institutions get the binary outcome the paper describes, but produced by an explicit, configurable threshold rather than implicit definition
 - Threshold transparency: every cert artifact records the thresholds used; reviewers can see *why* a cert is binary-passing and *what* would have to change for it to fail
 - Per-scope and per-aspect thresholds let safety-critical scopes set 100% while exploratory scopes set lower thresholds, without parallel binary-predicate definitions
-- Forward-compatible to the topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]): when the framework lands, the topological closure predicate becomes the binary signal in topological-audit-enabled cert runs; v0.1's threshold-derived binary remains for traditional-analysis cert runs
+- Forward-compatible with downstream-analysis paths (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]): an adopter who runs topological analysis as a downstream-analysis mode (see [[ADR-003 Topological Framework Documented as Future Work]]) can compose the closure predicate with the threshold-derived binary; adopters running SLSA, GSN, ARP4754A, or in-house analyses compose their own predicates on the same threshold-derived foundation
 
 ### Negative / Tradeoffs
 
@@ -50,3 +50,4 @@ The Zargham 2026 paper, in its TDD framing, characterizes the RTM certification 
 - [[Certification Predicate]] — the canonical predicate semantics
 - [[Quantitative Outcomes]] — the underlying quantitative model
 - [[ADR-004 Quantitative Certification Outcome]] — the primary outcome this derives from
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — the threshold-derived binary is `flexo-rtm`'s; downstream-analysis paths compose their own predicates on top

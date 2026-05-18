@@ -116,25 +116,24 @@ with the verification direction preserved (artifact → requirement). A graph im
 
 ## What v0.1 does NOT do
 
-The traditional bidirectional analysis is the v0.1 primary surface. It is intentionally narrow. The following capabilities are **deferred** to the future topological framework (see [[Design Spec]] §4.10) and are NOT part of v0.1's traditional analysis:
+The traditional bidirectional analysis is what `flexo-rtm` IS. It is intentionally narrow. The following capabilities belong to the **topological research line** ([[Topological Framework Future Work]]) — one possible downstream-analysis path adopters may choose to run on top of `flexo-rtm`'s data, per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — and are NOT part of `flexo-rtm`:
 
 - **No guidance vertices required.** v0.1 does not require an `rtm:Guidance` node mediating each verification edge. (Adopters MAY add guidance — see [[Design Spec]] §4.2 — but bidirectional analysis runs without it.)
-- **No assurance triangle closure.** v0.1 does not check that an artifact, a requirement, and a guidance vertex form a closed triangle with the required attestations on each face. Triangle closure is part of the deferred topological framework — see [[Topological Framework Future Work]].
-- **No V−F invariant computation.** v0.1 does not compute the vertex-minus-face topological invariant. That audit lands with the deferred framework.
-- **No adequacy/sufficiency judgment.** v0.1 records `rtm:AdequacyAttestation` and `rtm:SufficiencyAttestation` when present, but bidirectional analysis does not surface adequacy or sufficiency findings; those are guidance-mediated gap codes (`G3`–`G9`) and require the deferred audit.
-- **No recursive guidance completeness.** v0.1 does not check whether the guidance itself is fit-for-purpose. The recursive completeness check requires the registry and is deferred.
+- **No assurance triangle closure.** `flexo-rtm` does not check that an artifact, a requirement, and a guidance vertex form a closed triangle with the required attestations on each face. Triangle closure is a problem in the topological research line — see [[Topological Framework Future Work]] — not part of `flexo-rtm`.
+- **No V−F invariant computation.** `flexo-rtm` does not compute the vertex-minus-face topological invariant. The invariant's research belongs to the topological line, not `flexo-rtm`'s roadmap.
+- **No adequacy/sufficiency judgment in bidirectional analysis.** v0.1 records `rtm:AdequacyAttestation` and `rtm:SufficiencyAttestation` when present (as part of `flexo-rtm`'s named-signer discipline), but bidirectional analysis does not surface adequacy or sufficiency findings; those are guidance-mediated gap codes (`G3`–`G9`) — topology-line, meaningful only if an adopter runs a topological downstream audit.
+- **No recursive guidance completeness.** `flexo-rtm` does not check whether the guidance itself is fit-for-purpose. Recursive completeness is an unresolved problem in the topological research line, internal to that line.
 - **No rolled-up grade.** Per X3, no audit report contains a single "% certified" headline. Quantitative outcomes are always reported per dimension.
 
-These capabilities live in the deferred framework. v0.1 reserves the vocabulary they will use (see [[Design Spec]] §4.2) so adopters can begin populating it now; the topological audit that consumes it ships later.
+These capabilities live in the topological research line. `flexo-rtm` v0.1 ontology carries the aligned vocabulary as forward-compatible interop (see [[Design Spec]] §4.2 and [[ADR-020 Vocabulary Alignment with Zargham 2026]]); adopters who later run any downstream analysis (topological or otherwise) read it natively.
 
-## How the traditional analysis composes with the future framework
+## How the traditional analysis composes with downstream-analysis paths
 
-The traditional bidirectional analysis is **not** a stepping stone that is replaced; it is the persistent base layer the topological framework extends.
+The traditional bidirectional analysis is **what `flexo-rtm` IS**; it is not a stepping stone toward a topological audit. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], `flexo-rtm` is methodology-agnostic, and the topological framework is one possible downstream-analysis path among several (SLSA, GSN, ARP4754A, in-house). Composition properties:
 
-- Every future topological "pass" implies a traditional pass: the topological framework's verification edge IS `rtm:satisfies`.
-- A traditional pass does NOT imply a topological pass: the topological framework adds requirements (closed triangles, named attestations on each face, V−F invariant).
-- Adopters migrate incrementally. Coverage statistics are reported at both layers so progress is visible at every stage of adoption.
-- A team that never adopts the future framework still gets an open-source, OSLC-RM-roundtrip-capable, transcript-replayable RTM with reproducible certification artifacts — a meaningful complement to whatever RM tooling they already use.
+- Any downstream-analysis audit that includes verification semantics rests on `rtm:satisfies` as common substrate. A topological closed-triangle pass would imply a traditional bidirectional pass; SLSA, GSN, and ARP4754A read `rtm:satisfies` the same way.
+- A traditional pass does NOT imply a downstream-analysis pass: topological adds requirements (closed triangles, named attestations on each face, V−F invariant); SLSA adds supply-chain attestation requirements; GSN adds argument-structure requirements; each downstream path adds its own conditions.
+- Adopters compose incrementally as needed for their context. A team that never adopts any downstream analysis still gets an open-source, OSLC-RM-roundtrip-capable, transcript-replayable RTM with reproducible certification artifacts — a meaningful complement to whatever RM tooling they already use.
 
 ## Reference implementation lineage
 
@@ -144,12 +143,13 @@ The ADCS prototype's `traceability/audit.py` module implements forward and backw
 
 Institutional requirements management today is well-served by Doors, Jama, Polarion, and similar incumbents — but their certification artifacts are proprietary and their data is locked behind commercial agreements. `flexo-rtm` adds three properties the existing ecosystem doesn't yet supply natively: **open data portability** (RDF graphs with OSLC-RM roundtrip), **reproducible certification** (canonical hashes + replayable transcripts), and **federable verification** (third parties can re-check without proprietary access; see [[Federated Audit and Composition]]). These are properties an organization gains regardless of whether it keeps using its existing RM tool or transitions; they are also properties incumbent vendors and their hosting partners can offer their customers atop the open standard.
 
-Adopters can pick whichever path suits their context: pair `flexo-rtm` with existing RM tooling via OSLC roundtrip, run `flexo-rtm` standalone, or work through a vendor or hosting provider that supports the open standard. Each path produces the same artifact: a deterministic, replayable, lossless RTM with reproducible provenance. Those who later choose to commit to the topological framework can do so incrementally, on their own timeline, without abandoning the analysis they already trust. That dual-mode adoption path is the central rationale for putting traditional analysis first; see [[Mission and Thesis]] and [[Verifiable Self-Certification]] for the framing context, and [[Quantitative Outcomes]] for how the per-dimension reporting contract enforces X3.
+Adopters can pick whichever path suits their context: pair `flexo-rtm` with existing RM tooling via OSLC roundtrip, run `flexo-rtm` standalone, or work through a vendor or hosting provider that supports the open standard. Each path produces the same artifact: a deterministic, replayable, lossless RTM with reproducible provenance. Adopters who later want a deeper assurance audit can compose any downstream-analysis path on top — topological (if the research line matures), SLSA, GSN, ARP4754A, or in-house — without abandoning the traditional analysis they already trust. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], `flexo-rtm` does not privilege one downstream-analysis target over another. See [[Mission and Thesis]] and [[Verifiable Self-Certification]] for the framing context, and [[Quantitative Outcomes]] for how the per-dimension reporting contract enforces X3.
 
 ## See also
 
-- [[Design Spec]] §4.1 (normative definitions), §9.A.5 (acceptance criteria X1–X3, X8), §4.10 (deferred topological framework)
-- [[Topological Framework Future Work]]
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — names traditional bidirectional analysis as part of what `flexo-rtm` IS; the topological framework is one related research line, not `flexo-rtm`'s destination
+- [[Design Spec]] §4.1 (normative definitions), §9.A.5 (acceptance criteria X1–X3, X8), §4.10 (topological research line)
+- [[Topological Framework Future Work]] — the related research line as one possible downstream-analysis path
 - [[Certification Predicate]]
 - [[Gap Taxonomy]]
 - [[Quantitative Outcomes]]

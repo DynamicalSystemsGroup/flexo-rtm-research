@@ -258,7 +258,7 @@ Engineer Zargham attempts to commit a `rtm:SufficiencyAttestation` for the safet
 - Refresh-policy options + transcript provenance for projections (I8)
 - Profile-gated optional shapes (`require-role-policy`, `require-clearance-attribute`, `signed-commits` for I7)
 
-**Deferred to v0.2+ future framework:**
+**Out of scope for v0.1 (v0.2+ or out of `flexo-rtm` entirely):**
 - No user authentication, sessions, credential storage, password resets, MFA, OAuth refresh flows
 - No XACML / OPA / Cedar / Rego policy engines; policy IS RDF + SPARQL
 - No real-time projection sync; refresh is point-in-time and adopter-configurable

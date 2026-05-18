@@ -41,7 +41,7 @@ The same language is **incorrect** if read as a universal commitment for **deleg
 ### Neutral
 
 - The decision composes with [[ADR-015 GSN Adoption for Adequacy and Sufficiency]]: tolerance values appear as part of the `gsn:byJustification` or `gsn:inContextOf` payload on a sufficiency attestation; the GSN binding is unchanged
-- Forward-compatible to the topological framework: tolerance-typed sufficiency attestations are exactly the kind of evidence the future framework will aggregate; no rework when the framework lands
+- Forward-compatible with downstream-analysis paths (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]): tolerance-typed sufficiency attestations are readable by any downstream analysis adopters may choose (topological, SLSA, GSN, ARP4754A, in-house); no rework required if any of those research lines mature
 
 ## Alternatives Considered
 

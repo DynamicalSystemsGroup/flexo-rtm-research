@@ -21,7 +21,7 @@ The Zargham 2026 topological framework includes a topological invariant of the f
 
 - v0.1's certification surface is coherent: traditional analysis (see [[ADR-003a v0.1 Ships Traditional Analysis Only]]) plus accountability infrastructure (see [[ADR-021 Three Attestation Subclasses Ship in v0.1]]), with no half-shipped topological-framework signals
 - Avoids the failure mode where a passing V−F is interpreted as topological completeness when it is no such thing
-- Forward-compatible: when the topological framework lands (post-v0.1), V−F is computed and reported as one signal among the framework's audit signals — in context, where its meaning is well-defined
+- Forward-compatible: if the topological research line matures into an applied downstream audit (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]), V−F would be computed and reported as one signal among that audit's signals — in context, where its meaning is well-defined. The invariant tracks the research line, not `flexo-rtm`'s roadmap
 
 ### Negative / Tradeoffs
 
@@ -38,11 +38,12 @@ The Zargham 2026 topological framework includes a topological invariant of the f
 
 ## Implementation Notes
 
-V−F is not computed or reported by any v0.1 analysis surface. The vocabulary supporting it (vertex/face counts derived from `rtm:AssuranceComplex` — see [[ADR-020 Vocabulary Alignment with Zargham 2026]]) ships in v0.1 ontology forward-compatibly; the derived view (see [[ADR-013 Simplicial Complex as Derived View When Built]]) materializes the necessary resources when requested. When the topological framework lands in a future version, V−F is computed in context against a populated registry of pre-approved types (see [[ADR-003 Topological Framework Documented as Future Work]]).
+V−F is not computed or reported by any `flexo-rtm` analysis surface. The vocabulary supporting it (vertex/face counts derived from `rtm:AssuranceComplex` — see [[ADR-020 Vocabulary Alignment with Zargham 2026]]) ships in v0.1 ontology as forward-compatible interop; the derived view (see [[ADR-013 Simplicial Complex as Derived View When Built]]) materializes the necessary resources when research users request them. If the topological research line matures into an applied downstream audit, V−F would be computed in context against a populated registry of pre-approved types (internal to that research line — see [[ADR-003 Topological Framework Documented as Future Work]] and [[ADR-032 Methodology Agnosticism as Foundational Axiom]]).
 
 ## References
 
-- [[Design Spec]] §3.4 (V−F Deferral), §7.6 (Topological Invariants Future Work)
+- [[Design Spec]] §3.4 (V−F Deferral), §7.6 (Topological Invariants in the research line)
 - [[Vertices Edges Faces]] — the topological vocabulary V−F operates over
-- [[ADR-003 Topological Framework Documented as Future Work]] — the framework V−F belongs to
-- [[ADR-013 Simplicial Complex as Derived View When Built]] — the derived view that would host V−F when it lands
+- [[ADR-003 Topological Framework Documented as Future Work]] — the research line V−F belongs to
+- [[ADR-013 Simplicial Complex as Derived View When Built]] — the derived view that would host V−F as a downstream-analysis output
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — the V−F invariant tracks the topological research line, not `flexo-rtm`'s roadmap

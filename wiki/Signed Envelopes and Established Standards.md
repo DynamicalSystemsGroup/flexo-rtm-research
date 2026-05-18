@@ -190,14 +190,14 @@ Every IRI in this snippet lands in a public registry, a transparency log, a git 
 - Provide a signing service. All signing happens in the adopter's existing tooling (`git`, `gpg`, `ssh`, `cosign`, `witness`, `step-ca`, etc.).
 - Enforce any profile by default. Every signing requirement is **opt-in**.
 - Bundle a key directory or PKI. Adopters bring their own identity infrastructure (see [[Verifiable Self-Certification]] and [[Design Spec]] §4.4).
-- Ship a **recursive registry of approved signer identities**. That belongs with the future topological framework's recursive completeness story — out of scope for v0.1.
+- Ship a **recursive registry of approved signer identities**. Such a registry would be internal to the topological research line's recursive completeness story (see [[Topological Framework Future Work]] and [[ADR-032 Methodology Agnosticism as Foundational Axiom]]); it is not part of `flexo-rtm`.
 - Operate a Rekor instance. Adopters use the public Sigstore Rekor (`rekor.sigstore.dev`) or run their own deployment using upstream Sigstore code.
 
 ---
 
-## Forward compatibility
+## Forward compatibility with downstream-analysis paths
 
-When the future topological framework lands (see [[Design Spec]] §4.10), the same standards stack supports closed-triangle assurance unchanged: every assurance triangle has a signed validation edge with a signed approver attestation referencing signed activities producing content-hashed artifacts inside cosign-verified containers, all anchored to the registry's signed entries. The composition principle holds at every recursion depth because every level uses the same battle-tested primitives. No new crypto is required to scale into the topological framework — only **more disciplined composition of the same primitives**. The v0.1 stack scales into the recursive-completeness regime without `flexo-rtm` ever stepping outside its lane to become a cryptography project.
+Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the standards stack is methodology-neutral. Any downstream-analysis path adopters may choose to run — topological (see [[Design Spec]] §4.10 and [[Topological Framework Future Work]]), SLSA (which already uses DSSE + in-toto natively), GSN, ARP4754A, or in-house — composes on top of the same primitives. If an adopter runs the topological audit as a downstream-analysis mode, every assurance triangle has a signed validation edge with a signed approver attestation referencing signed activities producing content-hashed artifacts inside cosign-verified containers. The composition principle holds at every depth because every level uses the same battle-tested primitives. No new crypto is required for any downstream-analysis path — only **more disciplined composition of the same primitives**. `flexo-rtm` never steps outside its lane to become a cryptography project.
 
 ---
 

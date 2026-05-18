@@ -210,12 +210,12 @@ Standard tools resolve the v0.1 vocabulary natively:
 - **No fetcher.** The references are produced; consumption is by external tooling. Building a fetcher would couple `flexo-rtm` to a specific tool stack.
 - **No content-hash verification at cert time.** It is an audit-time check (per **U2**), opt-in via audit mode. Cert-time SHACL operates on the RDF metadata; it does not block on the network.
 - **No online dependency during cert.** Cert is offline-clean; consumption of references is a separate concern.
-- **No recursive registry of pre-approved artifact types.** That registry belongs to the future topological framework. Forward compatibility is preserved — when the framework lands, it operates against URI references already captured under v0.1 conventions.
+- **No recursive registry of pre-approved artifact types.** That registry is internal to the topological research line (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] and [[Topological Framework Future Work]]); `flexo-rtm` does not commit to one. If an adopter runs topological analysis as a downstream-analysis mode, that analysis operates against URI references already captured under v0.1 conventions — vocabulary alignment is forward-compatible interop, not a registry commitment.
 - **No new URI schemes.** Every property reuses an established standard (git, sha256, OCI, DCAT). The point is to compose, not to invent.
 
-## 15. Forward compatibility with the topological framework
+## 15. Forward compatibility with downstream-analysis paths (including the topological research line)
 
-When the future topological framework is built ([[Topological Framework Future Work]]), every assurance-triangle vertex references external URIs via this exact vocabulary: an Artifact carries `rtm:hasContentHash`, a Guidance vertex carries `rtm:hasGitRepo`+`rtm:hasGitCommit`+`rtm:hasGitPath`, a Requirement references its source spec the same way. **The URI vocabulary is stable across v0.1 and the future framework.** Adopters of v0.1 accumulate data that remains valid when the framework lands.
+The URI-references vocabulary in §3 is methodology-neutral: any downstream-analysis path that wants to do reproducibility, content-hash verification, or provenance traversal can consume it. The topological research line ([[Topological Framework Future Work]]) is one such consumer: if an adopter runs that audit, every assurance-triangle vertex references external URIs via this exact vocabulary — an Artifact carries `rtm:hasContentHash`, a Guidance vertex carries `rtm:hasGitRepo`+`rtm:hasGitCommit`+`rtm:hasGitPath`, a Requirement references its source spec the same way. **The URI vocabulary is stable across v0.1 and any downstream-analysis path.** Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the alignment is forward-compatible interop for one optional downstream-analysis target among several (SLSA, GSN, ARP4754A, in-house) — not a commitment that the topological audit is `flexo-rtm`'s destination.
 
 ## 16. Acceptance criteria recap (§9.A.4 U1–U6)
 
@@ -242,6 +242,7 @@ These six are the v0.1 release gate for the artifact-identity boundary. If this 
 - [[Signed Envelopes and Established Standards]] — signature dimension
 - [[Identity Boundaries and Policy Projections]] — identity-projection dimension
 - [[ADCS Prototype Lessons]] — empirical seed
-- [[Topological Framework Future Work]] — forward compatibility
+- [[Topological Framework Future Work]] — one downstream-analysis path that consumes this URI vocabulary
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — the vocabulary alignment is forward-compatible interop, not a commitment to any specific downstream-analysis target
 - [[ADR-026 Cryptographic Agility via Algorithm Profiles]] — `rtm:hasContentHash` algorithm prefix is suite-driven, not hardwired
 - [[ADR-027 Bit-Exactness vs Numerical Tolerances Are Both First-Class]] — bytes-vs-numerical-result regime distinction

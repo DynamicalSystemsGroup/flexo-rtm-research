@@ -22,7 +22,7 @@ Adequacy and sufficiency claims (see [[ADR-005 Adequacy and Sufficiency as Guida
 - Interoperability with the assurance-case community: GSN tools (Astah GSN, Adelard ASCE, NOR-STA, AdvoCATE) become potential authoring surfaces for `flexo-rtm` adequacy and sufficiency arguments
 - Consistency with the ADCS prototype's experience: ADCS prototype lessons (see [[ADCS Prototype Lessons]]) showed that flat claim types lose argument structure that reviewers need; GSN restores it
 - PROV-O + EARL + GSN + P-PLAN compose into a coherent assurance-trace vocabulary (see [[PROV EARL GSN P-PLAN]]) — adopters get a familiar argument structure plus rigorous provenance
-- Forward-compatible: when the future topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]) consumes adequacy/sufficiency attestations, the GSN argument structure surrounding them is preserved
+- Forward-compatible with any downstream-analysis path that consumes adequacy/sufficiency attestations (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]): adopters who choose to run topological analysis as a downstream-analysis mode (see [[ADR-003 Topological Framework Documented as Future Work]]), GSN-based assurance-case audits, or other in-house analyses read the surrounding argument structure natively. GSN is the elaborated argument structure; the topological framework is one possible downstream-analysis methodology that may compose with it
 
 ### Negative / Tradeoffs
 
@@ -53,4 +53,5 @@ Adequacy and sufficiency claims (see [[ADR-005 Adequacy and Sufficiency as Guida
 - [[PROV EARL GSN P-PLAN]] — the composed assurance-trace vocabulary
 - [[ADR-005 Adequacy and Sufficiency as Guidance Subtypes]] — the Guidance subtypes GSN elaborates
 - [[ADCS Prototype Lessons]] — what the prototype taught about flat-claim limitations
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — GSN and topological framework are independent downstream-analysis paths, each composable with `flexo-rtm`'s named-signer substrate
 - GSN Community Standard v3 (Assurance Case Working Group)

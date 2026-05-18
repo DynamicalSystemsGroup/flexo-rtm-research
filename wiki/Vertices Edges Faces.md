@@ -2,26 +2,26 @@
 
 # Vertices Edges Faces
 
-> Detailed type catalog for the assurance complex — the vertex classes, edge properties, and derived faces that the deferred topological framework will operate over. **This page documents future-framework content.** The RDF vocabulary it specifies (`rtm:Guidance`, `rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, `rtm:Aspect`, `rtm:DeferredJudgment`, and the three direct-property edges) ships in `flexo-rtm` v0.1 per [[Design Spec]] §4.2 so adopters can begin tagging now. The closed-triangle audit that *consumes* this vocabulary is deferred per [[Design Spec]] §9.A.6 D1, along with the V−F-style invariant per §9.A.6 D4. The deferral discussion lives at [[Topological Framework Future Work]].
+> **Status — Type catalog for the topological research line; not `flexo-rtm`'s data model destination.** This page documents the vertex classes, edge properties, and derived faces that the **topological research line** ([[Topological Framework Future Work]]) uses. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] and [[ADR-020 Vocabulary Alignment with Zargham 2026]], the RDF vocabulary it specifies (`rtm:Guidance`, `rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, `rtm:Aspect`, `rtm:DeferredJudgment`, and the three direct-property edges) ships in `flexo-rtm` v0.1 ontology as **forward-compatible interop for the topological research line as one possible downstream-analysis path among several** (SLSA, GSN, ARP4754A, in-house) — *not* as a commitment to that line as `flexo-rtm`'s eventual data model. Adopters who tag adequacy and sufficiency criteria as they go gain independently valuable traceability hygiene; if they later choose to run topological analysis as a downstream-analysis mode, the data is in the right vocabulary without translation. The closed-triangle audit that *consumes* this vocabulary is internal to the topological research line per [[Design Spec]] §4.10 — `flexo-rtm` does not ship it and does not commit to it; if the research line matures, the topology-line acceptance criteria are in [[Design Spec]] §9.A.6 (D1, D4).
 
-## v0.1 vs. future scope at a glance
+## v0.1 vs. topology-line scope at a glance
 
-| Element | v0.1 | Deferred |
+| Element | v0.1 (`flexo-rtm` IS this) | Topology-line (downstream-analysis mode, if adopter runs it) |
 |---|---|---|
 | Vertex classes (`Requirement`, `Guidance`, `AdequacyCriteria`, `SufficiencyCriteria`, `Artifact`) | Vocabulary ships; instances MAY be present (§4.2) | Closure of triangles against these vertices |
 | Edge properties (`rtm:satisfies`, `rtm:coupledTo`, `rtm:fitsFor`) | Vocabulary ships; SHACL well-formedness only | Triangle-closure audit gate |
-| `rtm:Attestation` + `rtm:approvedBy` | Schema-enforced named approver (§4.3) | Recursive completeness check on the approver's guidance |
+| `rtm:Attestation` + `rtm:approvedBy` | Schema-enforced named approver (§4.3); `flexo-rtm`'s named-signer accountability primitive | Recursive completeness check on the approver's guidance |
 | Faces (`rtm:AssuranceFace`) | None — derived view only (no v0.1 audit) | SPARQL CONSTRUCT projection in `knowledgecomplex`, triangle-closure audit |
 | `rtm:hasAspect` tagging | Vocabulary ships | Per-aspect face closure |
-| `rtm:DeferredJudgment` state | First-class RDF state, recorded (§4.2 vocabulary) | Surfacing/reporting under topological audit |
-| Boundary complex | Defined via the type-definitions themselves | Formalized as part of the future framework |
-| V−F invariant (or alternative) | Not computed | Future criterion (§9.A.6 D4, pending research) |
+| `rtm:DeferredJudgment` state | First-class RDF state, recorded (§4.2 vocabulary) | Surfacing/reporting under topological downstream-analysis |
+| Boundary complex | Defined via the type-definitions themselves | Formalized in the topological research line |
+| V−F invariant (or alternative) | Not computed | Topology-line criterion (§9.A.6 D4, pending research) |
 
-The through-line: v0.1 captures every typed fact the future framework will consume, but does not aggregate those facts into a topological audit. Per [[Design Spec]] §4.2 the oracle **MUST** parse these terms and accept attestations referencing them, and **MUST NOT** validate that guidance content is itself fit-for-purpose — that recursive completeness check is deferred to §4.10. The vocabulary accumulates forward-compatibly under v0.1; when the framework lands, no migration of the historical graph is required.
+The through-line: v0.1 captures typed facts as part of `flexo-rtm`'s named-signer traceability discipline. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], any downstream-analysis path that wants to consume those facts may do so — the topological research line is one such consumer (it would aggregate them into closed triangles); other downstream-analysis paths (SLSA, GSN, ARP4754A, in-house) read the same data differently. Per [[Design Spec]] §4.2 the oracle **MUST** parse these terms and accept attestations referencing them, and **MUST NOT** validate that guidance content is itself fit-for-purpose — recursive completeness is a problem internal to the topological research line, not a `flexo-rtm` feature.
 
 ## Vertices (0-simplices)
 
-The assurance complex has three top-level vertex kinds. Each is an RDF class with a stable IRI in the `rtm:` namespace, and each is independently meaningful in v0.1 even though the topological audit that consumes them is future work.
+The assurance complex has three top-level vertex kinds. Each is an RDF class with a stable IRI in the `rtm:` namespace, and each is independently meaningful in v0.1 traditional traceability — the topological audit that would consume them as a closed-triangle structure belongs to the related research line ([[Topological Framework Future Work]]) and is one possible downstream-analysis path adopters may choose to run, not part of `flexo-rtm`.
 
 ### `rtm:Requirement` — specification vertex
 
@@ -69,7 +69,7 @@ Required properties (SHACL-enforced under `rtm:AttestationShape`):
 
 Standard provenance: `earl:result` (`passed` / `failed` / `cantTell` / `inapplicable`), `prov:wasGeneratedBy`, `prov:atTime`, `prov:wasAssociatedWith`, and optional `rtm:hasAspect` for per-aspect attestation under the `aspect-coverage` profile.
 
-The three `rdfs:subClassOf rtm:Attestation` subtypes — `rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation` — share the parent shape; SHACL rejects any of them without an approver IRI. Adequacy and sufficiency attestations are exactly the named-approver inputs the future framework needs to construct closed assurance triangles: v0.1 captures them, the future framework aggregates them into faces.
+The three `rdfs:subClassOf rtm:Attestation` subtypes — `rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation` — share the parent shape; SHACL rejects any of them without an approver IRI. These are the named-signer accountability primitive of `flexo-rtm` ([[ADR-032 Methodology Agnosticism as Foundational Axiom]]). Adopters who choose to run topological analysis as a downstream-analysis mode read adequacy and sufficiency attestations as the named-approver inputs that would aggregate into closed assurance triangles; adopters running other downstream-analysis paths read them equally.
 
 ## Faces (2-simplices, derived view)
 
@@ -98,23 +98,23 @@ CONSTRUCT {
 
 A face exists in the materialized view iff **all three edges are present and the validation edge carries a valid attestation** — the **closed assurance triangle** of Zargham 2026.
 
-The audit gate is itself future work. [[Design Spec]] §9.A.6 **D1** ("Closed assurance triangle audit") names the future test (`tests/future/test_triangle_closure.py`). In v0.1 the oracle does not run this audit; the data accumulates and the audit waits. The deferred V−F-style invariant — Zargham 2026's |V| − |F| ≤ 1 sanity check — is named in §9.A.6 **D4** ("V−F invariant (alternative formulation pending research)"). Per locked decision D18, further research determined purely numerical invariants are insufficient; a proper topological audit requires recursive completeness against a registry of pre-approved types. An alternative formulation is pending — see [[Topological Framework Future Work]].
+The audit gate is part of the topological research line, not `flexo-rtm`. [[Design Spec]] §9.A.6 **D1** ("Closed assurance triangle audit") names the topology-line test (`tests/future/test_triangle_closure.py`); `flexo-rtm` v0.1 does not run this audit and does not commit to ever doing so. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], if the topological research line matures into an applied artifact, adopters may choose to run that audit as a downstream-analysis mode on top of `flexo-rtm` data. The V−F-style invariant — Zargham 2026's |V| − |F| ≤ 1 sanity check — is named in §9.A.6 **D4** ("V−F invariant (alternative formulation pending research)"). Per locked decision D18, further research determined purely numerical invariants are insufficient; a proper topological audit requires recursive completeness against a registry of pre-approved types. An alternative formulation is pending — see [[Topological Framework Future Work]].
 
 ## Aspect parameterization
 
 Real systems engineering does not produce uniform assurance — a requirement may need to be argued under several aspects (functional, performance, safety, security, usability), each of which can warrant its own face. The vocabulary handles this via `rtm:hasAspect` on Requirement, Guidance, and Artifact. Aspect is an open extensibility point: the core ontology ships `rtm:functional`, `rtm:performance`, `rtm:safety`, and adopters add their own (`rtm:security`, `rtm:reliability`, `rtm:cost`, …) by minting IRIs.
 
-A face has an **implicit aspect** via the consistent aspect tag across its three vertices. A multi-aspect requirement induces a multi-face closure obligation: "R is closed for aspect *safety*" is independent of "R is closed for aspect *performance*." Per-aspect coverage is the reporting unit institutional adopters care about ([[Design Spec]] §9 audit dimensions). In v0.1, aspect tags accumulate but the per-aspect closure audit is deferred along with the rest of the topological framework.
+A face has an **implicit aspect** via the consistent aspect tag across its three vertices. A multi-aspect requirement induces a multi-face closure obligation: "R is closed for aspect *safety*" is independent of "R is closed for aspect *performance*." Per-aspect coverage is the reporting unit institutional adopters care about ([[Design Spec]] §9 audit dimensions). In v0.1, aspect tags accumulate as independently valuable traceability metadata; the per-aspect closure audit belongs to the topological research line and is one possible downstream-analysis path adopters may choose to run, not part of `flexo-rtm`.
 
 ## DeferredJudgment — first-class judgment state
 
 `rtm:DeferredJudgment` is a first-class RDF state representing "the engineer surfaced this judgment moment but is not ready to attest yet." It is the substantive contribution of the assurance complex to engineering UX: rather than letting unresolved judgments stay invisible, the schema lets the engineer record them with `rtm:deferralReason`, `rtm:deferredAtTime`, and optional `rtm:expectedResolutionBy`, and resume later.
 
-The audit treats a `rtm:DeferredJudgment` as a **gap that has been recognized** — categorically different from an *unrecognized* gap. In future-framework reporting, deferred judgments appear on their own line of the gap taxonomy ([[Gap Taxonomy]] G-series codes) and the report distinguishes "engineer hasn't noticed the missing attestation" (worse) from "engineer noticed and explicitly deferred" (better, with audit trail). The vocabulary ships in v0.1 even though the audit semantics that consume it are future work.
+The audit treats a `rtm:DeferredJudgment` as a **gap that has been recognized** — categorically different from an *unrecognized* gap. Under a topological downstream-analysis mode, deferred judgments appear on their own line of the gap taxonomy ([[Gap Taxonomy]] G-series codes — meaningful only if an adopter runs that analysis) and the report distinguishes "engineer hasn't noticed the missing attestation" (worse) from "engineer noticed and explicitly deferred" (better, with audit trail). The vocabulary ships in v0.1 ontology as forward-compatible interop; the audit semantics that consume it belong to the topological research line.
 
 ## Boundary complex
 
-Zargham 2026 §4 identifies a foundational problem with simplicial-complex assurance frameworks: four self-referential vertices — the (S, S), (S, G), (G, S), (G, G) pairings of *specification* and *guidance* over themselves — appear at the boundary of any non-trivial complex. These are claims one makes *about the framework itself* ("the way we specify requirements is itself adequately specified," etc.). Left unresolved they generate an infinite regress. Zargham 2026 resolves this by introducing an **axiomatic root vertex `b0`** — the framework's foundational commitment, asserted but not further decomposed within the framework. For `flexo-rtm`, the boundary complex is realized by the `rtm:Requirement` / `rtm:Guidance` / `rtm:Artifact` type definitions themselves, plus the SHACL shapes that govern them: the type catalog is the axiomatic root from which the rest of the assurance complex is grown. This is not a v0.1 *audit* feature — it is the conceptual underpinning that this page's type catalog provides.
+Zargham 2026 §4 identifies a foundational problem with simplicial-complex assurance frameworks: four self-referential vertices — the (S, S), (S, G), (G, S), (G, G) pairings of *specification* and *guidance* over themselves — appear at the boundary of any non-trivial complex. These are claims one makes *about the framework itself* ("the way we specify requirements is itself adequately specified," etc.). Left unresolved they generate an infinite regress. Zargham 2026 resolves this formally by introducing an **axiomatic root vertex `b0`** — the framework's foundational commitment, asserted but not further decomposed within the framework. For an applied topological audit, the boundary needs to be operational (a community-curated registry of pre-approved types — see [[Topological Framework Future Work]] §5). The `rtm:Requirement` / `rtm:Guidance` / `rtm:Artifact` type definitions provide a candidate type catalog for that conversation, but the registry conversation belongs to the topological research line, not to `flexo-rtm`. This page documents the conceptual underpinning of that line; the type catalog is forward-compatible interop, not a `flexo-rtm` audit feature.
 
 ## RDF representation summary
 
@@ -158,17 +158,18 @@ ex:judge-22 a rtm:DeferredJudgment ;
     rtm:deferredAtTime "2026-05-14T16:00:00Z"^^xsd:dateTime .
 ```
 
-The above is valid v0.1 RDF, will round-trip through the storage layer, and will be accepted by the v0.1 SHACL gate. The face audit it *enables* — "is the safety-aspect (Artifact, Requirement, Guidance) triangle closed for `ex:req-17`?" — is the future-framework audit deferred per [[Design Spec]] §9.A.6 D1. The vocabulary is ready; the audit will follow.
+The above is valid v0.1 RDF, will round-trip through the storage layer, and will be accepted by the v0.1 SHACL gate. The face audit it *enables* — "is the safety-aspect (Artifact, Requirement, Guidance) triangle closed for `ex:req-17`?" — belongs to the topological research line per [[Design Spec]] §9.A.6 D1; an adopter who runs that audit as a downstream-analysis mode reads this vocabulary natively. `flexo-rtm` itself does not ship the audit and does not commit to it.
 
 ## Cross-references
 
-- [[Design Spec]] §4.1 (traditional bidirectional traceability; v0.1 primary), §4.2 (vocabulary carried in v0.1), §4.3 (attestation infrastructure), §4.10 (topological framework future work), §9.A.6 D1/D4 (deferred acceptance criteria), §11 D12/D13 (direct-property edges and derived-view simplicial complex).
-- [[Topological Framework Future Work]] — deferral discussion, registry concept, recursion challenge, open questions.
-- [[Topological Framework Future Work]] — companion page on the simplicial-complex framing.
-- [[Certification Predicate]] — the predicate the closed-face audit will compute.
-- [[Gap Taxonomy]] — T1–T8 (v0.1) versus G3–G9 (future framework) gap codes.
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — names the topological framework as one related research line; this page documents the framework's type catalog as such, not as `flexo-rtm`'s data model destination.
+- [[ADR-020 Vocabulary Alignment with Zargham 2026]] — vocabulary alignment as forward-compatible interop.
+- [[Design Spec]] §4.1 (traditional bidirectional traceability; what `flexo-rtm` IS), §4.2 (vocabulary aligned with the topological research line), §4.3 (attestation infrastructure), §4.10 (topological framework as related research line), §9.A.6 D1/D4 (topology-line acceptance criteria), §11 D12/D13 (direct-property edges and derived-view simplicial complex).
+- [[Topological Framework Future Work]] — the related research line, registry concept, recursion challenge, open questions.
+- [[Certification Predicate]] — the v0.1 certification predicate; the topological closed-face predicate is one possible downstream composition adopters may choose.
+- [[Gap Taxonomy]] — T1–T8 (v0.1) versus G3–G9 (topology-line, downstream-analysis only) gap codes.
 - [[GSN Integration]] — adequacy/sufficiency as Solution + Justification mapping.
 - [[Layered Ontology]] — where `rtm:` sits among upstream ontologies (BFO, IOF Core, SysMLv2, PROV-O, EARL, SHACL).
-- [[Attestation Infrastructure in v0.1]] — the v0.1 named-approver discipline the validation edge requires.
+- [[Attestation Infrastructure in v0.1]] — `flexo-rtm`'s named-approver discipline.
 - [[External URI References]] — how artifact vertices carry git+commit / content-hash / OCI digest URIs.
-- [[Traditional Forward and Backward Analysis]] — the v0.1 audit that runs over `rtm:satisfies` today.
+- [[Traditional Forward and Backward Analysis]] — the analysis `flexo-rtm` v0.1 ships over `rtm:satisfies`.

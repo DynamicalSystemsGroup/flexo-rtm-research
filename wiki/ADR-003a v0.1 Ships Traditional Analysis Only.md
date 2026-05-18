@@ -22,16 +22,16 @@ Once the topological framework is deferred (see [[ADR-003 Topological Framework 
 - Single coherent v0.1 analysis story: traditional bidirectional analysis with quantitative coverage; named-approver attestation as a separate, well-scoped v0.1 capability
 - Eliminates the half-shipped Level 2 problem — no partial topological audit that depends on registry decisions deferred to future work
 - Traditional analysis is trusted and familiar to RTM practitioners; v0.1 adoption is not gated on understanding the topological framework
-- Forward-compatible: today's attestations (see [[ADR-021 Three Attestation Subclasses Ship in v0.1]]) become the inputs the future closed-triangle audit will aggregate
+- Forward-compatible interop (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]): today's attestations (see [[ADR-021 Three Attestation Subclasses Ship in v0.1]]) are independently meaningful as `flexo-rtm`'s named-signer accountability, and equally readable by any downstream-analysis path adopters may choose (topological closed-triangle audit, SLSA, GSN, ARP4754A, in-house)
 
 ### Negative / Tradeoffs
 
 - v0.1 does not deliver the topological framework's headline claim ("the RTM is closed iff every face is approved by a registered type") — adopters expecting that from the Zargham 2026 paper get traditional analysis plus accountability infrastructure instead
-- Some sophistication of the future framework is invisible to v0.1 users — `rtm:AssuranceFace` instances may exist in their graph (via vocabulary forward-compatibility) without any v0.1 tooling that consumes them
+- Some sophistication of the topological research line is invisible to v0.1 users — `rtm:AssuranceFace` instances may exist in their graph (via vocabulary alignment per [[ADR-020 Vocabulary Alignment with Zargham 2026]]) without any v0.1 tooling that consumes them. That is by design: `flexo-rtm` does not commit to the topological audit, and adopters who choose to run topological analysis as a downstream-analysis mode read the data without translation
 
 ### Neutral
 
-- The collapse simplifies the design spec's deferral story to a single sentence: v0.1's analysis is traditional, the topological framework is future work. Vocabulary still ships forward-compatibly (see [[ADR-020 Vocabulary Alignment with Zargham 2026]])
+- The collapse simplifies the design spec's framing: `flexo-rtm` v0.1's analysis is traditional bidirectional + named-signer attestation, and the topological framework is a related research line, not `flexo-rtm`'s destination (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]). Vocabulary alignment ships as forward-compatible interop (see [[ADR-020 Vocabulary Alignment with Zargham 2026]])
 
 ## Alternatives Considered
 

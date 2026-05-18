@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Gap Taxonomy
 
-> The canonical enumeration of gap codes that a `flexo-rtm` v0.1 audit report can produce, plus the gap codes documented as future-framework material. The taxonomy is the lingua franca between the certification predicate, the audit report, the SHACL profiles, and adopters' workflow tooling. Normative source: [[Design Spec]] §4.7. Deferred codes referenced against §9.A.6 (D1, D2).
+> The canonical enumeration of gap codes that a `flexo-rtm` v0.1 audit report can produce, plus the gap codes documented as topology-line material (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — only meaningful if an adopter runs the optional topological audit as a downstream-analysis mode). The taxonomy is the lingua franca between the certification predicate, the audit report, the SHACL profiles, and adopters' workflow tooling. Normative source: [[Design Spec]] §4.7. Topology-line codes referenced against §9.A.6 (D1, D2).
 
 ## What a "gap" is
 
@@ -88,7 +88,7 @@ SELECT ?art ?req WHERE {
 
 **Profile-gating.** Active only with `--profile=attested-adequacy`. Adequacy is conceptually independent of satisfaction (see [[Aspect Coverage with Adequacy and Sufficiency]]), so adopters typically turn this on after `attested-satisfies` has stabilized.
 
-**Resolution.** Add an `rtm:AdequacyAttestation` — a named human confirms the model is adequate for the claim. The criterion is usually tied to a coupling-level `rtm:AdequacyCriteria` guidance vertex; v0.1 does not check that guidance recursively (the recursive check is deferred — see [[Topological Framework Future Work]]) but does require a named approver on the adequacy claim itself.
+**Resolution.** Add an `rtm:AdequacyAttestation` — a named human confirms the model is adequate for the claim. The criterion is usually tied to a coupling-level `rtm:AdequacyCriteria` guidance vertex; v0.1 does not check that guidance recursively (recursive guidance checking is a problem in the topological research line, not part of `flexo-rtm` — see [[Topological Framework Future Work]]) but does require a named approver on the adequacy claim itself.
 
 ### T5.unattested-sufficiency
 
@@ -188,19 +188,19 @@ SELECT ?att WHERE {
 
 A v0.1 adopter chooses the level of attestation discipline appropriate to the program's maturity. With no optional profiles active, the audit reports $T1$, $T2$, $T6$, $T9$, and $T10$ (informational) — traditional bidirectional analysis plus failed-, deprecated-, and deferred-attestation surfacing. As programs mature, they add `attested-satisfies`, then `attested-adequacy`, then `attested-sufficiency`, and finally `aspect-coverage`; each profile activates a new gap code with a deterministic SHACL/SPARQL check. Programs running production certifications add `--profile=no-deferred` to make deferred attestations cert-blocking. Tightening the audit does not require rewriting the data, only switching on the next profile. See [[Attestation Infrastructure in v0.1]] for the profile catalogue and [[Operational Layer UX Discipline]] for how adoption is sequenced.
 
-## G3–G9: future-framework gap codes
+## G3–G9: topology-line gap codes
 
-The `G`-prefixed codes are documented for forward planning. They depend on the deferred topological framework and the registry of pre-approved guidance/artifact types; they are NOT reported by v0.1. Normative source: [[Design Spec]] §4.7 and §9.A.6 (acceptance criteria D1 and D2). The framework itself is described in [[Topological Framework Future Work]].
+The `G`-prefixed codes are gap codes that would be meaningful **only if an adopter runs the topological audit as a downstream-analysis mode** (per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]). They depend on the topological research line maturing into an applied audit, on a registry of pre-approved guidance/artifact types existing, and on the adopter choosing to run that audit; they are NOT reported by v0.1, and `flexo-rtm` does not commit to ever producing them. Normative source: [[Design Spec]] §4.7 and §9.A.6 (topology-line acceptance criteria D1 and D2). The research line itself is described in [[Topological Framework Future Work]].
 
-- **`G3.uncoupled`** — a requirement is not paired with the Guidance vertices the framework expects (`rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, etc.). Surfaces only once coupling edges and the registry exist.
-- **`G4.assurance-triangle-incomplete`** — an assurance triangle (the closed face the framework audits) is missing one or more edges. Requires the closed-triangle audit gate (D1).
-- **`G5`** — **structurally absent in the future framework, just as $T7$ is in v0.1.** The framework's SHACL gate on validation edges would reject any without an approver IRI. The code is reserved in the enumeration for diagnostic completeness only.
+- **`G3.uncoupled`** — a requirement is not paired with the Guidance vertices a topological audit would expect (`rtm:AdequacyCriteria`, `rtm:SufficiencyCriteria`, etc.). Surfaces only if coupling edges are populated and a registry-rooted audit is run.
+- **`G4.assurance-triangle-incomplete`** — an assurance triangle (the closed face a topological audit reads) is missing one or more edges. Requires the closed-triangle audit pass (D1).
+- **`G5`** — **structurally absent under the topological audit's SHACL gate, just as $T7$ is in v0.1.** The audit's SHACL gate on validation edges would reject any without an approver IRI. The code is reserved in the enumeration for diagnostic completeness only.
 - **`G6.assurance-triangle-stale`** — a triangle is structurally closed but the content hashes of its constituents have diverged since closure; the closure no longer reflects current state.
 - **`G7.recursive-incompleteness`** — guidance referenced by an attestation is itself not assured. Catching this requires the registry-driven recursive completeness audit (D2).
-- **`G8.dangling-sysml-ref`** — an edge points to an `omg-sysml:` IRI not in scope. This can surface descriptively in v0.1 audit reports under [[External URI References]], but only the future framework gives it semantic weight as an audit failure.
-- **`G9.registry-unknown-type`** — an artifact or guidance type is not in the pre-approved registry. The registry is part of the deferred framework.
+- **`G8.dangling-sysml-ref`** — an edge points to an `omg-sysml:` IRI not in scope. This can surface descriptively in v0.1 audit reports under [[External URI References]], but only a topological audit gives it semantic weight as an audit failure.
+- **`G9.registry-unknown-type`** — an artifact or guidance type is not in the pre-approved registry. The registry is internal to the topological research line.
 
-The G-codes are tracked in the codebase enumeration alongside the T-codes so downstream tooling has stable identifiers for the eventual transition. A v0.1 audit report MUST NOT emit G-code rows; the certification predicate MUST NOT depend on them. Adopters interested in the eventual topological audit can follow [[Topological Framework Future Work]] and the D1/D2 future tests in [[Design Spec]] §9.A.6.
+The G-codes are tracked in the codebase enumeration alongside the T-codes so any downstream-analysis tooling that materializes has stable identifiers. A v0.1 audit report MUST NOT emit G-code rows; the certification predicate MUST NOT depend on them. Adopters interested in the topological audit as a downstream-analysis path can follow [[Topological Framework Future Work]] and the D1/D2 topology-line tests in [[Design Spec]] §9.A.6.
 
 ## Scope-relativity recap
 
@@ -220,15 +220,16 @@ Every gap code above is evaluated against the graph subset chosen by the active 
 | $T8$ | §4.7, §4.3 | `aspect-coverage` |
 | $T9$ | §4.7, §4.3, ADR-031 | always on (cert-blocking by default; informational under `accept-deprecated`) |
 | $T10$ | §4.7, §4.3, ADR-031 | always on as informational; cert-blocking under `no-deferred` |
-| $G3$–$G9$ | §4.7, §9.A.6 (D1, D2) | future framework only |
+| $G3$–$G9$ | §4.7, §9.A.6 (D1, D2) | topology-line only (downstream-analysis mode) |
 
 ## Cross-links
 
-- [[Design Spec]] — §4.7 normative source for the gap taxonomy; §4.3 attestation subclasses that generate $T3$–$T10$; §9.A.6 (D1, D2) for the deferred capabilities that the G-codes depend on.
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — names the topological framework as one related research line; the G-codes are downstream-analysis gap codes, not deferred `flexo-rtm` features.
+- [[Design Spec]] — §4.7 normative source for the gap taxonomy; §4.3 attestation subclasses that generate $T3$–$T10$; §9.A.6 (D1, D2) for the topology-line capabilities that the G-codes depend on.
 - [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] — locked decision introducing the four-state attestation status vocabulary that generates $T9$ and $T10$ and refines $T6$.
 - [[Certification Predicate]] — how gap enumeration composes into the PASS/FAIL grade.
 - [[Aspect Coverage with Adequacy and Sufficiency]] — the per-aspect rollup that $T8$ checks.
 - [[Operational Layer UX Discipline]] — how the audit report surfaces gaps to practitioners.
 - [[Traditional Forward and Backward Analysis]] — $T1$ and $T2$ in their forward/backward context.
 - [[Attestation Infrastructure in v0.1]] — the SHACL discipline and composable profiles that produce $T3$–$T8$.
-- [[Topological Framework Future Work]] — the deferred framework that the G-codes depend on.
+- [[Topological Framework Future Work]] — the topological research line that the G-codes are meaningful under.

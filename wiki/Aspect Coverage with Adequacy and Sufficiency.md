@@ -124,14 +124,14 @@ An adopter typically enables `aspect-coverage` after their attestation disciplin
 
 ## What v0.1 does NOT do for aspect coverage
 
-The boundary against the deferred topological framework is sharper here than elsewhere in v0.1, because adequacy and sufficiency attestations are exactly the inputs the future framework will aggregate. v0.1 collects, types, tags, and audits whether they are present and approved. It does **not**:
+Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the boundary between `flexo-rtm` and the topological research line is sharp: adequacy and sufficiency attestations are part of what `flexo-rtm` IS — settled engineering on named-signer accountability. The topological audit that would aggregate them into closed triangles is one possible downstream-analysis mode adopters may choose to run. v0.1 collects, types, tags, and audits whether attestations are present and approved. It does **not**:
 
-- **Check that `rtm:AdequacyCriteria` / `rtm:SufficiencyCriteria` are themselves assured.** The recursive completeness check — "is the guidance fit-for-purpose, given its own coupling to a parent rubric or standards clause?" — is the topological framework's job. v0.1 accepts criteria as ontology individuals; it does not audit their genealogy.
-- **Aggregate per-aspect attestations into closed assurance triangles.** The 2-simplex closure (specification + verification + validation coupled with attested guidance) is the future-framework gate. v0.1 reports per-aspect coverage as a matrix; it does not enforce that safety-aspect verification, validation, and coupling-to-guidance are all simultaneously present.
-- **Require the guidance to be registry-pre-approved.** The guidance registry — canonical store of fit-for-purpose criteria with their own attestation chains — is deferred.
-- **Compute V−F invariants.** The Euler-style invariant the future framework uses to detect aspect-coverage closure gaps is a property of a closed complex; v0.1 has no such complex.
+- **Check that `rtm:AdequacyCriteria` / `rtm:SufficiencyCriteria` are themselves assured.** Recursive guidance completeness ("is the guidance fit-for-purpose, given its own coupling to a parent rubric or standards clause?") is an open problem in the topological research line, not a `flexo-rtm` feature.
+- **Aggregate per-aspect attestations into closed assurance triangles.** The 2-simplex closure (specification + verification + validation coupled with attested guidance) belongs to the topological research line; `flexo-rtm` reports per-aspect coverage as a matrix and does not enforce simultaneous presence of safety-aspect verification, validation, and coupling-to-guidance.
+- **Require the guidance to be registry-pre-approved.** A guidance registry is internal to the topological research line, not part of `flexo-rtm`.
+- **Compute V−F invariants.** The Euler-style invariant the topological research line uses is a property of a closed complex; `flexo-rtm` has no such complex.
 
-Per [[Design Spec]] §4.2 / D22, the per-claim attestations are first-class v0.1 features; the recursive completeness audit is what's deferred. See [[Topological Framework Future Work]].
+Per [[Design Spec]] §4.2 / D22, the per-claim attestations are part of what `flexo-rtm` IS. Recursive completeness and closed-triangle aggregation belong to the topological research line as one possible downstream-analysis path. See [[Topological Framework Future Work]].
 
 ## Scope-level adequacy and sufficiency at composition scale
 
@@ -144,9 +144,9 @@ A third subject, `rtm:ScopeCertificationAttestation`, captures an individual org
 
 See [[Federated Audit and Composition]] for the canonical documentation, the four levels of certification a scope can carry (self → reproducibility audit → qualified-role audit → composition certification), and the org-level identity-projection extension that makes qualified-role attestations first-class. The decision is locked in [[ADR-028 Scope-Level Adequacy and Sufficiency for Federated Audit]].
 
-## Forward compatibility with the topological framework
+## Forward compatibility with downstream-analysis paths
 
-The matrix-view audit display, the typed subclasses, and the aspect tags are precisely the named-approver-bearing inputs the future framework will aggregate into closed assurance triangles. Each cell of v0.1's matrix corresponds to a future-framework face — when the topological audit lands, the gate becomes "for each aspect declared on a requirement, the matching (satisfaction, adequacy, sufficiency) triple must close a 2-simplex with the guidance coupling." Per-aspect coverage stats (v0.1) and per-aspect assurance-face closure (future) operate on the same attestation data. Adopters running v0.1 with `aspect-coverage` active accumulate compliant evidence for the future audit without retro-fit.
+Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], the matrix-view audit display, the typed subclasses, and the aspect tags are methodology-neutral. They are independently valuable as `flexo-rtm`'s per-aspect named-signer accountability, and consumable by any downstream-analysis path adopters may choose (topological, SLSA, GSN, ARP4754A, in-house). If an adopter runs topological analysis as a downstream-analysis mode, each cell of `flexo-rtm`'s matrix corresponds to one assurance face — the topological gate becomes "for each aspect declared on a requirement, the matching (satisfaction, adequacy, sufficiency) triple must close a 2-simplex with the guidance coupling." If an adopter runs a different downstream analysis, the same data is read differently. Per-aspect coverage stats (`flexo-rtm`) and per-aspect assurance-face closure (one possible downstream-analysis predicate) operate on the same attestation data.
 
 ## Cross-references
 

@@ -22,7 +22,7 @@ A satisfaction claim ("design element D satisfies requirement R") is mechanicall
 - Engineer judgment is **surfaced**, not hidden: an audit report can show "satisfaction coverage is 100% but adequacy attestation coverage is 30%" — which is exactly the gap a reviewer needs to see
 - GSN integration (see [[ADR-015 GSN Adoption for Adequacy and Sufficiency]]) maps cleanly to these subtypes — GSN's adequacy and sufficiency arguments become RDF-projectable
 - Attestation infrastructure (see [[ADR-021 Three Attestation Subclasses Ship in v0.1]]) is uniform across all three claim types: same SHACL named-approver enforcement, same coverage metrics, same audit report format
-- Forward-compatible to the topological framework (see [[ADR-003 Topological Framework Documented as Future Work]]): the future closed-triangle audit consumes adequacy and sufficiency attestations directly
+- Vocabulary aligns with the topological research line (see [[ADR-032 Methodology Agnosticism as Foundational Axiom]] and [[ADR-003 Topological Framework Documented as Future Work]]) as forward-compatible interop: an adopter who chooses to run topological analysis as a downstream-analysis mode can consume adequacy and sufficiency attestations directly. The same vocabulary is equally consumable by other downstream-analysis paths (SLSA, GSN, ARP4754A, in-house) — it is not topology-specific
 
 ### Negative / Tradeoffs
 
@@ -35,7 +35,7 @@ A satisfaction claim ("design element D satisfies requirement R") is mechanicall
 
 ## Alternatives Considered
 
-- **Single Guidance type with tagging:** Define one `rtm:Guidance` class and tag instances as `adequacy` or `sufficiency` via a property. Rejected: tagging is structurally weaker than subclassing — SHACL profiles cannot enforce per-type constraints as cleanly, and downstream consumers (audit reports, GSN tooling, the future topological framework) have to dispatch on tag values. Explicit subtypes make the distinction first-class in the ontology and in the attestation infrastructure that consumes it.
+- **Single Guidance type with tagging:** Define one `rtm:Guidance` class and tag instances as `adequacy` or `sufficiency` via a property. Rejected: tagging is structurally weaker than subclassing — SHACL profiles cannot enforce per-type constraints as cleanly, and downstream consumers (audit reports, GSN tooling, any topological or other downstream analysis adopters may choose to run) have to dispatch on tag values. Explicit subtypes make the distinction first-class in the ontology and in the attestation infrastructure that consumes it.
 
 ## Implementation Notes
 
@@ -47,3 +47,4 @@ A satisfaction claim ("design element D satisfies requirement R") is mechanicall
 - [[Aspect Coverage with Adequacy and Sufficiency]] — the coverage model and SPARQL recipes
 - [[ADR-015 GSN Adoption for Adequacy and Sufficiency]] — GSN as the elaborated argument structure
 - [[ADR-021 Three Attestation Subclasses Ship in v0.1]] — the attestation subclasses that surface these
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — methodology-neutral framing; vocabulary alignment with the topological research line is forward-compatible interop, not commitment to it as `flexo-rtm`'s destination

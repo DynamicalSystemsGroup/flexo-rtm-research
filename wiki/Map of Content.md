@@ -36,17 +36,17 @@ Comprehensive index of the `flexo-rtm-research` wiki. Every page is listed once 
 - [[Signed Envelopes and Established Standards]] — W3C VC-DI, DSSE, Sigstore, cosign, and signed git commits as the crypto substrate.
 - [[Aspect Coverage with Adequacy and Sufficiency]] — per-aspect, per-claim-type coverage matrix that drives the v0.1 outcome.
 - [[Federated Audit and Composition]] — scope-level adequacy and sufficiency layered on self-certification; new attestation subjects for reproducibility audits, qualified-role audits, and composition certification.
-- [[Certification Predicate]] — v0.1 basic predicate (thresholded coverage); brief note on the future-framework predicate.
-- [[Gap Taxonomy]] — T1–T8 ship in v0.1; G3–G9 documented as future-framework gap classes.
+- [[Certification Predicate]] — v0.1 basic predicate (thresholded coverage); brief note on the predicate an adopter running topological downstream analysis would compose on top.
+- [[Gap Taxonomy]] — T1–T8 ship in v0.1; G3–G9 are topology-line gap classes (only meaningful if an adopter runs the optional topological audit as a downstream-analysis mode).
 - [[Quantitative Outcomes]] — v0.1 metrics, configurable thresholds, and how the binary view is derived.
 
-## 4. Roadmap and future work
+## 4. Roadmap and related research lines
 
-Two distinct timelines apply here. **Engineering lifecycle stages** are **optional organizational-convenience metadata** — methodology-neutral with INCOSE / ISO 15288 as one example among many (DO-178C, NASA, Agile, ISO 9001, MIL-STD-498, custom phasing). The framework ships the vocabulary substrate but no privileged state machine; regression handling moves to the attestation level via [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] (v0.2 ships the deprecation cascade detection). The **topological framework**, by contrast, remains in research phase — its timeline depends on community-curated registry governance and open invariant research.
+Two distinct categories of pages live here. **`flexo-rtm`'s own roadmap items** include the methodology-neutral engineering lifecycle vocabulary — **optional organizational-convenience metadata** with INCOSE / ISO 15288 as one example among many (DO-178C, NASA, Agile, ISO 9001, MIL-STD-498, custom phasing). The framework ships the vocabulary substrate but no privileged state machine; regression handling moves to the attestation level via [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] (v0.2 ships the deprecation cascade detection). The **topological framework** is **not on `flexo-rtm`'s roadmap** — per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], it is a separate, related research line with philosophical kinship to `flexo-rtm`'s named-approver discipline. If that research line matures, the resulting audit operates as one optional downstream-analysis mode on top of `flexo-rtm`'s data, among several plausible ones (SLSA, GSN, ARP4754A, in-house). `flexo-rtm`'s release schedule does not depend on it.
 
-- [[Engineering Lifecycle Stages]] — optional `rtm:lifecycleStage` scope metadata; methodology-neutral with INCOSE / ISO 15288 as one example; no scope-level state machine in core.
-- [[Topological Framework Future Work]] — deferred (research-phase) vision, recursion structure, registry concept, open questions.
-- [[Vertices Edges Faces]] — future-framework type catalog (V, E, F) that generalizes traditional traceability.
+- [[Engineering Lifecycle Stages]] — optional `rtm:lifecycleStage` scope metadata; methodology-neutral with INCOSE / ISO 15288 as one example; no scope-level state machine in core. (`flexo-rtm` roadmap item.)
+- [[Topological Framework Future Work]] — the canonical reference for the related topological research line (Zargham 2026): recursion structure, registry concept, open questions, candidate invariants. Not `flexo-rtm`'s planned destination; one downstream-analysis path among several. (Research line, not `flexo-rtm` roadmap.)
+- [[Vertices Edges Faces]] — type catalog documenting the topological research line's vocabulary; aligned with v0.1 ontology per [[ADR-020 Vocabulary Alignment with Zargham 2026]] as forward-compatible interop, not as `flexo-rtm`'s data model destination.
 
 ## 5. Three-Layer Architecture
 
@@ -78,7 +78,7 @@ Two distinct timelines apply here. **Engineering lifecycle stages** are **option
 
 ## 9. Decision Log
 
-The Decision Log holds 32 ADRs (ADR-001 through ADR-031, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata; revised to optional + methodology-neutral) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment that underwrites the scope algebra; [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] introduces the four-state attestation status vocabulary (`rtm:status/{pass,fail,deferred,deprecated}`) and locks regression handling at the attestation level rather than via a scope-level state machine — the methodology-neutrality refactor that the [[Engineering Lifecycle Stages]] and [[INCOSE V2 Review]] pages reflect.
+The Decision Log holds 33 ADRs (ADR-001 through ADR-032, plus ADR-003a) plus an [[ADR Template]]. Each ADR documents one of the locked decisions from [[Design Spec]] §14 in the standard context/decision/consequences format. The full list is in the sidebar under **Decision Log**. ADR-028 (scope-level adequacy and sufficiency for federated audit) closes research issue #3; ADR-029 (engineering lifecycle stages as scope metadata; revised to optional + methodology-neutral) closes research issue #6; ADR-030 ([[ADR-030 Polycentric ASOT Authority Model]]) locks the polycentric ASOT institutional-topology commitment; [[ADR-031 Attestation Status Pass Fail Deferred Deprecated]] introduces the four-state attestation status vocabulary; [[ADR-032 Methodology Agnosticism as Foundational Axiom]] names methodology agnosticism as a foundational design axiom and clarifies that the topological framework is a related research line with philosophical kinship, not `flexo-rtm`'s planned destination.
 
 ## 10. Meta
 

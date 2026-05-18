@@ -2,11 +2,11 @@
 
 # Attestation Infrastructure in v0.1
 
-> The named-approver attestation discipline that ships in v0.1 — three typed attestation subclasses (`rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation`), each a `rdfs:subClassOf rtm:Attestation`, each governed by a single SHACL shape that rejects any attestation lacking a named human approver IRI. This is the accountability mechanism that is "by construction" rather than "by policy." It is independent of the deferred topological framework and ships in v0.1 because the [[ADCS Prototype Lessons]] regression corpus already depends on adequacy and sufficiency attestations today. Normative source: [[Design Spec]] §4.3. Acceptance criteria: §9.A.3 **I1** (schema-enforced approver) and §9.A.3 **I7** (git approver binding under `signed-commits` profile).
+> The named-approver attestation discipline that ships in v0.1 — three typed attestation subclasses (`rtm:SatisfactionAttestation`, `rtm:AdequacyAttestation`, `rtm:SufficiencyAttestation`), each a `rdfs:subClassOf rtm:Attestation`, each governed by a single SHACL shape that rejects any attestation lacking a named human approver IRI. This is the accountability mechanism that is "by construction" rather than "by policy." Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], named-signer accountability is part of what `flexo-rtm` IS — settled engineering independent of any specific downstream-analysis methodology. The [[ADCS Prototype Lessons]] regression corpus already depends on adequacy and sufficiency attestations. Normative source: [[Design Spec]] §4.3. Acceptance criteria: §9.A.3 **I1** (schema-enforced approver) and §9.A.3 **I7** (git approver binding under `signed-commits` profile).
 
 ## Purpose and scope
 
-`flexo-rtm` v0.1 ships three kinds of attestation as first-class typed RDF assertions. Each is an independent claim by a named human about a single subject, and each is rejected at write time if no approver is named. The discipline is narrower than the full topological audit Zargham (2026) describes — there is no closed-triangle gate, no recursive completeness check on guidance, and no V−F invariant computation. Those are deferred. **The typed attestations are well-defined as individual assertions; aggregating them into closed assurance faces is what waits.**
+`flexo-rtm` v0.1 ships three kinds of attestation as first-class typed RDF assertions. Each is an independent claim by a named human about a single subject, and each is rejected at write time if no approver is named. This is `flexo-rtm`'s named-signer accountability discipline — narrower in scope than the full topological audit Zargham (2026) describes (no closed-triangle gate, no recursive completeness check on guidance, no V−F invariant computation), and intentionally so. The topological audit belongs to a separate research line ([[Topological Framework Future Work]]); if an adopter chooses to run it as a downstream-analysis mode, the data is forward-compatible — but `flexo-rtm` does not commit to it. **The typed attestations are well-defined as individual assertions on their own.**
 
 This page specifies what v0.1 ships, the SHACL shape that makes the discipline structural, the composable profiles, and the boundary against the deferred framework. Normative source: [[Design Spec]] §4.3. Gap codes: [[Gap Taxonomy]] (§4.7). Git side: [[Approver Binding via Git]]. Accountability motivation: [[Human-AI Accountability]].
 
@@ -16,7 +16,7 @@ Two arguments converge.
 
 **Regression need.** The [[ADCS Prototype Lessons]] corpus — the ground-truth dataset against which `flexo-rtm` regressions run — already records adequacy and sufficiency attestations as `rtm:Attestation` instances with `earl:result` outcomes and `prov:` provenance. v0.1 has to read and round-trip those graphs without semantic loss; the three subclasses with a named-approver SHACL shape are the minimum satisfying the regression contract.
 
-**Independent value.** Named-approver accountability is independently useful before any topological aggregation. A claim that "this artifact satisfies this requirement" is well-typed regardless of whether the surrounding triangle has closed. The adopter who turns on `attested-satisfies` today gets the "by construction" property — they cannot persist an unsigned attestation — without waiting for the registry-dependent recursive audit. Structural accountability is achieved by making the schema reject the unaccountable case, not by trusting reviewers to enforce a recommendation.
+**Independent value.** Named-approver accountability is meaningful on its own — `flexo-rtm`'s named-signer discipline, per [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — not as preparation for any specific downstream-analysis methodology. A claim that "this artifact satisfies this requirement" is well-typed regardless of whether any closed triangle exists. The adopter who turns on `attested-satisfies` today gets the "by construction" property — they cannot persist an unsigned attestation. Structural accountability is achieved by making the schema reject the unaccountable case, not by trusting reviewers to enforce a recommendation.
 
 ## The three attestation subclasses
 
@@ -110,23 +110,23 @@ A multi-aspect requirement (one that declares aspects like `rtm:safety`, `rtm:se
 
 The named-approver IRI is enforced at the SHACL gate; the binding between that IRI and a real human action is enforced at the git layer. The full chain is documented in [[Approver Binding via Git]]. The relevant guarantee here is §9.A.3 **I7**: when the `signed-commits` profile is active, any git commit that introduces an attestation triple MUST be GPG- or SSH-signed by a key whose fingerprint matches the `rtm:approvedBy` IRI's published key. A pre-commit hook and a GitHub Actions check both verify this, applied uniformly to all three subclasses. The test is `tests/integration/git/test_approver_binding.py`. Together, **I1** (SHACL-enforced approver IRI) and **I7** (cryptographic binding from IRI to commit signer) compose into the end-to-end guarantee: an attestation exists in the graph only if a named approver signed for it, and a signed commit introducing one only verifies if the signer matches the named approver.
 
-## Why per-claim attestations are not deferred (the boundary)
+## Why per-claim attestations are part of what `flexo-rtm` IS
 
-An attestation is an independent assertion by a named human about a single claim. Its semantics do not depend on whether the surrounding assurance triangle is closed, whether the guidance it implicitly invokes has itself been attested, or whether the V−F invariant balances. Those are properties of an *aggregation* of attestations, not of any individual one. Adequacy and sufficiency, as individual judgments, are well-defined; the [[ADCS Prototype Lessons]] corpus demonstrates them in operation. What is deferred is the *aggregation step* — building closed assurance faces, auditing that every coupling has guidance, checking that guidance is recursively assured. Those steps require the guidance registry (deferred), the closed-triangle gate (deferred), and the recursive completeness audit (deferred).
+An attestation is an independent assertion by a named human about a single claim. Its semantics do not depend on whether any surrounding assurance triangle is closed, whether the guidance it implicitly invokes has itself been attested, or whether some V−F invariant balances. Those are properties of an *aggregation* of attestations, not of any individual one. Per [[ADR-032 Methodology Agnosticism as Foundational Axiom]], named-signer attestation is part of what `flexo-rtm` IS — settled engineering composed of W3C VC Data Integrity, SLSA in-toto, Sigstore + Fulcio, git GPG/SSH signing, NIST SP 800-63, and W3C SHACL — independent of any specific downstream-analysis methodology. Adequacy and sufficiency, as individual judgments, are well-defined; the [[ADCS Prototype Lessons]] corpus demonstrates them in operation.
 
-The corollary is forward compatibility. The triples written under v0.1 carry exactly the fields the future framework needs: named approver, typed subject, aspect tag, EARL result, PROV provenance. When the topological framework lands, aggregation builds on top of this data without retro-fitting. Adopters running v0.1 today are accumulating compliant evidence for the future audit.
+The corollary is forward-compatible interop. The triples written under v0.1 carry the fields any downstream-analysis path needs: named approver, typed subject, aspect tag, EARL result, PROV provenance. Adopters who choose to run topological analysis as a downstream-analysis mode read them as named-approver-bearing inputs to closed-triangle audits; adopters running SLSA, GSN, ARP4754A, or in-house analyses read them equally.
 
-## What v0.1 does NOT do
+## What `flexo-rtm` does NOT do
 
-The boundary against the future framework, stated plainly:
+The boundary between `flexo-rtm` and downstream-analysis paths (topological, SLSA, GSN, ARP4754A, in-house) — per [[ADR-032 Methodology Agnosticism as Foundational Axiom]]:
 
-- **Does not enforce closed assurance triangles.** The 2-simplex closure (verification + validation + spec/guidance coupling all present) is the topological gate Zargham (2026) describes; v0.1 does not check it.
-- **Does not check "is this guidance itself fit-for-purpose?"** That is the recursive completeness check on the guidance dimension. It requires the registry of guidance documents and an audit pass over the guidance graph. Deferred.
-- **Does not run recursive completeness audits.** Reaching guidance-of-guidance-of-guidance until a self-attesting base case is found is part of the topological audit, not part of v0.1.
-- **Does not compute V−F invariants.** The Euler-style invariant the framework uses to detect coverage gaps is a property of the closed complex; v0.1 has no such complex.
+- **Does not enforce closed assurance triangles.** The 2-simplex closure (verification + validation + spec/guidance coupling all present) is a topological-audit gate from the research line ([[Topological Framework Future Work]]); `flexo-rtm` does not check it and does not commit to it.
+- **Does not check "is this guidance itself fit-for-purpose?"** Recursive completeness is an open problem in the topological research line, requiring a community-curated registry; it is not a `flexo-rtm` feature.
+- **Does not run recursive completeness audits.** Reaching guidance-of-guidance-of-guidance until a self-attesting base case is found belongs to the topological research line.
+- **Does not compute V−F invariants.** The Euler-style invariant is a property of the closed complex an adopter would construct in a topological downstream audit; `flexo-rtm` has no such complex.
 - **Does not verify aspect coverage as a closure property.** The `aspect-coverage` profile checks declared aspects, not topologically derived ones.
 
-All of these live in the future topological framework; see [[Topological Framework Future Work]] for the deferred-features roadmap.
+All of these live in the topological research line or other downstream-analysis paths adopters may choose to run; see [[Topological Framework Future Work]] for the canonical reference to the topological line.
 
 ## Coverage and audit reporting
 
@@ -151,6 +151,7 @@ The three subclasses map cleanly to the forward/backward primitives in [[Traditi
 - [[Aspect Coverage with Adequacy and Sufficiency]] — per-aspect attestation rollup and the `aspect-coverage` profile.
 - [[Gap Taxonomy]] — full enumeration of T-codes the audit surfaces.
 - [[Quantitative Outcomes]] — how coverage % and gap counts appear in audit reports.
-- [[Topological Framework Future Work]] — the deferred aggregation and closure features.
+- [[Topological Framework Future Work]] — the topological research line as one possible downstream-analysis path; not `flexo-rtm`'s destination.
+- [[ADR-032 Methodology Agnosticism as Foundational Axiom]] — names named-signer accountability as part of what `flexo-rtm` IS, independent of any specific downstream-analysis methodology.
 - [[Human-AI Accountability]] — why named-approver accountability matters in the LLM-assisted authoring era.
 - [[ADCS Prototype Lessons]] — the regression corpus that exercises the three subclasses today.
