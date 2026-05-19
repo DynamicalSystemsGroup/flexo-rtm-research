@@ -6,6 +6,18 @@
 
 The **research and specification** repo for `flexo-rtm` — a verifiable self-certification oracle for bidirectional requirements traceability of SysMLv2 models. Design lives here as wiki pages, ADRs, and open issues. **Code lives elsewhere**, in [`flexo-rtm`](https://github.com/DynamicalSystemsGroup/flexo-rtm).
 
+## Where to start (resuming cold)
+
+If you're picking this project up from scratch (new session, new contributor, returning after a break), read these in order:
+
+1. **This file** — the double-loop architecture + coupling-loop discipline (the rest of this page).
+2. **The two wiki dashboards** — [Open Issues — Research](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/wiki/Open-Issues---Research) and [Open Issues — Implementation](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/wiki/Open-Issues---Implementation). These are the **live status board**: what's pending, what's blocked, what's cross-linked between the two repos. The roadmap IS the open issues; there is no separate roadmap doc to chase.
+3. **[`User Testing Experiment 1`](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/wiki/User-Testing-Experiment-1)** — the most recent UAT consolidation. Captures what the framework's current vocabulary gaps are (research-repo #29–#34), what was parked for the next experiment, and the synthesis driving v0.2's direction. The next UAT (Experiment #2) builds on this.
+
+Together these three documents reconstruct the project's current state and direction. No additional context required. Plan files in `~/.claude/plans/` are session-scoped and not load-bearing.
+
+For implementation work specifically, also read [`flexo-rtm/CLAUDE.md`](https://github.com/DynamicalSystemsGroup/flexo-rtm/blob/main/CLAUDE.md) — same architectural framing seen from the development side, plus the skill routing + permission model.
+
 ## The double-loop architecture
 
 `flexo-rtm`'s development discipline pairs two loops, one per repo, plus a coupling loop between them. Get this framing right and the two repos divide labor cleanly; get it wrong and changes wander between the two without ever landing.
