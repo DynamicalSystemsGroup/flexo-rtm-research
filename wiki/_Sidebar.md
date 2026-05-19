@@ -84,6 +84,11 @@
 - [[Transcript Replay Semantics]]
 - [[Approver Binding via Git]]
 
+### Open issues
+
+- [[Open Issues - Research]]
+- [[Open Issues - Implementation]]
+
 ### Decision Log
 
 - [[ADR Template]]
