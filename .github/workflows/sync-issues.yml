@@ -6,33 +6,30 @@
 # regenerated markdown differs from what's checked in, commit it to
 # `main` and propagate to the published GitHub wiki.
 #
-# Manual setup:
+# Both flexo-rtm and flexo-rtm-research are public repos, so the
+# default GITHUB_TOKEN covers the cross-repo issue reads (public reads
+# work either unauthenticated or with any valid token; the token here
+# just gets us 5000 req/hr instead of 60 req/hr). The repo's workflow
+# permissions are set to "Read and write permissions" repo-wide, which
+# gives GITHUB_TOKEN write access to both the main branch (for
+# committing regenerated pages) and the wiki repo (which uses the same
+# contents:write scope).
 #
-#   1. Create a fine-grained personal access token (PAT) with READ
-#      access to issues on both DynamicalSystemsGroup/flexo-rtm and
-#      DynamicalSystemsGroup/flexo-rtm-research, AND write access to
-#      this repo's contents (for committing) AND its wiki, then store
-#      it as the repo secret `ISSUE_SYNC_PAT`.
+# Setup is therefore zero-config: drop the workflow in, enable Actions,
+# done. No PATs to manage.
 #
-#      Why a PAT rather than secrets.GITHUB_TOKEN: the default token is
-#      scoped to the repo running the workflow. We need to enumerate
-#      issues across BOTH repos.
-#
-#   2. To trigger this workflow when issues change in the impl repo
-#      (cross-repo dispatch), add a small companion workflow in the
-#      impl repo that emits a `repository_dispatch` event of type
-#      `impl-repo-issue-changed` to this repo. The dispatch trigger is
-#      already wired here; see the bottom of this file for the snippet
-#      to paste into the impl repo. Until that's in place, daily cron +
-#      manual dispatch are the fallback.
+# Cross-repo trigger (optional): to refresh the dashboards immediately
+# when an issue changes in the impl repo (rather than waiting for cron),
+# paste the companion workflow snippet (at the bottom of this file)
+# into the impl repo. That companion DOES need a small PAT — see the
+# snippet for details — but it's an opt-in optimization.
 #
 # Security discipline:
 #
 # All user-controllable event data is routed through env vars, never
 # interpolated directly into `run:` shell strings. The only ${{ }}
-# substitutions inside shell are repository identifiers and runner
-# paths, both GitHub-controlled. Secrets are passed via env / with:,
-# never embedded in URLs.
+# substitutions inside shell context are repository identifiers and
+# runner-controlled paths.
 
 name: Sync open-issue wiki dashboards
 
@@ -72,20 +69,18 @@ jobs:
       - name: Checkout main repo
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.ISSUE_SYNC_PAT }}
           path: main
 
       - name: Checkout published wiki repo
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}.wiki
-          token: ${{ secrets.ISSUE_SYNC_PAT }}
           path: wiki-repo
 
       - name: Regenerate wiki dashboards
         working-directory: main
         env:
-          GH_TOKEN: ${{ secrets.ISSUE_SYNC_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           scripts/sync-issues-to-wiki.sh
 
@@ -115,21 +110,21 @@ jobs:
       - name: Sync to published wiki
         if: steps.commit.outputs.no_change != 'true'
         env:
-          MAIN_REPO_DIR: ${{ github.workspace }}/main
           WIKI_REPO: ${{ github.workspace }}/wiki-repo
         working-directory: main
         run: |
-          # sync-wiki.sh assumes the wiki repo lives at <MAIN_REPO>.wiki by
-          # default; the WIKI_REPO env override redirects it to our
-          # workspace-local checkout (which already has the right token
-          # baked into its remote config via actions/checkout).
+          # sync-wiki.sh resolves WIKI_REPO from env when set,
+          # otherwise falls back to <MAIN_REPO>.wiki sibling. The
+          # workspace-local checkout already has its remote configured
+          # with the GITHUB_TOKEN baked in via actions/checkout.
           scripts/sync-wiki.sh
 
 # -----------------------------------------------------------------------------
 # Companion workflow snippet — paste into the impl repo
 # (DynamicalSystemsGroup/flexo-rtm) so its issue events fire a dispatch
-# to this repo. Add as `.github/workflows/notify-research-on-issues.yml`
-# in the impl repo:
+# to this repo immediately rather than waiting for the daily cron. Add
+# as `.github/workflows/notify-research-on-issues.yml` in the impl
+# repo:
 #
 # ```yaml
 # name: Notify research repo on issue change
@@ -147,6 +142,7 @@ jobs:
 #           event-type: impl-repo-issue-changed
 # ```
 #
-# The PAT in the impl repo only needs `repository_dispatch` write on
-# this research repo. Cron + manual dispatch are the fallback for
-# adopters who don't set this up.
+# The PAT here only needs `repository_dispatch` write on this research
+# repo — the default GITHUB_TOKEN can't cross repo boundaries to
+# trigger workflows. The companion is purely a latency optimization;
+# the cron + manual dispatch are the fallback.
