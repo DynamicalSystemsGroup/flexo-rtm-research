@@ -61,6 +61,30 @@ The coupling loop is the load-bearing piece. Without it, the research repo becom
 
 This is the same discipline the engineer skill enforces ([`tests/acceptance/01-engineer-walkthrough.md`](https://github.com/DynamicalSystemsGroup/flexo-rtm/blob/main/tests/acceptance/01-engineer-walkthrough.md) demonstrates it): never paraphrase, never silently resolve, always file when in doubt.
 
+### User testing as structured coupling
+
+The coupling loop has two channels, and they are not equivalent:
+
+1. **Ad-hoc behavior observation.** A CI failure, an integration test surprise, a bug report, a live-test divergence (the v0.1 build's slice-time issues, [#11–#22](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues?q=is%3Aissue+is%3Aclosed)). Filed when noticed; cadence is whatever-the-code-makes-you-find.
+
+2. **Structured user testing (UAT).** A deliberate, scheduled exercise of the shipped framework against a realistic engineering arc, with a human driving the skills and the LLM running the catechisms. Findings are captured inline as research-repo issues; the experiment ends with a consolidation page in the wiki.
+
+UAT is the structured face of the coupling loop. CI verifies that the framework runs mechanically (constructor commits, audits produce JSON, push lands on Flexo); UAT validates whether **the framework expresses what an engineer actually needs to say**. CI cannot replace UAT — verification cannot substitute for validation. The two layers are complementary and the coupling loop fires through both.
+
+**Cadence and artifacts:**
+
+| Artifact | Repo | Convention |
+|---|---|---|
+| Walkthrough script | `flexo-rtm` | [`tests/acceptance/N-<role>-walkthrough.md`](https://github.com/DynamicalSystemsGroup/flexo-rtm/tree/main/tests/acceptance) — versioned per skill role; engineer / reviewer / auditor / reconcile so far |
+| Findings (inline) | both | Filed as GitHub issues during the experiment, never buffered |
+| Consolidation page | this repo | `wiki/User Testing Experiment <N>.md` — numbered; covers scope actually covered, findings, links to filed issues, synthesis |
+
+**The first experiment** is [`User Testing Experiment 1`](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/wiki/User-Testing-Experiment-1) — engineer-skill walkthrough on the ADCS arc, completed REQ-001's pre-commitment layer, surfaced [#29–#34](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues?q=is%3Aissue+is%3Aopen+number%3A29..34). That experiment's pattern is the template: scope, findings, issues, synthesis, what's parked for the next experiment.
+
+**Each experiment numbered separately.** Experiment #N's consolidation references Experiment #(N–1)'s parked work and may extend or invalidate prior findings. The numbered series is the auditable record of "how the framework evolves under contact with real engineering."
+
+**The framework's evolution is driven by UAT findings.** v0.1 was built against the Design Spec's 45 acceptance criteria (verification ground). v0.2's vocabulary work (the GSN promotion direction, the precondition vocabulary, the temporal partition, the model-vs-evidence partition) is driven by Experiment #1's findings (validation ground). The two are not interchangeable: 45 acceptance criteria do not anticipate every engineering primitive an engineer wants to express; only running the framework against a real arc surfaces those.
+
 ## Where work lives in this repo
 
 | What | Where |
