@@ -1,0 +1,152 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Regenerate the open-issue wiki dashboards (Open Issues - Research /
+# Open Issues - Implementation) whenever issues change in this repo, in
+# the impl repo, on a daily cron, or on manual dispatch. If the
+# regenerated markdown differs from what's checked in, commit it to
+# `main` and propagate to the published GitHub wiki.
+#
+# Manual setup:
+#
+#   1. Create a fine-grained personal access token (PAT) with READ
+#      access to issues on both DynamicalSystemsGroup/flexo-rtm and
+#      DynamicalSystemsGroup/flexo-rtm-research, AND write access to
+#      this repo's contents (for committing) AND its wiki, then store
+#      it as the repo secret `ISSUE_SYNC_PAT`.
+#
+#      Why a PAT rather than secrets.GITHUB_TOKEN: the default token is
+#      scoped to the repo running the workflow. We need to enumerate
+#      issues across BOTH repos.
+#
+#   2. To trigger this workflow when issues change in the impl repo
+#      (cross-repo dispatch), add a small companion workflow in the
+#      impl repo that emits a `repository_dispatch` event of type
+#      `impl-repo-issue-changed` to this repo. The dispatch trigger is
+#      already wired here; see the bottom of this file for the snippet
+#      to paste into the impl repo. Until that's in place, daily cron +
+#      manual dispatch are the fallback.
+#
+# Security discipline:
+#
+# All user-controllable event data is routed through env vars, never
+# interpolated directly into `run:` shell strings. The only ${{ }}
+# substitutions inside shell are repository identifiers and runner
+# paths, both GitHub-controlled. Secrets are passed via env / with:,
+# never embedded in URLs.
+
+name: Sync open-issue wiki dashboards
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - deleted
+      - transferred
+      - pinned
+      - unpinned
+      - closed
+      - reopened
+      - assigned
+      - unassigned
+      - labeled
+      - unlabeled
+      - locked
+      - unlocked
+      - milestoned
+      - demilestoned
+  schedule:
+    # Daily at 04:17 UTC — off the hour to avoid GitHub cron contention.
+    - cron: '17 4 * * *'
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [impl-repo-issue-changed]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ISSUE_SYNC_PAT }}
+          path: main
+
+      - name: Checkout published wiki repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          token: ${{ secrets.ISSUE_SYNC_PAT }}
+          path: wiki-repo
+
+      - name: Regenerate wiki dashboards
+        working-directory: main
+        env:
+          GH_TOKEN: ${{ secrets.ISSUE_SYNC_PAT }}
+        run: |
+          scripts/sync-issues-to-wiki.sh
+
+      - name: Commit any regenerated pages to main
+        id: commit
+        working-directory: main
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+        run: |
+          git config user.name "flexo-rtm-bot"
+          git config user.email "flexo-rtm-bot@users.noreply.github.com"
+          if [[ -z "$(git status --porcelain wiki/)" ]]; then
+            echo "no_change=true" >> "$GITHUB_OUTPUT"
+            echo "Wiki dashboards already in sync; nothing to commit."
+            exit 0
+          fi
+          git add wiki/
+          action_label="${EVENT_ACTION:-schedule}"
+          git commit -m "docs(wiki): regenerate open-issue dashboards [automated]
+
+          Triggered by event=${EVENT_NAME} action=${action_label}.
+          Issue source of truth is GitHub; this is a published mirror."
+          git push origin main
+          echo "no_change=false" >> "$GITHUB_OUTPUT"
+
+      - name: Sync to published wiki
+        if: steps.commit.outputs.no_change != 'true'
+        env:
+          MAIN_REPO_DIR: ${{ github.workspace }}/main
+          WIKI_REPO: ${{ github.workspace }}/wiki-repo
+        working-directory: main
+        run: |
+          # sync-wiki.sh assumes the wiki repo lives at <MAIN_REPO>.wiki by
+          # default; the WIKI_REPO env override redirects it to our
+          # workspace-local checkout (which already has the right token
+          # baked into its remote config via actions/checkout).
+          scripts/sync-wiki.sh
+
+# -----------------------------------------------------------------------------
+# Companion workflow snippet — paste into the impl repo
+# (DynamicalSystemsGroup/flexo-rtm) so its issue events fire a dispatch
+# to this repo. Add as `.github/workflows/notify-research-on-issues.yml`
+# in the impl repo:
+#
+# ```yaml
+# name: Notify research repo on issue change
+# on:
+#   issues:
+#     types: [opened, edited, deleted, closed, reopened, labeled, unlabeled]
+# jobs:
+#   dispatch:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: peter-evans/repository-dispatch@v3
+#         with:
+#           token: ${{ secrets.RESEARCH_REPO_DISPATCH_PAT }}
+#           repository: DynamicalSystemsGroup/flexo-rtm-research
+#           event-type: impl-repo-issue-changed
+# ```
+#
+# The PAT in the impl repo only needs `repository_dispatch` write on
+# this research repo. Cron + manual dispatch are the fallback for
+# adopters who don't set this up.
