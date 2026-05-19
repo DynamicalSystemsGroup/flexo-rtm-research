@@ -29,33 +29,26 @@ Future Flexo major versions (Layer 1 API v2+) require a new binding contract.
 
 `flexo-rtm`'s storage adapter (`oracle/src/oracle/storage/flexo_client.py`) calls these endpoints. All are HTTPS with bearer-token auth (`FLEXO_TOKEN` env var or configured equivalent).
 
-### 3.1 Graph operations
+### 3.1 Resource provisioning + write
 
 | Operation | Endpoint | Purpose |
 |---|---|---|
-| Read graph | `GET /orgs/{org}/repos/{repo}/branches/{branch}/graphs/{graph-iri}` | Fetch a named graph as RDF |
-| Write graph | `PUT /orgs/{org}/repos/{repo}/branches/{branch}/graphs/{graph-iri}` | Replace a named graph (within a transaction) |
-| Patch graph | `PATCH /orgs/{org}/repos/{repo}/branches/{branch}/graphs/{graph-iri}` | SPARQL UPDATE on a named graph (within a transaction) |
-| List graphs | `GET /orgs/{org}/repos/{repo}/branches/{branch}/graphs` | Enumerate named graphs on a branch |
-| Delete graph | `DELETE /orgs/{org}/repos/{repo}/branches/{branch}/graphs/{graph-iri}` | Remove a named graph (rare; carry-through preservation usually preferred) |
+| Ensure org | `PUT /orgs/{org}` | Idempotent; `text/turtle` body sets `dcterms:title`; `409 Conflict` is treated as success |
+| Ensure repo | `PUT /orgs/{org}/repos/{repo}` | Same idempotency; creates the default branch (`master`) implicitly |
+| Ensure branch | `PUT /orgs/{org}/repos/{repo}/branches/{branch}` | Body includes `mms:ref <./master>` for non-default branches |
+| SPARQL UPDATE | `POST /orgs/{org}/repos/{repo}/branches/{branch}/update` | The atomic-write endpoint; body is `application/sparql-update` (typically `INSERT DATA { … }`). A single POST is one atomic commit (see §5.1). |
 
-### 3.2 Transaction operations
-
-| Operation | Endpoint | Purpose |
-|---|---|---|
-| Begin | `POST /orgs/{org}/repos/{repo}/branches/{branch}/transactions` | Open a new transaction; returns transaction ID |
-| Commit | `POST /orgs/{org}/repos/{repo}/branches/{branch}/transactions/{tx-id}/commit` | Atomically commit all writes in this transaction |
-| Abort | `POST /orgs/{org}/repos/{repo}/branches/{branch}/transactions/{tx-id}/abort` | Discard all writes |
-
-### 3.3 Query
+### 3.2 Query
 
 | Operation | Endpoint | Purpose |
 |---|---|---|
-| SPARQL Query | `POST /orgs/{org}/repos/{repo}/branches/{branch}/sparql` | SPARQL 1.1 SELECT / CONSTRUCT / ASK / DESCRIBE |
+| SPARQL Query | `POST /orgs/{org}/repos/{repo}/branches/{branch}/query` | `application/sparql-query` body; `Accept: text/turtle` or `application/sparql-results+json` |
 
-The SPARQL endpoint queries across all named graphs on the branch (federated default graph). The oracle's analysis layer issues all certification queries here.
+The SPARQL endpoint queries the branch's single named graph (Flexo's branch-is-graph semantics; see §4). The oracle's analysis layer issues all certification queries here.
 
-### 3.4 Branch & commit metadata
+> **Spec-vs-reality note:** Earlier drafts of this contract listed a separate transaction surface (`POST /transactions`, `/commit`, `/abort`). Live testing against `try-layer1.starforge.app` confirmed those endpoints do not exist in the real OpenMBEE Flexo MMS Layer-1 API. The atomic-batch semantics are achieved by buffering staged writes client-side and emitting a single `POST .../update` with combined `INSERT DATA` at commit time. Tracked at [research-repo #20](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues/20).
+
+### 3.3 Branch & commit metadata
 
 | Operation | Endpoint | Purpose |
 |---|---|---|
@@ -67,9 +60,11 @@ The SPARQL endpoint queries across all named graphs on the branch (federated def
 
 ## 4. Named-graph IRI scheme
 
-`flexo-rtm` uses a **stable, prefix-based IRI scheme** so adopters can identify graph kind from the IRI alone.
+> **Spec-vs-reality note:** Live-testing against `try-layer1.starforge.app` (2026-05-18) revealed that Flexo MMS Layer-1 treats **a branch as a named graph** — one branch holds exactly one named graph. `INSERT DATA { GRAPH <iri> { … } }` raises `QuadsNotAllowedException`. Adopters who want multiple partition graphs map each partition to its own branch (the ADCS-lifecycle-demo pattern). Tracked at [research-repo #22](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues/22).
 
-### 4.1 Per-partition graphs
+`flexo-rtm` uses a **stable, prefix-based IRI scheme** so adopters can identify graph kind from the IRI alone. In a multi-partition deployment, each partition IRI below maps to a Flexo branch with the same name.
+
+### 4.1 Per-partition graphs (one per Flexo branch)
 
 | IRI pattern | Contents |
 |---|---|
@@ -82,6 +77,8 @@ The SPARQL endpoint queries across all named graphs on the branch (federated def
 | `urn:rtm:identity-projection` | `foaf:Person`, `org:Organization`, `org:Membership`, `rtm:Policy`, `rtm:Attribute` (the projection per [[Identity Adapter Contract]]) |
 | `urn:rtm:scopes` | `rtm:Scope` definitions |
 | `urn:rtm:lifecycle` | optional `rtm:lifecycleStage` annotations (per ADR-029) |
+
+Single-branch deployments (the default for v0.1 smoke tests) put all triples on `master` (see §6); the partition IRIs are still informative annotations a client can use to taxonomize the corpus, but Flexo doesn't enforce per-IRI separation.
 
 ### 4.2 Per-resource source graphs (Layer C carry-through)
 
@@ -111,23 +108,22 @@ When a Scope (per `rtm:Scope`) constrains which graphs are in-scope for cert, th
 
 ### 5.1 Atomic batch (F1 of §6.1)
 
-A single `flexo-rtm commit` translates to **one Flexo transaction**:
+A single `flexo-rtm commit` translates to **one SPARQL UPDATE POST**:
 
 ```
-1. POST /transactions → tx-id
-2. PUT /graphs/<urn:rtm:model>            (in tx-id)
-3. PUT /graphs/<urn:rtm:attestations>     (in tx-id)
-4. PUT /graphs/<urn:rtm:transcripts>      (in tx-id)
-5. POST /transactions/{tx-id}/commit
+1. (idempotent) PUT /orgs/{org}                              (ensure org)
+2. (idempotent) PUT /orgs/{org}/repos/{repo}                 (ensure repo + auto-creates master)
+3. (idempotent, non-master) PUT /orgs/{org}/repos/{repo}/branches/{branch}
+4. POST /orgs/{org}/repos/{repo}/branches/{branch}/update
+       Content-Type: application/sparql-update
+       Body: INSERT DATA { <s1> <p1> <o1> . <s2> <p2> <o2> . … }
 ```
 
-If any sub-write fails (HTTP non-2xx, SHACL violation server-side, conflict), the client:
+Steps 1–3 are idempotent provisioning (`200`/`201`/`409` all treated as success). **Step 4 is the atomic commit:** the entire `INSERT DATA` body is one Flexo Layer-1 transaction. There is no client-side `begin/commit/abort` cycle and no transaction endpoints (see §3.1 spec-vs-reality note); the client buffers staged writes locally between `begin_transaction()` and `commit_transaction()` calls and flushes the union as one `INSERT DATA` body at commit time.
 
-1. Issues `POST /transactions/{tx-id}/abort`
-2. Surfaces the error to the operational layer
-3. The local working set is unchanged
+If step 4 fails (HTTP non-2xx, SHACL violation server-side, conflict), the client surfaces the error to the operational layer and the Flexo branch is unchanged — partial commits are impossible because the failed `INSERT DATA` is rejected as a whole.
 
-**Partial commits are forbidden.** No state persists in Flexo until the final commit succeeds.
+**Abort semantics** at the client are simply "discard the pending buffer"; no server call is needed.
 
 ### 5.2 Activity provenance (F2)
 
@@ -154,9 +150,11 @@ This is what enables cross-scope audit composition (per [[Federated Audit and Co
 
 | Branch pattern | Purpose | Mutability |
 |---|---|---|
-| `main` | Published baselines; protected; merges only via reviewed PR | Mutable via reviewed merge |
+| `master` (Flexo default) **or** `main` | Published baselines; protected; merges only via reviewed PR | Mutable via reviewed merge |
 | `engineering/{team}` | Concurrent engineering streams per team or person | Mutable; teams operate independently |
 | `cert/{run-id}` | Immutable certification artifacts for a specific cert run | Read-only after first push |
+
+> **Spec-vs-reality note:** OpenMBEE Flexo MMS Layer-1 auto-creates the branch named `master` (not `main`) on repo PUT. `flexo-rtm`'s `is_valid_branch_name` accepts both names as published-baseline equivalents; adopters who prefer `main` create it explicitly (with `mms:ref <./master>`) and treat `master` as a deprecated alias. Tracked at [research-repo #21](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues/21).
 
 Branch creation requires the configured Flexo authorization; `flexo-rtm` does not bypass Flexo's own ACL.
 
@@ -230,7 +228,7 @@ class FlexoClient:
     def read_graph(self, branch: str, graph_iri: str) -> Graph: ...
     def query_sparql(self, branch: str, query: str) -> "QueryResult": ...
     
-    def create_branch(self, name: str, from_branch: str = "main"): ...
+    def create_branch(self, name: str, from_branch: str = "master"): ...
     def merge(self, source: str, target: str, policy: dict) -> "MergeResult": ...
 ```
 

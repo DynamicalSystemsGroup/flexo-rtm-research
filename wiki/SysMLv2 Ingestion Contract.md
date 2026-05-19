@@ -38,6 +38,22 @@ The recommended adopter workflow:
 
 v0.1 does NOT bundle the SysMLv2 → RDF conversion toolchain — it consumes RDF. Adopters who need conversion install openCAESAR's converter as a separate dependency (out of `flexo-rtm`'s default install per X5 of §6.6).
 
+### 3.1 Where to get openCAESAR
+
+The openCAESAR project provides the JVM-based `owl-adapter` (MOF2OML + OWL) and `sysml-adapter` toolchains that perform the SysMLv2 ↔ `omg-sysml:` RDF conversion in both directions. Canonical source:
+
+- **GitHub org:** https://github.com/opencaesar
+- **`owl-adapter`:** https://github.com/opencaesar/owl-adapter
+- **`sysml-adapter`:** https://github.com/opencaesar/sysml-adapter
+
+**Adopter dependency posture:**
+
+- The openCAESAR toolchain is **not** installed by `pip install flexo-rtm` or `uv sync`. It's a separate JVM (Java 17+) + Gradle dependency adopters install only if their source-of-truth is SysMLv2 native rather than pre-converted RDF.
+- `flexo-rtm` pins to **OMG SysMLv2 1.0** (formal/2024-08-01) and **openCAESAR rendering v1.x** (see §2 of this contract).
+- An end-to-end live test of the conversion pipeline is tracked at [research-repo issue #24](https://github.com/DynamicalSystemsGroup/flexo-rtm-research/issues/24) (decide JVM-in-CI vs pre-cached fixtures vs container).
+
+For adopters who already have `omg-sysml:` RDF on disk (e.g., from a prior conversion pipeline), the openCAESAR dependency is not required; `flexo-rtm` reads and writes the RDF directly.
+
 ## 4. Conformance profile
 
 The `sysmlv2-anchored` SHACL profile (in `ontology/profiles/sysmlv2-anchored.shacl.ttl`) validates that an ingested model is well-formed `omg-sysml:` RDF. The profile enforces:
@@ -95,8 +111,8 @@ SysMLv2 has first-class requirement constructs. The mapping to `rtm:` is:
 | `omg-sysml:RequirementUsage` instance | `rtm:Requirement` (`owl:equivalentClass` between `omg-sysml:RequirementUsage` and `rtm:Requirement`) |
 | `omg-sysml:RequirementDefinition` | `rtm:RequirementDefinition` (a class of requirements; analogous to `oslc_rm:RequirementCollection`) |
 | `omg-sysml:requirement` annotation property | `rdfs:subPropertyOf rtm:hasRequirement` |
-| `omg-sysml:satisfies` connection | `rtm:satisfies` (the **v0.1 verification edge**; cross-domain to other SysMLv2 elements OR to `rtm:Artifact` external evidence) |
-| `omg-sysml:verifies` connection | `rtm:verifies` (validation/test relationship; cross-domain to `omg-sysml:VerificationCaseUsage` instances) |
+| `omg-sysml:satisfies` connection | `rtm:addresses` (the **v0.1 evidence-linkage edge**; cross-domain to other SysMLv2 elements OR to `rtm:Artifact` external evidence). Per the Hawkins-Habli ACP split: no individual artifact satisfies a requirement; satisfaction is recorded via `rtm:SatisfactionAttestation`. |
+| `omg-sysml:verifies` connection | `rtm:addresses` (validation/test relationship; cross-domain to `omg-sysml:VerificationCaseUsage` instances). The design-time-`satisfies` vs verification-time-`verifies` distinction is preserved in the source `omg-sysml:` graph; both surface as the same `rtm:addresses` edge in the projection. A `rtm:verifies` convenience alias (subPropertyOf `rtm:addresses`) is declared in `rtm-core.ttl` for adopters who want the OSLC-QM cross-domain narrative. |
 | `omg-sysml:assumes` annotation | preserved as-is (assumption captured in source graph) |
 
 ### 5.2 Parts, actions, ports
@@ -143,9 +159,15 @@ The `omg-sysml:elementId` is the **stable identity** that `rtm:` attestations at
 - Sample SysMLv2 models (the OMG-published examples + ADCS-lifecycle-demo SysMLv2 graphs) ingest cleanly.
 - The `omg-sysml:elementId` for each ingested element is preserved verbatim in the source graph.
 
+### 8.1a Write-back (per-file RDF emit; pulled into v0.1)
+
+- For every `omg-sysml:` RDF input file, `flexo-rtm` emits a corresponding RDF artifact preserving the source's `omg-sysml:elementId` set; the round-trip `parse → emit → parse → canonical-equality` is the read-step's correctness proof.
+- Per-file separation is enforced via per-source named graphs in the storage layer; cross-file ingestion preserves separation through the roundtrip.
+- Per-native-format emission (`.kerml`, `.sysml.json`) remains out of v0.1 scope — that's openCAESAR's owl-adapter direction, symmetric to ingest (see §3.1).
+
 ### 8.2 Cross-class compatibility
 
-- A `rtm:SatisfactionAttestation` whose `rtm:subject` references an `omg-sysml:RequirementUsage`'s `elementId` passes SHACL.
+- A `rtm:SatisfactionAttestation` whose `rtm:appliesTo` references an `omg-sysml:RequirementUsage`'s `elementId` passes SHACL.
 - A `rtm:Artifact` typed as both `rtm:Artifact` and `omg-sysml:PartUsage` is accepted (multi-typing is allowed).
 
 ### 8.3 Aspect tagging
@@ -154,7 +176,7 @@ The `omg-sysml:elementId` is the **stable identity** that `rtm:` attestations at
 
 ## 9. What is NOT in v0.1
 
-- **Write-back to SysMLv2 native formats** (`.kerml`, `.sysml.json` emit). v0.2.
+- **Write-back to SysMLv2 native formats** (`.kerml`, `.sysml.json` emit). v0.2 — that's openCAESAR's owl-adapter job, symmetric to ingest. Per-file `omg-sysml:` RDF write-back ships in v0.1 (see §8.1a).
 - **SysMLv2 model authoring** within `flexo-rtm`. Adopters use their existing SysMLv2 tools (Pilot Implementation, MagicDraw, Cameo Systems Modeler, …).
 - **SysMLv2 textual notation parser**. v0.1 consumes RDF; conversion is via openCAESAR's converter as an external dependency.
 - **Live SysMLv2 tool connectors** (e.g., direct Cameo API integration). v0.2+.

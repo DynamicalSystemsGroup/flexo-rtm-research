@@ -84,9 +84,9 @@ This gives `flexo-rtm` a useful security property: **a cert artifact can be shar
 
 - `rtm:Requirement` — a stated requirement
 - `rtm:Artifact` — evidence (a SysMLv2 model element, proof script, simulation result, test report, …)
-- `rtm:satisfies` (Artifact → Requirement) — verification edge
+- `rtm:addresses` (Artifact → Requirement) — evidence-linkage edge. No individual artifact can satisfy a requirement; satisfaction is a synthesizing human judgment recorded only via `rtm:SatisfactionAttestation` (Hawkins-Habli Assurance Claim Point split, consistent with the ADCS prototype). Same shape as OSLC's `oslc_rm:satisfies` predicate but with the epistemic correction baked in.
 
-**Analyses.** Forward: for each $r \in R$, enumerate $\{a \in A : a \texttt{ rtm:satisfies } r\}$; a requirement is *forward-covered* if non-empty. Backward: symmetric for $a \in A$.
+**Analyses.** Forward: for each $r \in R$, enumerate $\{a \in A : a \texttt{ rtm:addresses } r\}$; a requirement is *forward-covered* if non-empty. Backward: symmetric for $a \in A$.
 
 **Coverage statistics.** Forward coverage $\% = |\{r : r \text{ forward-covered}\}| / |R|$; backward similarly.
 
@@ -102,7 +102,7 @@ This is the analysis Doors/Jama/Polarion/OSLC users recognize; it works directly
 
 | Class | Subject | Asserts |
 |---|---|---|
-| `rtm:SatisfactionAttestation` | an `rtm:satisfies` triple | "this artifact satisfies this requirement" |
+| `rtm:SatisfactionAttestation` | an `rtm:addresses` triple | "this artifact satisfies this requirement" |
 | `rtm:AdequacyAttestation` | an (artifact, requirement) pair | "the model representation is adequate for the claim" |
 | `rtm:SufficiencyAttestation` | an (artifact, requirement) pair | "the evidence is sufficient to support the claim" |
 
@@ -150,7 +150,7 @@ Applies to the parent class and all six subclasses.
 
 **Composable profiles** (off by default):
 
-- `attested-satisfies` — every `rtm:satisfies` requires a `rtm:SatisfactionAttestation`
+- `attested-addresses` — every `rtm:addresses` triple requires a `rtm:SatisfactionAttestation`
 - `attested-adequacy` — same with `rtm:AdequacyAttestation`
 - `attested-sufficiency` — same with `rtm:SufficiencyAttestation`
 - `composition-adequacy` / `composition-sufficiency` / `qualified-audit-per-scope` — composition-level (see §4.8)
@@ -238,9 +238,9 @@ v0.1 reports these gap codes:
 
 | Code | Meaning | Detection |
 |---|---|---|
-| `T1.orphan-requirement` | `r ∈ R` with no incoming `rtm:satisfies` | forward analysis |
-| `T2.dangling-evidence` | `a ∈ A` with no outgoing `rtm:satisfies` | backward analysis |
-| `T3.unattested-satisfaction` | `rtm:satisfies` without `SatisfactionAttestation` (when `attested-satisfies` active) | attestation profile |
+| `T1.orphan-requirement` | `r ∈ R` with no incoming `rtm:addresses` | forward analysis |
+| `T2.dangling-evidence` | `a ∈ A` with no outgoing `rtm:addresses` | backward analysis |
+| `T3.unattested-satisfaction` | `rtm:addresses` triple without `SatisfactionAttestation` (when `attested-addresses` active) | attestation profile |
 | `T4.unattested-adequacy` | same with `AdequacyAttestation` (when `attested-adequacy` active) | attestation profile |
 | `T5.unattested-sufficiency` | same with `SufficiencyAttestation` (when `attested-sufficiency` active) | attestation profile |
 | `T6.failed-attestation` | any attestation with `rtm:status = fail` | attestation review |
@@ -477,13 +477,27 @@ class Scope(BaseModel):
 
 class TranscriptStep(BaseModel):
     seq: int
-    step_kind: Literal["sparql", "shacl", "canonicalize", "fetch", "verify-signature"]
+    step_kind: Literal["sparql", "shacl", "canonicalize", "kc-operation", "delegated-numerical"]
     query_text: str | None
     shape_iri: AnyUrl | None
     inputs_hash: str
     result_hash: str
     cryptosuite: str | None                  # ADR-027 suite-derived algorithm
     prov_activity: AnyUrl
+    was_informed_by: AnyUrl | None           # prov:wasInformedBy → preceding step IRI
+
+class Transcript(BaseModel):
+    """Linear chain of TranscriptStep records over a single cert run.
+
+    Per [[Transcript Replay Semantics]] §1+§5: the chain's hash sequence is a
+    Merkle commitment to the entire cert computation. ``steps[0].inputs_hash``
+    MUST equal ``genesis_inputs_hash``; for k ≥ 1, ``steps[k].inputs_hash`` MUST
+    equal ``steps[k-1].result_hash``.
+    """
+    run_id: UUID
+    genesis_inputs_hash: str
+    steps: tuple[TranscriptStep, ...]
+    cryptosuite: str
 
 class GapRecord(BaseModel):
     code: Literal["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"]

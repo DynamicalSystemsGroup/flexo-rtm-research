@@ -53,7 +53,7 @@ Each row is `owl:equivalentProperty` unless noted. Directionality is preserved.
 | `oslc_rm:specifiedBy` | `rtm:specifiedBy` | many-to-many |
 | `oslc_rm:specifies` | `rtm:specifies` (inverse) | many-to-many |
 | `oslc_rm:satisfiedBy` | `rtm:satisfiedBy` | many-to-many |
-| `oslc_rm:satisfies` | `rtm:satisfies` | **the verification edge** (§4.1 of Design Spec); v0.1 PRIMARY |
+| `oslc_rm:satisfies` | `rtm:addresses` | **the evidence-linkage edge** (§4.1 of Design Spec); v0.1 PRIMARY. The OSLC predicate's "satisfies" naming is misleading per the Hawkins-Habli ACP split — satisfaction is judgment, not evidence — but the *graph shape* maps cleanly. Satisfaction synthesis is recorded via `rtm:SatisfactionAttestation`, not on this edge. |
 | `oslc_rm:tracedTo` | `rtm:tracedTo` | many-to-many; weaker than satisfies |
 | `oslc_rm:affectedBy` | `rtm:affectedBy` | many-to-many |
 | `oslc_rm:constrainedBy` | `rtm:constrainedBy` | many-to-many |
@@ -102,7 +102,7 @@ These are NOT remapped — they remain in their native Dublin Core / OSLC namesp
 | `oslc_qm:reportsOnTestPlan` | `rtm:reportsOnTestPlan` |
 | `oslc_qm:runsTestCase` | `rtm:runsTestCase` |
 | `oslc_qm:runsOnTestEnvironment` | `rtm:runsOnTestEnvironment` |
-| `oslc_qm:validatesRequirement` | `rtm:satisfies` (cross-domain: QM TestResult `rtm:satisfies` RM Requirement) |
+| `oslc_qm:validatesRequirement` | `rtm:addresses` (cross-domain: QM TestResult `rtm:addresses` RM Requirement; satisfaction is recorded via `rtm:SatisfactionAttestation`) |
 | `oslc_qm:blocksTestExecutionRecord` | `rtm:blocksTestExecutionRecord` |
 | `oslc_qm:relatedChangeRequest` | `rtm:relatedChangeRequest` |
 
@@ -234,7 +234,35 @@ Any addition to the core mapping table (§4 or §5) requires:
 3. Adding at least one canonical fixture exercising the new mapping
 4. Updating `tests/conformance/test_mapping_table.py` to enforce the new row
 
-## 11. What is NOT in scope
+## 11. Asymmetric audit semantics (OSLC ↔ flexo-rtm)
+
+`flexo-rtm`'s audit bar is strictly *higher* than OSLC's, because we
+distinguish **evidence** (`rtm:addresses`) from **judgment**
+(`rtm:SatisfactionAttestation`). A graph that passes OSLC's traceability
+bar may fail a `flexo-rtm` audit — we flag the missing explicit human
+attestations.
+
+Consequence: roundtrips through OSLC are NOT identity for non-trivial
+graphs that carry attestations:
+
+| Direction | Faithful? | Notes |
+|---|---|---|
+| OSLC → flexo-rtm | Layer A faithful by construction (source-preserving). | The result has no attestations; any `attested-*` profile would fail at re-audit. |
+| flexo-rtm → OSLC | Lossy. | Attestation triples drop (default) or carry as Layer C extensions other OSLC clients can't interpret. |
+| flexo-rtm → OSLC → flexo-rtm | NOT identity. | The intermediate OSLC form loses attestation structure; re-ingesting yields the bare addresses-graph. |
+
+The OSLC adapter source-preserves verbatim — the *triple-set* roundtrip is
+lossless for whatever the input contained. The asymmetry is at the
+**semantic-bar** level, not the syntactic-fidelity level. `flexo-rtm`
+strictly *extends* OSLC; OSLC is a strict semantic subset.
+
+This is unavoidable: OSLC has no normative slot for the
+Hawkins-Habli `gsn:Justification` (sufficiency) and `gsn:Assumption`
+(adequacy) categories that `flexo-rtm` makes first-class. Any OSLC
+consumer that wants to preserve the judgment layer needs a flexo-rtm-aware
+extension.
+
+## 12. What is NOT in scope
 
 - **OSLC Service Discovery** (`oslc:ServiceProvider`, `oslc:Discovery`): not used by `flexo-rtm`'s adapter. v0.1 takes RDF in, emits RDF out; service discovery is a runtime concern handled by live connectors (v0.2).
 - **OSLC Delegated UIs** (`oslc:Dialog`): vendor-specific UI embedding; out of scope.
